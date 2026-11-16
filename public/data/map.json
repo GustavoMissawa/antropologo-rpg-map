@@ -1,0 +1,4307 @@
+{
+  "project": "ANTROPOLOGO RPG · v0.38",
+  "source": "Redesigner Antropologo.fig",
+  "importedAt": "2026-11-14",
+  "summary": {
+    "figmaNodes": 3451,
+    "screenshotsInFig": 149,
+    "catalogedScreenshots": 149,
+    "otherImages": 1,
+    "flowCards": 90,
+    "verifiedLabeledTransitions": 47,
+    "missingScreenshotRefs": []
+  },
+  "sections": [
+    {
+      "id": "overview",
+      "label": "01 · Navegação principal",
+      "color": "#7b9dff",
+      "description": "ANTROPOLOGO RPG · v0.38 • Estado documentado da aplicação • Fonte: backup validado, código e exploração local"
+    },
+    {
+      "id": "pending",
+      "label": "07 · Pendências e limites",
+      "color": "#f59e0b",
+      "description": "As referências são da v0.38 servida localmente, com dados sintéticos. Este mapa registra caminhos e estados observados ou localizados no código."
+    },
+    {
+      "id": "global",
+      "label": "02 · Modo ANTROPOLOGO",
+      "color": "#3fc0a7",
+      "description": "Entrada sem sistema ativo. A barra superior dá acesso direto às cinco áreas, e os atalhos do Início partem para destinos e estados diferentes."
+    },
+    {
+      "id": "system",
+      "label": "03 · Modo Sistema",
+      "color": "#ad8dff",
+      "description": "O sistema ativo acompanha a navegação, mas leitura, biblioteca e edição continuam sendo estados da página. Perfil aplica temporariamente a identidade global."
+    },
+    {
+      "id": "rules",
+      "label": "04.1 · Sistema e regras",
+      "color": "#6db4ff",
+      "description": "Leitura, navegação local, edição e personalização dividem a mesma área de Sistema. Os retornos ao leitor, à biblioteca e à exportação aparecem em trilhas separadas."
+    },
+    {
+      "id": "sheet",
+      "label": "04.2 · Fichas e campos",
+      "color": "#ff8a9e",
+      "description": "A mesma área alterna biblioteca, ficha vazia, Modo edição, Modo ficha e edição do modelo de sistema. O mapa é uma área de trabalho dentro de #ficha."
+    },
+    {
+      "id": "dice",
+      "label": "04.3 · Dados e fórmulas",
+      "color": "#ebb978",
+      "description": "A interpretação parte das regras do sistema ou dos dados livres da ficha. Os resultados do jogo e os dados decorativos da interface são registrados em quadros próprios."
+    },
+    {
+      "id": "files",
+      "label": "04.4 · Arquivos e PDFs",
+      "color": "#70c7e8",
+      "description": "Sistema e Ficha compartilham leitura de arquivos por conteúdo. A biblioteca de PDFs usa outro fluxo: upload local e memória da página."
+    },
+    {
+      "id": "account",
+      "label": "04.5 · Perfil e Agenda",
+      "color": "#c6a5fc",
+      "description": "A conta habilita apenas a agenda. Login é modal e o calendário é uma página da aplicação. Os exemplos em capturas pertencem a um banco local descartável."
+    },
+    {
+      "id": "cross",
+      "label": "04.6 · Elementos transversais",
+      "color": "#9badbf",
+      "description": "Temas, ajuda, navegação e cache afetam mais de uma área. Suas consequências são registradas junto aos estados que o usuário consegue observar."
+    }
+  ],
+  "lanes": [
+    {
+      "id": "overview-0",
+      "section": "overview",
+      "title": "Cinco destinos pela barra superior",
+      "cardIds": [
+        "30:29",
+        "30:39",
+        "30:49",
+        "30:59",
+        "30:68"
+      ]
+    },
+    {
+      "id": "overview-1",
+      "section": "overview",
+      "title": "Mudança de contexto no mesmo aplicativo",
+      "cardIds": [
+        "30:81",
+        "30:94",
+        "30:107",
+        "30:121"
+      ]
+    },
+    {
+      "id": "pending-0",
+      "section": "pending",
+      "title": "Ambiente e cobertura",
+      "cardIds": [
+        "30:157",
+        "30:167",
+        "30:177",
+        "30:189"
+      ]
+    },
+    {
+      "id": "global-0",
+      "section": "global",
+      "title": "Descobrir e criar sistemas",
+      "cardIds": [
+        "30:212",
+        "30:225",
+        "30:239",
+        "30:252"
+      ]
+    },
+    {
+      "id": "global-1",
+      "section": "global",
+      "title": "Entradas para Ficha",
+      "cardIds": [
+        "30:265",
+        "30:278",
+        "30:292"
+      ]
+    },
+    {
+      "id": "global-2",
+      "section": "global",
+      "title": "Biblioteca de personagens",
+      "cardIds": [
+        "30:306",
+        "30:320",
+        "30:333"
+      ]
+    },
+    {
+      "id": "global-3",
+      "section": "global",
+      "title": "Ferramentas, perfil e navegação",
+      "cardIds": [
+        "30:346",
+        "30:355",
+        "30:368",
+        "30:378"
+      ]
+    },
+    {
+      "id": "system-0",
+      "section": "system",
+      "title": "Entrada, troca e retorno",
+      "cardIds": [
+        "30:423",
+        "30:436",
+        "30:449",
+        "30:463"
+      ]
+    },
+    {
+      "id": "system-1",
+      "section": "system",
+      "title": "Mesmo contexto nas ferramentas",
+      "cardIds": [
+        "30:476",
+        "30:489",
+        "30:499",
+        "30:509"
+      ]
+    },
+    {
+      "id": "system-2",
+      "section": "system",
+      "title": "Ficha-modelo e consequências",
+      "cardIds": [
+        "30:523",
+        "30:537",
+        "30:549",
+        "30:560"
+      ]
+    },
+    {
+      "id": "system-3",
+      "section": "system",
+      "title": "Salvar, recarregar e alternar visual",
+      "cardIds": [
+        "30:575",
+        "30:589",
+        "30:605",
+        "30:615"
+      ]
+    },
+    {
+      "id": "rules-0",
+      "section": "rules",
+      "title": "Leitura, índice e links",
+      "cardIds": [
+        "30:660",
+        "30:674",
+        "30:687"
+      ]
+    },
+    {
+      "id": "rules-1",
+      "section": "rules",
+      "title": "Editor inline e retorno à leitura",
+      "cardIds": [
+        "30:701",
+        "30:714",
+        "30:728",
+        "30:739"
+      ]
+    },
+    {
+      "id": "rules-2",
+      "section": "rules",
+      "title": "Configuração e personalização",
+      "cardIds": [
+        "30:755",
+        "30:769",
+        "30:784",
+        "30:795"
+      ]
+    },
+    {
+      "id": "sheet-0",
+      "section": "sheet",
+      "title": "Da ficha ao mapa",
+      "cardIds": [
+        "30:833",
+        "30:847",
+        "30:861",
+        "30:875"
+      ]
+    },
+    {
+      "id": "sheet-1",
+      "section": "sheet",
+      "title": "Durante a sessão de jogo",
+      "cardIds": [
+        "30:889",
+        "30:902",
+        "30:915",
+        "30:925"
+      ]
+    },
+    {
+      "id": "dice-0",
+      "section": "dice",
+      "title": "Do catálogo à regra de resolução",
+      "cardIds": [
+        "30:961",
+        "30:974",
+        "30:988"
+      ]
+    },
+    {
+      "id": "dice-1",
+      "section": "dice",
+      "title": "Lançar, escolher e consultar",
+      "cardIds": [
+        "30:1002",
+        "30:1016",
+        "30:1030",
+        "30:1044"
+      ]
+    },
+    {
+      "id": "files-0",
+      "section": "files",
+      "title": "Importar e exportar Sistema ou Ficha",
+      "cardIds": [
+        "30:1072",
+        "30:1086",
+        "30:1100"
+      ]
+    },
+    {
+      "id": "files-1",
+      "section": "files",
+      "title": "Biblioteca e arquivo local",
+      "cardIds": [
+        "30:1114",
+        "30:1128",
+        "30:1141",
+        "30:1155"
+      ]
+    },
+    {
+      "id": "account-0",
+      "section": "account",
+      "title": "De visitante à agenda",
+      "cardIds": [
+        "30:1186",
+        "30:1199",
+        "30:1213",
+        "30:1228"
+      ]
+    },
+    {
+      "id": "account-1",
+      "section": "account",
+      "title": "Criar, editar, filtrar e fechar",
+      "cardIds": [
+        "30:1241",
+        "30:1255",
+        "30:1268",
+        "30:1279"
+      ]
+    },
+    {
+      "id": "cross-0",
+      "section": "cross",
+      "title": "Aparência e ajuda",
+      "cardIds": [
+        "30:1312",
+        "30:1326",
+        "30:1337"
+      ]
+    },
+    {
+      "id": "cross-1",
+      "section": "cross",
+      "title": "Ambiente e estado local",
+      "cardIds": [
+        "30:1351",
+        "30:1363",
+        "30:1375"
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "id": "30:29",
+      "section": "overview",
+      "lane": "overview-0",
+      "order": 0,
+      "title": "Início",
+      "kind": "PÁGINA #inicio",
+      "route": "#inicio",
+      "description": "Home global ou contextual. Cards de sistemas e personagens, biblioteca de PDFs e Agenda.",
+      "refs": [
+        "D01",
+        "M01",
+        "D03",
+        "M03"
+      ],
+      "figmaId": "30:29",
+      "size": {
+        "x": 350.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:39",
+      "section": "overview",
+      "lane": "overview-0",
+      "order": 1,
+      "title": "Sistema",
+      "kind": "PÁGINA #regras",
+      "route": "#regras",
+      "description": "Biblioteca quando não há contexto; leitor do sistema ativo ao entrar pelo menu contextual.",
+      "refs": [
+        "D06",
+        "M05",
+        "D07",
+        "M06"
+      ],
+      "figmaId": "30:39",
+      "size": {
+        "x": 350.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 427.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:49",
+      "section": "overview",
+      "lane": "overview-0",
+      "order": 2,
+      "title": "Ficha",
+      "kind": "PÁGINA #ficha",
+      "route": "#ficha",
+      "description": "Entrada vazia, biblioteca, ficha de personagem ou modelo vinculado.",
+      "refs": [
+        "D37",
+        "M30",
+        "D43",
+        "M34"
+      ],
+      "figmaId": "30:49",
+      "size": {
+        "x": 350.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 835.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:59",
+      "section": "overview",
+      "lane": "overview-0",
+      "order": 3,
+      "title": "PDFs",
+      "kind": "PÁGINA #pdfs",
+      "route": "#pdfs",
+      "description": "Biblioteca por categoria, busca e arquivos locais durante o teste.",
+      "refs": [
+        "D65",
+        "M52",
+        "D67",
+        "M54"
+      ],
+      "figmaId": "30:59",
+      "size": {
+        "x": 350.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1243.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:68",
+      "section": "overview",
+      "lane": "overview-0",
+      "order": 4,
+      "title": "Agenda",
+      "kind": "PÁGINA #agenda",
+      "route": "#agenda",
+      "description": "Visitante vê convite. Após o acesso, calendário, one-shots e séries.",
+      "refs": [
+        "D71",
+        "M57",
+        "D79",
+        "M65"
+      ],
+      "figmaId": "30:68",
+      "size": {
+        "x": 350.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1651.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:81",
+      "section": "overview",
+      "lane": "overview-1",
+      "order": 0,
+      "title": "Modo ANTROPOLOGO",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Sem sistema ativo. Início oferece explorar, criar ou abrir um sistema. Links por hash partem da mesma página /.",
+      "refs": [
+        "D01",
+        "M01"
+      ],
+      "figmaId": "30:81",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:94",
+      "section": "overview",
+      "lane": "overview-1",
+      "order": 1,
+      "title": "Selecionar conjunto",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Escolha AB10 ou um sistema próprio. Criar e importar um sistema também abrem seu leitor.",
+      "refs": [
+        "D07",
+        "M06",
+        "D10",
+        "M09",
+        "D12",
+        "M11"
+      ],
+      "figmaId": "30:94",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:107",
+      "section": "overview",
+      "lane": "overview-1",
+      "order": 2,
+      "title": "Modo Sistema",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "A marca ANTROPOLOGO retorna ao global; a identidade do sistema permite trocar. O contexto normalmente sobrevive à recarga na mesma aba.",
+      "refs": [
+        "D03",
+        "M03",
+        "D05",
+        "M04"
+      ],
+      "figmaId": "30:107",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:121",
+      "section": "overview",
+      "lane": "overview-1",
+      "order": 3,
+      "title": "Perfil",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "A identidade global aparece no modal. Fechar restaura o visual contextual. Acesso, cadastro e agenda vinculada ao @.",
+      "refs": [
+        "D72",
+        "M58",
+        "D75",
+        "M61"
+      ],
+      "figmaId": "30:121",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:157",
+      "section": "pending",
+      "lane": "pending-0",
+      "order": 0,
+      "title": "Aparelhos físicos",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Mobile foi capturado em viewport 390 × 844 e toque emulado. Teclado nativo, IME, Safari iOS e Chrome Android ficam pendentes.",
+      "refs": [],
+      "figmaId": "30:157",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:167",
+      "section": "pending",
+      "lane": "pending-0",
+      "order": 1,
+      "title": "Conta e serviços publicados",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Foram testados cadastro, login e Agenda no banco descartável. Não se provocaram expiração, logout destrutivo, limites ou falhas na produção.",
+      "refs": [],
+      "figmaId": "30:167",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:177",
+      "section": "pending",
+      "lane": "pending-0",
+      "order": 2,
+      "title": "Erros raros e limites",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "503 do catálogo e importação inválida foram reproduzidos localmente. Falhas de cache, cota máxima e combinações de arquivos não foram esgotadas.",
+      "refs": [
+        "D70",
+        "M56",
+        "D64",
+        "M51"
+      ],
+      "figmaId": "30:177",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:189",
+      "section": "pending",
+      "lane": "pending-0",
+      "order": 3,
+      "title": "Dados e interações de fronteira",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Dados e interações de fronteira O mapa cobre caminhos representativos; não enumera cada tópico criado por usuários, combinação de fórmulas, arquivo ou aparência. Nenhuma exclusão foi confirmada.",
+      "refs": [],
+      "figmaId": "30:189",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:212",
+      "section": "global",
+      "lane": "global-0",
+      "order": 0,
+      "title": "Início global",
+      "kind": "PÁGINA #inicio",
+      "route": "#inicio",
+      "description": "Marca, aviso da versão de teste, cards de sistemas e personagens, atalhos para PDFs e Agenda.",
+      "refs": [
+        "D01",
+        "M01",
+        "D02",
+        "M02"
+      ],
+      "figmaId": "30:212",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:225",
+      "section": "global",
+      "lane": "global-0",
+      "order": 1,
+      "title": "Biblioteca de sistemas",
+      "kind": "PÁGINA #regras",
+      "route": "#regras",
+      "description": "Lista AB10 e sistemas próprios. O card abre leitura; botões do card permitem salvar e, nos próprios, editar ou abrir a confirmação de remoção.",
+      "refs": [
+        "D06",
+        "M05",
+        "D21"
+      ],
+      "figmaId": "30:225",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:239",
+      "section": "global",
+      "lane": "global-0",
+      "order": 2,
+      "title": "Criar sistema",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "O card da Home também abre este modal diretamente. Nome, descrição, logo e entrada de Personalizar.",
+      "refs": [
+        "D10",
+        "M09"
+      ],
+      "figmaId": "30:239",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:252",
+      "section": "global",
+      "lane": "global-0",
+      "order": 3,
+      "title": "Sistema selecionado",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "O sistema recém-criado abre sem capítulos. Abrir o card AB10 ou um conjunto da lista também ativa o contexto.",
+      "refs": [
+        "D11",
+        "M10",
+        "D07",
+        "M06"
+      ],
+      "figmaId": "30:252",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:265",
+      "section": "global",
+      "lane": "global-1",
+      "order": 0,
+      "title": "Ficha de personagem",
+      "kind": "PÁGINA #ficha",
+      "route": "#ficha",
+      "description": "Atalho do cabeçalho. Mostra a entrada vazia enquanto não há ficha ou modelo aberto.",
+      "refs": [
+        "D37",
+        "M30"
+      ],
+      "figmaId": "30:265",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:278",
+      "section": "global",
+      "lane": "global-1",
+      "order": 1,
+      "title": "Criar nova ficha",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Também abre pelo botão do destaque e pelo card do Início. Nome obrigatório, jogador e sistema opcionais; modelo quando o conjunto tem vínculo.",
+      "refs": [
+        "D38",
+        "M31",
+        "D39"
+      ],
+      "figmaId": "30:278",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:292",
+      "section": "global",
+      "lane": "global-1",
+      "order": 2,
+      "title": "Editor de personagem",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Criação abre Modo edição. Um arquivo de ficha abre Modo ficha. As fichas abertas aparecem como cards e na lista de recentes durante a página.",
+      "refs": [
+        "D40",
+        "M32",
+        "D43",
+        "M34",
+        "D44",
+        "M35"
+      ],
+      "figmaId": "30:292",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:306",
+      "section": "global",
+      "lane": "global-2",
+      "order": 0,
+      "title": "Seus personagens",
+      "kind": "INFORMAÇÃO",
+      "route": null,
+      "description": "Faixa horizontal. Os cards abrem o personagem diretamente; o card Criar personagem abre o mesmo formulário de ficha.",
+      "refs": [
+        "D02",
+        "M02"
+      ],
+      "figmaId": "30:306",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:320",
+      "section": "global",
+      "lane": "global-2",
+      "order": 1,
+      "title": "Suas fichas",
+      "kind": "INFORMAÇÃO",
+      "route": null,
+      "description": "Mostra fichas da página em grade e oferece Criar personagem. O card de uma ficha abre o editor.",
+      "refs": [
+        "D36",
+        "M29"
+      ],
+      "figmaId": "30:320",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:333",
+      "section": "global",
+      "lane": "global-2",
+      "order": 2,
+      "title": "Ficha selecionada",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Abre no Modo edição. O contexto de sistema vigente e o vínculo da ficha são estados distintos.",
+      "refs": [
+        "D43",
+        "M34",
+        "D41"
+      ],
+      "figmaId": "30:333",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:346",
+      "section": "global",
+      "lane": "global-3",
+      "order": 0,
+      "title": "Biblioteca de PDFs",
+      "kind": "PÁGINA #pdfs",
+      "route": "#pdfs",
+      "description": "Página acessível no cabeçalho e pelo card Sua biblioteca de materiais do Início.",
+      "refs": [
+        "D65",
+        "M52"
+      ],
+      "figmaId": "30:346",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:355",
+      "section": "global",
+      "lane": "global-3",
+      "order": 1,
+      "title": "Agenda de RPG",
+      "kind": "PÁGINA #agenda",
+      "route": "#agenda",
+      "description": "Acesso no cabeçalho, card da Home e Perfil. Visitante pode abrir o modal Entrar ou criar conta.",
+      "refs": [
+        "D71",
+        "M57"
+      ],
+      "figmaId": "30:355",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:368",
+      "section": "global",
+      "lane": "global-3",
+      "order": 2,
+      "title": "Perfil / conta",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Modal sobre a área atual. Entrar, Criar conta, Ver agenda e próximas sessões dependem da autenticação.",
+      "refs": [
+        "D72",
+        "M58",
+        "D73",
+        "M59",
+        "D74",
+        "M60"
+      ],
+      "figmaId": "30:368",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:378",
+      "section": "global",
+      "lane": "global-3",
+      "order": 3,
+      "title": "Aparência e Ajuda",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Aparência altera claro/escuro e oito paletas no navegador. Ajuda tem abas por área e fica oculta a 390 px.",
+      "refs": [
+        "D33",
+        "M27",
+        "D34",
+        "M28",
+        "D35"
+      ],
+      "figmaId": "30:378",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:423",
+      "section": "system",
+      "lane": "system-0",
+      "order": 0,
+      "title": "Selecionar um sistema",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Card no Início, Abrir conjunto na biblioteca, Criar ou importar regras. AB10 é fixo; sistemas do usuário são editáveis.",
+      "refs": [
+        "D06",
+        "M05",
+        "D07",
+        "M06",
+        "D12",
+        "M11"
+      ],
+      "figmaId": "30:423",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:436",
+      "section": "system",
+      "lane": "system-0",
+      "order": 1,
+      "title": "Sistema · Leitura",
+      "kind": "PÁGINA #regras",
+      "route": "#regras",
+      "description": "Leitura usa índice e tópico selecionado. Conjuntos de regras retorna à biblioteca sem limpar o contexto.",
+      "refs": [
+        "D07",
+        "M06",
+        "D12",
+        "M11",
+        "M08"
+      ],
+      "figmaId": "30:436",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:449",
+      "section": "system",
+      "lane": "system-0",
+      "order": 2,
+      "title": "Início contextual",
+      "kind": "PÁGINA #inicio",
+      "route": "#inicio",
+      "description": "Destaque e Explorar regras apontam ao sistema ativo. A faixa de personagens filtra pelo vínculo; Ver tudo amplia à biblioteca.",
+      "refs": [
+        "D03",
+        "M03",
+        "D04",
+        "D05",
+        "M04"
+      ],
+      "figmaId": "30:449",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:463",
+      "section": "system",
+      "lane": "system-0",
+      "order": 3,
+      "title": "Trocar / voltar ao global",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Identidade contextual abre a biblioteca para troca. Marca ANTROPOLOGO limpa o contexto e retorna ao Início global.",
+      "refs": [
+        "D05",
+        "M04",
+        "D01",
+        "M01"
+      ],
+      "figmaId": "30:463",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:476",
+      "section": "system",
+      "lane": "system-1",
+      "order": 0,
+      "title": "Navegação contextual",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "O mesmo menu superior se mantém. A seleção de sistema altera visual e contexto; não cria novas URLs.",
+      "refs": [
+        "D03",
+        "M03",
+        "D05",
+        "M04"
+      ],
+      "figmaId": "30:476",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:489",
+      "section": "system",
+      "lane": "system-1",
+      "order": 1,
+      "title": "Ficha ou modelo vinculado",
+      "kind": "PÁGINA #ficha",
+      "route": "#ficha",
+      "description": "Abre o espaço de ficha; também pode chegar do conjunto pelo menu Ficha-modelo e de personagens da Home.",
+      "refs": [
+        "D19",
+        "M16",
+        "D20",
+        "M17",
+        "D41"
+      ],
+      "figmaId": "30:489",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:499",
+      "section": "system",
+      "lane": "system-1",
+      "order": 2,
+      "title": "PDFs com o contexto ativo",
+      "kind": "PÁGINA #pdfs",
+      "route": "#pdfs",
+      "description": "Mesmo catálogo e ações da área global. O sistema ativo continua no cabeçalho; não filtra a biblioteca.",
+      "refs": [
+        "D67",
+        "M54"
+      ],
+      "figmaId": "30:499",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:509",
+      "section": "system",
+      "lane": "system-1",
+      "order": 3,
+      "title": "Agenda com contexto",
+      "kind": "PÁGINA #agenda",
+      "route": "#agenda",
+      "description": "A Agenda segue a conta temporária, independentemente do sistema ativo. O Perfil usa identidade global enquanto está aberto.",
+      "refs": [
+        "D79",
+        "M65",
+        "D75",
+        "M61"
+      ],
+      "figmaId": "30:509",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:523",
+      "section": "system",
+      "lane": "system-2",
+      "order": 0,
+      "title": "Criar ou vincular ficha",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Criar modelo, vincular arquivo ou vincular cópia de ficha da página. Com modelo, Gerenciar revela abrir, criar personagem, substituir e desvincular.",
+      "refs": [
+        "D19",
+        "M16"
+      ],
+      "figmaId": "30:523",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:537",
+      "section": "system",
+      "lane": "system-2",
+      "order": 1,
+      "title": "Editor de ficha-modelo",
+      "kind": "INFORMAÇÃO",
+      "route": null,
+      "description": "Modelo separado de personagens. Salvar modelo atualiza o sistema local; Exportar ficha gera cópia; Voltar às regras retorna ao conjunto.",
+      "refs": [
+        "D20",
+        "M17"
+      ],
+      "figmaId": "30:537",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:549",
+      "section": "system",
+      "lane": "system-2",
+      "order": 2,
+      "title": "Criar personagem do modelo",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "A ação pode partir do menu do conjunto. O formulário traz o sistema selecionado; blocos, campos e rolagens são copiados para a nova ficha.",
+      "refs": [
+        "D39",
+        "D41"
+      ],
+      "figmaId": "30:549",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:560",
+      "section": "system",
+      "lane": "system-2",
+      "order": 3,
+      "title": "Modelo pendente",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Se houver mudanças ao trocar de ficha, continuar, salvar ou descartar. Se o conjunto não existir mais, exportação da ficha permanece disponível.",
+      "refs": [
+        "D20",
+        "M17"
+      ],
+      "figmaId": "30:560",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:575",
+      "section": "system",
+      "lane": "system-3",
+      "order": 0,
+      "title": "Identidade do sistema",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Marca global × nome ou logo do sistema. Quando há imagem, o nome continua acessível. Logos e fundos de cabeçalho podem ser diferentes por dispositivo.",
+      "refs": [
+        "D05",
+        "M04",
+        "D26",
+        "M22"
+      ],
+      "figmaId": "30:575",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:589",
+      "section": "system",
+      "lane": "system-3",
+      "order": 1,
+      "title": "Restauração da área e contexto",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Restauração da área e contexto IndexedDB por token da sessão guarda sistemas, área e contexto. Se o contexto salvo não existe, a recuperação volta ao Início global.",
+      "refs": [
+        "D03",
+        "M03"
+      ],
+      "figmaId": "30:589",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:605",
+      "section": "system",
+      "lane": "system-3",
+      "order": 2,
+      "title": "Perfil com identidade global",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Modal global sobre a área; fechar restaura o visual contextual. A seleção do sistema não é apagada.",
+      "refs": [
+        "D75",
+        "M61"
+      ],
+      "figmaId": "30:605",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:615",
+      "section": "system",
+      "lane": "system-3",
+      "order": 3,
+      "title": "Personalizar sistema",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Geral → Personalizar. Computador, Celular e Super PNG; prévia, ajustes e confirmação de alterações locais.",
+      "refs": [
+        "D23",
+        "M19",
+        "D24",
+        "M20",
+        "D25",
+        "M21"
+      ],
+      "figmaId": "30:615",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:660",
+      "section": "rules",
+      "lane": "rules-0",
+      "order": 0,
+      "title": "Leitor de regras",
+      "kind": "PÁGINA #regras",
+      "route": "#regras",
+      "description": "AB10 somente consulta. Conjuntos próprios oferecem Novo capítulo, Editar sistema, Salvar regras e ficha-modelo. Estado vazio quando não há tópicos.",
+      "refs": [
+        "D07",
+        "M06",
+        "D12",
+        "M11",
+        "D11",
+        "M10"
+      ],
+      "figmaId": "30:660",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:674",
+      "section": "rules",
+      "lane": "rules-0",
+      "order": 1,
+      "title": "Índice do sistema",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Desktop com árvore à esquerda. Em 390 px, o botão Índice abre gaveta e o texto Sobre o sistema pode expandir.",
+      "refs": [
+        "M08",
+        "D09",
+        "M07"
+      ],
+      "figmaId": "30:674",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:687",
+      "section": "rules",
+      "lane": "rules-0",
+      "order": 2,
+      "title": "Tópico ou subseção",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Busca filtra a árvore; clique, trilha e lista Neste tópico levam a outro capítulo. Link interno admite âncora de cabeçalho; destino ausente gera aviso.",
+      "refs": [
+        "D08",
+        "D12",
+        "M11",
+        "D15",
+        "M15"
+      ],
+      "figmaId": "30:687",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:701",
+      "section": "rules",
+      "lane": "rules-1",
+      "order": 0,
+      "title": "Editor de tópico",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Novo capítulo, Adicionar subseção, Editar tópico ou Escrever conteúdo abrem o mesmo editor inline. Título, estado e conteúdo.",
+      "refs": [
+        "D13",
+        "M12",
+        "D17"
+      ],
+      "figmaId": "30:701",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:714",
+      "section": "rules",
+      "lane": "rules-1",
+      "order": 1,
+      "title": "Menu e links",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Cabeçalhos, pequeno, destaque, listas, código, citação, histórico e links. Desktop tem menu; mobile tem barra em foco e Mais opções.",
+      "refs": [
+        "D14",
+        "M13",
+        "M14",
+        "D15",
+        "M15",
+        "D16"
+      ],
+      "figmaId": "30:714",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:728",
+      "section": "rules",
+      "lane": "rules-1",
+      "order": 2,
+      "title": "Rascunho e retorno",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Salvar volta à leitura; cancelamento retorna. Troca local oferece continuar ou descartar; navegação global pede salvar ou cancelar.",
+      "refs": [
+        "D18",
+        "D12",
+        "M11"
+      ],
+      "figmaId": "30:728",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:739",
+      "section": "rules",
+      "lane": "rules-1",
+      "order": 3,
+      "title": "Ordem e remoção",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Subir/descer entre irmãos; confirmação ao remover tópico ou conjunto. Criação limitada a 300 tópicos e 12 níveis por conjunto, 50 conjuntos próprios por sessão.",
+      "refs": [
+        "D21"
+      ],
+      "figmaId": "30:739",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:755",
+      "section": "rules",
+      "lane": "rules-2",
+      "order": 0,
+      "title": "Editar conjunto",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Aba Geral com nome, descrição e logo. Fechamento de rascunho pede continuar editando ou descartar; também há Regras de Dados.",
+      "refs": [
+        "D22",
+        "M18"
+      ],
+      "figmaId": "30:755",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:769",
+      "section": "rules",
+      "lane": "rules-2",
+      "order": 1,
+      "title": "Personalização do sistema",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Três destinos. Desktop usa navegação lateral de áreas; 390 px usa alternador e áreas compactas. Logo, fundo, capa, prévia, remover e restaurar, respeitando cotas.",
+      "refs": [
+        "D23",
+        "M19",
+        "D24",
+        "M20",
+        "D25",
+        "M21",
+        "D26",
+        "M22",
+        "D27"
+      ],
+      "figmaId": "30:769",
+      "size": {
+        "x": 445.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:784",
+      "section": "rules",
+      "lane": "rules-2",
+      "order": 2,
+      "title": "Identidade e capa atualizadas",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Logo aparece no cabeçalho do dispositivo; fundo da página é compartilhado. Capa estática substitui a automática no Super PNG.",
+      "refs": [
+        "D05",
+        "M04",
+        "D62",
+        "M49"
+      ],
+      "figmaId": "30:784",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:795",
+      "section": "rules",
+      "lane": "rules-2",
+      "order": 3,
+      "title": "Dados e Configurações",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Regras de Dados: catálogo tradicional, método de resultado, ordem e Roll and Keep. Personalizar dados revela Configurações de Dados.",
+      "refs": [
+        "D28",
+        "M24",
+        "D29",
+        "M25",
+        "D32",
+        "M26"
+      ],
+      "figmaId": "30:795",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:833",
+      "section": "sheet",
+      "lane": "sheet-0",
+      "order": 0,
+      "title": "Modo edição",
+      "kind": "PÁGINA #ficha",
+      "route": "#ficha",
+      "description": "Nome, jogador, descrição, retrato, modo, abas e mapa. Novo e abrir ficha recente entram aqui. Há atalhos para salvar e lançamentos.",
+      "refs": [
+        "D43",
+        "M34",
+        "D41"
+      ],
+      "figmaId": "30:833",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:847",
+      "section": "sheet",
+      "lane": "sheet-0",
+      "order": 1,
+      "title": "Mapa e blocos",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Alterna encaixe, seleção/mão, zoom, enquadrar e ampliar. Abas criam, renomeiam ou removem grupos; o seletor oferece modelos de bloco.",
+      "refs": [
+        "D47",
+        "M37",
+        "D46",
+        "D40",
+        "M32"
+      ],
+      "figmaId": "30:847",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:861",
+      "section": "sheet",
+      "lane": "sheet-0",
+      "order": 2,
+      "title": "Propriedades do bloco",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Título, descrição, aba, cor, imagem, posição, tamanho, duplicar e confirmação de remoção. Conectar blocos mostra a seleção de alvo.",
+      "refs": [
+        "D45",
+        "M36",
+        "D48"
+      ],
+      "figmaId": "30:861",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:875",
+      "section": "sheet",
+      "lane": "sheet-0",
+      "order": 3,
+      "title": "Editar ou adicionar campo",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Formulário muda com o tipo. Número, texto, texto longo, marcador, dependente, composto e comparativo. Também controla ordem, largura, detalhes e rolagem.",
+      "refs": [
+        "D49",
+        "M38",
+        "D50",
+        "M39",
+        "D51"
+      ],
+      "figmaId": "30:875",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:889",
+      "section": "sheet",
+      "lane": "sheet-1",
+      "order": 0,
+      "title": "Modo ficha",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Sem os controles de edição dos blocos. Ajusta o atual do comparativo; troca de abas e visão do mapa continuam acessíveis.",
+      "refs": [
+        "D44",
+        "M35"
+      ],
+      "figmaId": "30:889",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:902",
+      "section": "sheet",
+      "lane": "sheet-1",
+      "order": 1,
+      "title": "Detalhes do campo",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Mostra a descrição e, quando aplicável, valores e origem. Toque emulado e hover registrados em ficha sintética.",
+      "refs": [
+        "D52",
+        "M40"
+      ],
+      "figmaId": "30:902",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:915",
+      "section": "sheet",
+      "lane": "sheet-1",
+      "order": 2,
+      "title": "Resultado de campo",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Abre retorno da rolagem. Fechar volta à ficha; Ver lançamentos leva ao painel com resultado e histórico.",
+      "refs": [
+        "D53",
+        "M41",
+        "D56",
+        "M44"
+      ],
+      "figmaId": "30:915",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:925",
+      "section": "sheet",
+      "lane": "sheet-1",
+      "order": 3,
+      "title": "Salvar ficha",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Editor abre JSON ou Super PNG; o histórico dos dados permanece temporário. Salvar modelo age no sistema em vez de baixar o personagem.",
+      "refs": [
+        "D59",
+        "M47",
+        "D20",
+        "M17"
+      ],
+      "figmaId": "30:925",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:961",
+      "section": "dice",
+      "lane": "dice-0",
+      "order": 0,
+      "title": "Regras de Dados",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Dados tradicionais, resultado numérico ou simbólico e ordem inicial. Roll and Keep define quantos dados podem ser escolhidos.",
+      "refs": [
+        "D28",
+        "M24"
+      ],
+      "figmaId": "30:961",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:974",
+      "section": "dice",
+      "lane": "dice-0",
+      "order": 1,
+      "title": "Configurações de Dados",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Símbolos, criar dado com número de faces, renomear e configurar por face. Podem existir texto, emoji, ícone, imagem e resultado próprio.",
+      "refs": [
+        "D29",
+        "M25",
+        "D31",
+        "D30"
+      ],
+      "figmaId": "30:974",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:988",
+      "section": "dice",
+      "lane": "dice-0",
+      "order": 2,
+      "title": "Editor de faces",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Tipo, conteúdo, resultado e prioridade. Face vazia não pontua; prioridade ordena. Paginação e salto de face ficam condicionados ao tamanho do dado.",
+      "refs": [
+        "D32",
+        "M26"
+      ],
+      "figmaId": "30:988",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1002",
+      "section": "dice",
+      "lane": "dice-1",
+      "order": 0,
+      "title": "Painel Lançamentos",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Rolagem avulsa, seletor de sistema ou dados livres, atalhos de dado e rolagens extras. O seletor fica bloqueado no modelo.",
+      "refs": [
+        "D54",
+        "M42"
+      ],
+      "figmaId": "30:1002",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1016",
+      "section": "dice",
+      "lane": "dice-1",
+      "order": 1,
+      "title": "Programar ou editar fórmula",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Expressão, dados e campos da ficha com variáveis; ativação por campo nos tipos numéricos. Modo ficha executa; edição habilita manutenção.",
+      "refs": [
+        "D55",
+        "M43",
+        "D49",
+        "M38"
+      ],
+      "figmaId": "30:1016",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1030",
+      "section": "dice",
+      "lane": "dice-1",
+      "order": 2,
+      "title": "Resultado e histórico",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Lançamento, resultado, faces e variáveis. Histórico de até 20 entradas com Limpar histórico; feedback de campo tem Ver lançamentos.",
+      "refs": [
+        "D56",
+        "M44",
+        "D53",
+        "M41"
+      ],
+      "figmaId": "30:1030",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1044",
+      "section": "dice",
+      "lane": "dice-1",
+      "order": 3,
+      "title": "Roll and Keep manual",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Começa com nenhum dado mantido. Selecionar/desmarcar, respeitar limite e atualizar totais. Ordenação depende da prioridade das faces.",
+      "refs": [
+        "D57",
+        "M45",
+        "D58",
+        "M46"
+      ],
+      "figmaId": "30:1044",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1072",
+      "section": "files",
+      "lane": "files-0",
+      "order": 0,
+      "title": "Carregar ou arrastar arquivo",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Carregar regras ou Carregar ficha. Aceita JSON, Super PNG e formatos legados .ab10/.regras. Arquivo inválido é recusado.",
+      "refs": [
+        "D06",
+        "M05",
+        "D37",
+        "M30",
+        "D64",
+        "M51"
+      ],
+      "figmaId": "30:1072",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1086",
+      "section": "files",
+      "lane": "files-0",
+      "order": 1,
+      "title": "Destino conforme conteúdo",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Arquivo de sistema abre #regras e ativa contexto. Arquivo de personagem abre #ficha em Modo ficha, mesmo quando escolhido a partir de Sistema.",
+      "refs": [
+        "D63",
+        "M50",
+        "D42",
+        "M33"
+      ],
+      "figmaId": "30:1086",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1100",
+      "section": "files",
+      "lane": "files-0",
+      "order": 2,
+      "title": "Salvar regras / Salvar ficha",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "JSON e Super PNG. Na versão PNG, geração de capa, verificação de integridade e recibo ao reimportar. O PNG original é necessário para recuperar dados.",
+      "refs": [
+        "D60",
+        "D61",
+        "M48",
+        "D62",
+        "M49",
+        "D59",
+        "M47"
+      ],
+      "figmaId": "30:1100",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1114",
+      "section": "files",
+      "lane": "files-1",
+      "order": 0,
+      "title": "Biblioteca de PDFs",
+      "kind": "PÁGINA #pdfs",
+      "route": "#pdfs",
+      "description": "Adicionar PDF, buscar por título e descrição, filtrar categorias; vazio, sem resultados, carregamento e erro recuperável.",
+      "refs": [
+        "D65",
+        "M52",
+        "D68",
+        "D70",
+        "M56"
+      ],
+      "figmaId": "30:1114",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1128",
+      "section": "files",
+      "lane": "files-1",
+      "order": 1,
+      "title": "Adicionar à biblioteca",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Arquivo PDF de até 20 MB, título, categoria e descrição. Aplicação valida assinatura do PDF e campos do formulário.",
+      "refs": [
+        "D66",
+        "M53"
+      ],
+      "figmaId": "30:1128",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1141",
+      "section": "files",
+      "lane": "files-1",
+      "order": 2,
+      "title": "Lista de materiais",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Após adicionar, Abrir PDF usa outra aba e Baixar recupera o arquivo. Limpar filtros volta à listagem; o conteúdo adicionado não sobrevive a recarga.",
+      "refs": [
+        "D67",
+        "M54",
+        "D68"
+      ],
+      "figmaId": "30:1141",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1155",
+      "section": "files",
+      "lane": "files-1",
+      "order": 3,
+      "title": "Confirmação de remoção",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Confirmar retiraria o item apenas da biblioteca da página. O diálogo foi aberto e cancelado.",
+      "refs": [
+        "D69",
+        "M55"
+      ],
+      "figmaId": "30:1155",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1186",
+      "section": "account",
+      "lane": "account-0",
+      "order": 0,
+      "title": "Agenda de visitante",
+      "kind": "PÁGINA #agenda",
+      "route": "#agenda",
+      "description": "Entrada pelo cabeçalho ou pelo Início. Conteúdo de apresentação e ação Entrar ou criar conta.",
+      "refs": [
+        "D71",
+        "M57"
+      ],
+      "figmaId": "30:1186",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1199",
+      "section": "account",
+      "lane": "account-0",
+      "order": 1,
+      "title": "Entrar ou criar conta",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Abas Entrar e Criar conta de teste. Usa @, senha e, no cadastro, confirmação; há mensagens de validação e verificação de acesso.",
+      "refs": [
+        "D72",
+        "M58",
+        "D73",
+        "M59"
+      ],
+      "figmaId": "30:1199",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1213",
+      "section": "account",
+      "lane": "account-0",
+      "order": 2,
+      "title": "Perfil autenticado",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Mostra @, prazo, próximas sessões e Ver agenda. Perfil é modal global inclusive quando aberto dentro de um sistema. Sair apaga conta e agenda de teste.",
+      "refs": [
+        "D74",
+        "M60",
+        "D75",
+        "M61"
+      ],
+      "figmaId": "30:1213",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1228",
+      "section": "account",
+      "lane": "account-0",
+      "order": 3,
+      "title": "Calendário autenticado",
+      "kind": "PÁGINA #agenda",
+      "route": "#agenda",
+      "description": "Filtros, busca, dias, mês anterior/próximo e Hoje. Dia selecionado mostra detalhes e próximas sessões.",
+      "refs": [
+        "D76",
+        "M62",
+        "D79",
+        "M65"
+      ],
+      "figmaId": "30:1228",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1241",
+      "section": "account",
+      "lane": "account-1",
+      "order": 0,
+      "title": "Nova sessão",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Título, data, início, duração, local ou link e anotações. One-shot é pontual; Recorrente revela frequência e data final opcional.",
+      "refs": [
+        "D77",
+        "M63",
+        "D78",
+        "M64"
+      ],
+      "figmaId": "30:1241",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1255",
+      "section": "account",
+      "lane": "account-1",
+      "order": 1,
+      "title": "Evento na agenda",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Ocorrências aparecem no calendário, dia e próximas sessões. Busca e filtros alteram os resultados na mesma rota.",
+      "refs": [
+        "D79",
+        "M65"
+      ],
+      "figmaId": "30:1255",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1268",
+      "section": "account",
+      "lane": "account-1",
+      "order": 2,
+      "title": "Editar one-shot ou série",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Aplicar altera o evento. Na recorrência, mudança vale para a série toda. Cancelar fecha o modal.",
+      "refs": [
+        "D80",
+        "M66",
+        "M67"
+      ],
+      "figmaId": "30:1268",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1279",
+      "section": "account",
+      "lane": "account-1",
+      "order": 3,
+      "title": "Confirmar exclusão",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "A confirmação informa o alcance: evento único ou série inteira. O cancelamento foi exercitado em banco local.",
+      "refs": [
+        "D81",
+        "M68"
+      ],
+      "figmaId": "30:1279",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1543.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1312",
+      "section": "cross",
+      "lane": "cross-0",
+      "order": 0,
+      "title": "Aparência global",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Claro/escuro. Paletas Floresta, Safira, Rubi, Ouro, Ametista, Âmbar, Prata e Grafite. Aplica imediatamente e guarda a preferência localmente.",
+      "refs": [
+        "D33",
+        "M27",
+        "D34",
+        "M28"
+      ],
+      "figmaId": "30:1312",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1326",
+      "section": "cross",
+      "lane": "cross-0",
+      "order": 1,
+      "title": "Restaurar e concluir",
+      "kind": "AÇÃO",
+      "route": null,
+      "description": "Restaura o padrão e fecha ao concluir. Há aviso se o navegador não aceitar a gravação da preferência.",
+      "refs": [
+        "D33",
+        "M27"
+      ],
+      "figmaId": "30:1326",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1337",
+      "section": "cross",
+      "lane": "cross-0",
+      "order": 2,
+      "title": "Ajuda contextual",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Botão ? abre conteúdo da área e permite navegar nas abas Início, Sistema, Ficha, PDFs e Agenda. A 390 px o atalho do cabeçalho não é exibido.",
+      "refs": [
+        "D35"
+      ],
+      "figmaId": "30:1337",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1351",
+      "section": "cross",
+      "lane": "cross-1",
+      "order": 0,
+      "title": "Cabeçalho e estados responsivos",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Cabeçalho e estados responsivos Desktop em uma linha. Em 390 px, marca e atalhos na primeira linha, cinco áreas na segunda. Reconstruções editáveis nas duas galerias.",
+      "refs": [
+        "D01",
+        "M01",
+        "D05",
+        "M04"
+      ],
+      "figmaId": "30:1351",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 19.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1363",
+      "section": "cross",
+      "lane": "cross-1",
+      "order": 1,
+      "title": "Dados de ambientação",
+      "kind": "ESTADO",
+      "route": null,
+      "description": "Dado principal e dados decorativos da área de fundo. A versão interativa depende de mouse fino; tema com fundo próprio e redução de movimento afetam a ambientação.",
+      "refs": [
+        "D01",
+        "M01",
+        "D34",
+        "M28"
+      ],
+      "figmaId": "30:1363",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 527.0,
+        "y": 96.0
+      }
+    },
+    {
+      "id": "30:1375",
+      "section": "cross",
+      "lane": "cross-1",
+      "order": 2,
+      "title": "Persistência de teste",
+      "kind": "FUNÇÃO",
+      "route": null,
+      "description": "Conta e agenda duram duas horas. Fichas e PDFs locais ficam em memória. Sistemas e contexto ficam no cache da aba; exportações são a forma de levar os dados.",
+      "refs": [
+        "D01",
+        "M01",
+        "D74",
+        "M60",
+        "D59",
+        "M47"
+      ],
+      "figmaId": "30:1375",
+      "size": {
+        "x": 436.0,
+        "y": 279.0
+      },
+      "positionFigma": {
+        "x": 1035.0,
+        "y": 96.0
+      }
+    }
+  ],
+  "connections": [
+    {
+      "id": "e-30:81-30:94",
+      "source": "30:81",
+      "target": "30:94",
+      "label": "Card / lista / arquivo",
+      "section": "overview",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:94-30:107",
+      "source": "30:94",
+      "target": "30:107",
+      "label": "Contexto acompanha as áreas",
+      "section": "overview",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:107-30:121",
+      "source": "30:107",
+      "target": "30:121",
+      "label": "Abrir sobre a área atual",
+      "section": "overview",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:212-30:225",
+      "source": "30:212",
+      "target": "30:225",
+      "label": "Explorar sistemas / Ver tudo / Sistema",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:225-30:239",
+      "source": "30:225",
+      "target": "30:239",
+      "label": "Suas regras / Criar sistema",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:239-30:252",
+      "source": "30:239",
+      "target": "30:252",
+      "label": "Criar conjunto → contexto ativo",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:265-30:278",
+      "source": "30:265",
+      "target": "30:278",
+      "label": "Criar ficha / Criar personagem",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:278-30:292",
+      "source": "30:278",
+      "target": "30:292",
+      "label": "Criar / abrir ficha recente",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:306-30:320",
+      "source": "30:306",
+      "target": "30:320",
+      "label": "Ver tudo",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:320-30:333",
+      "source": "30:320",
+      "target": "30:333",
+      "label": "Abrir card da ficha",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:355-30:368",
+      "source": "30:355",
+      "target": "30:368",
+      "label": "Entrar ou criar conta",
+      "section": "global",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:423-30:436",
+      "source": "30:423",
+      "target": "30:436",
+      "label": "Seleção ativa o contexto",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:436-30:449",
+      "source": "30:436",
+      "target": "30:449",
+      "label": "Início no cabeçalho",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:449-30:463",
+      "source": "30:449",
+      "target": "30:463",
+      "label": "Identidade do sistema / marca",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:476-30:489",
+      "source": "30:476",
+      "target": "30:489",
+      "label": "Ficha / Ficha-modelo",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:523-30:537",
+      "source": "30:523",
+      "target": "30:537",
+      "label": "Criar / Abrir ficha do sistema",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:537-30:549",
+      "source": "30:537",
+      "target": "30:549",
+      "label": "Gerenciar → Criar personagem",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:575-30:589",
+      "source": "30:575",
+      "target": "30:589",
+      "label": "Recarregar a mesma aba",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:589-30:605",
+      "source": "30:589",
+      "target": "30:605",
+      "label": "Abrir Perfil → fechar",
+      "section": "system",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:660-30:674",
+      "source": "30:660",
+      "target": "30:674",
+      "label": "Índice / capítulo na barra lateral",
+      "section": "rules",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:674-30:687",
+      "source": "30:674",
+      "target": "30:687",
+      "label": "Selecionar índice / trilha / link",
+      "section": "rules",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:701-30:714",
+      "source": "30:701",
+      "target": "30:714",
+      "label": "Formatação / Ferramentas do texto",
+      "section": "rules",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:714-30:728",
+      "source": "30:714",
+      "target": "30:728",
+      "label": "Salvar / Cancelar / tentar sair",
+      "section": "rules",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:755-30:769",
+      "source": "30:755",
+      "target": "30:769",
+      "label": "Geral → Personalizar",
+      "section": "rules",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:769-30:784",
+      "source": "30:769",
+      "target": "30:784",
+      "label": "Salvar personalização",
+      "section": "rules",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:833-30:847",
+      "source": "30:833",
+      "target": "30:847",
+      "label": "Grade / Livre / Novo bloco",
+      "section": "sheet",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:847-30:861",
+      "source": "30:847",
+      "target": "30:861",
+      "label": "Selecionar bloco / índice de aba",
+      "section": "sheet",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:861-30:875",
+      "source": "30:861",
+      "target": "30:875",
+      "label": "Lápis / inserir / inserir ao lado",
+      "section": "sheet",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:889-30:902",
+      "source": "30:889",
+      "target": "30:902",
+      "label": "Hover / toque prolongado / foco",
+      "section": "sheet",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:902-30:915",
+      "source": "30:902",
+      "target": "30:915",
+      "label": "Clicar em campo com fórmula",
+      "section": "sheet",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:961-30:974",
+      "source": "30:961",
+      "target": "30:974",
+      "label": "Personalizar dados deste sistema",
+      "section": "dice",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:974-30:988",
+      "source": "30:974",
+      "target": "30:988",
+      "label": "Personalizar faces de um dado",
+      "section": "dice",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1002-30:1016",
+      "source": "30:1002",
+      "target": "30:1016",
+      "label": "Programar / editar / rolar campo",
+      "section": "dice",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1016-30:1030",
+      "source": "30:1016",
+      "target": "30:1030",
+      "label": "Rolar / atalho de dado / campo",
+      "section": "dice",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1030-30:1044",
+      "source": "30:1030",
+      "target": "30:1044",
+      "label": "Sistema com seleção ativada",
+      "section": "dice",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1072-30:1086",
+      "source": "30:1072",
+      "target": "30:1086",
+      "label": "Leitura e validação",
+      "section": "files",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1086-30:1100",
+      "source": "30:1086",
+      "target": "30:1100",
+      "label": "Botão Salvar → exportação",
+      "section": "files",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1114-30:1128",
+      "source": "30:1114",
+      "target": "30:1128",
+      "label": "Adicionar PDF / primeiro PDF",
+      "section": "files",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1128-30:1141",
+      "source": "30:1128",
+      "target": "30:1141",
+      "label": "Adicionar / buscar / filtrar",
+      "section": "files",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1141-30:1155",
+      "source": "30:1141",
+      "target": "30:1155",
+      "label": "Remover PDF",
+      "section": "files",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1186-30:1199",
+      "source": "30:1186",
+      "target": "30:1199",
+      "label": "Agenda / ícone de Perfil",
+      "section": "account",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1199-30:1213",
+      "source": "30:1199",
+      "target": "30:1213",
+      "label": "Login / cadastro concluído",
+      "section": "account",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1213-30:1228",
+      "source": "30:1213",
+      "target": "30:1228",
+      "label": "Ver agenda / concluir login na Agenda",
+      "section": "account",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1241-30:1255",
+      "source": "30:1241",
+      "target": "30:1255",
+      "label": "Agendar sessão",
+      "section": "account",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1255-30:1268",
+      "source": "30:1255",
+      "target": "30:1268",
+      "label": "Botão de editar no card",
+      "section": "account",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1268-30:1279",
+      "source": "30:1268",
+      "target": "30:1279",
+      "label": "Excluir no card",
+      "section": "account",
+      "figmaDerived": true
+    },
+    {
+      "id": "e-30:1312-30:1326",
+      "source": "30:1312",
+      "target": "30:1326",
+      "label": "Restaurar padrão / Pronto",
+      "section": "cross",
+      "figmaDerived": true
+    }
+  ],
+  "screenshots": [
+    {
+      "code": "D01",
+      "title": "Início · ANTROPOLOGO",
+      "device": "desktop",
+      "image": "/screens/66dc48754b2be142baafee66fe0be030e2046584.jpg",
+      "figmaId": "10:7",
+      "hash": "66dc48754b2be142baafee66fe0be030e2046584"
+    },
+    {
+      "code": "D02",
+      "title": "Início · Cards e atalhos",
+      "device": "desktop",
+      "image": "/screens/66dc48754b2be142baafee66fe0be030e2046584.jpg",
+      "figmaId": "10:11",
+      "hash": "66dc48754b2be142baafee66fe0be030e2046584"
+    },
+    {
+      "code": "D03",
+      "title": "Início · Modo Sistema",
+      "device": "desktop",
+      "image": "/screens/aebb96d50cf94a435ef3a7e2b9df7d2142c96b17.jpg",
+      "figmaId": "10:16",
+      "hash": "aebb96d50cf94a435ef3a7e2b9df7d2142c96b17"
+    },
+    {
+      "code": "D04",
+      "title": "Início · Sistema próprio",
+      "device": "desktop",
+      "image": "/screens/be89a7603d6c4c25b4e090686947dea424d28f57.jpg",
+      "figmaId": "10:21",
+      "hash": "be89a7603d6c4c25b4e090686947dea424d28f57"
+    },
+    {
+      "code": "D05",
+      "title": "Modo Sistema · Logo no cabeçalho",
+      "device": "desktop",
+      "image": "/screens/e1862dce560364fa57b78bf4cb06ecbc791e5020.jpg",
+      "figmaId": "10:26",
+      "hash": "e1862dce560364fa57b78bf4cb06ecbc791e5020"
+    },
+    {
+      "code": "D06",
+      "title": "Sistema · Biblioteca",
+      "device": "desktop",
+      "image": "/screens/42637c965f07d292579000a75c5385991cb45bec.jpg",
+      "figmaId": "10:31",
+      "hash": "42637c965f07d292579000a75c5385991cb45bec"
+    },
+    {
+      "code": "D07",
+      "title": "AB10 · Leitura",
+      "device": "desktop",
+      "image": "/screens/ed73bb69db52a57888eb06aca36582d55b8fda47.jpg",
+      "figmaId": "10:36",
+      "hash": "ed73bb69db52a57888eb06aca36582d55b8fda47"
+    },
+    {
+      "code": "D08",
+      "title": "AB10 · Tópico reservado",
+      "device": "desktop",
+      "image": "/screens/c215f5782fd846555ce6e8fbb80f41d73936bc40.jpg",
+      "figmaId": "10:41",
+      "hash": "c215f5782fd846555ce6e8fbb80f41d73936bc40"
+    },
+    {
+      "code": "D09",
+      "title": "Sistema · Busca no índice",
+      "device": "desktop",
+      "image": "/screens/2ea2716ff597c816b266b28c0d8f98d170140f25.jpg",
+      "figmaId": "10:46",
+      "hash": "2ea2716ff597c816b266b28c0d8f98d170140f25"
+    },
+    {
+      "code": "D10",
+      "title": "Sistema · Criar conjunto",
+      "device": "desktop",
+      "image": "/screens/f37737b4072976ce18607529e9fd26cedaf3a701.jpg",
+      "figmaId": "10:53",
+      "hash": "f37737b4072976ce18607529e9fd26cedaf3a701"
+    },
+    {
+      "code": "D11",
+      "title": "Sistema próprio · Primeiro capítulo",
+      "device": "desktop",
+      "image": "/screens/985e61841ed444c0dba84c15699be9dd1bbe389d.jpg",
+      "figmaId": "10:58",
+      "hash": "985e61841ed444c0dba84c15699be9dd1bbe389d"
+    },
+    {
+      "code": "D12",
+      "title": "Sistema próprio · Leitura",
+      "device": "desktop",
+      "image": "/screens/4c79badf71078fb0550d779cefe58c7cf10bdbfd.jpg",
+      "figmaId": "10:63",
+      "hash": "4c79badf71078fb0550d779cefe58c7cf10bdbfd"
+    },
+    {
+      "code": "D13",
+      "title": "Sistema · Editor de tópico",
+      "device": "desktop",
+      "image": "/screens/7db8a304db70b7e76f16df3b033556294d03e87d.jpg",
+      "figmaId": "10:68",
+      "hash": "7db8a304db70b7e76f16df3b033556294d03e87d"
+    },
+    {
+      "code": "D14",
+      "title": "Editor de tópico · Menu de ferramentas",
+      "device": "desktop",
+      "image": "/screens/883a22f25796fd233388346c4b52c7e38a2da4da.jpg",
+      "figmaId": "10:73",
+      "hash": "883a22f25796fd233388346c4b52c7e38a2da4da"
+    },
+    {
+      "code": "D15",
+      "title": "Editor de tópico · Link interno",
+      "device": "desktop",
+      "image": "/screens/0893d9bcd60be75019ce6a72018d06a36ab827d5.jpg",
+      "figmaId": "10:78",
+      "hash": "0893d9bcd60be75019ce6a72018d06a36ab827d5"
+    },
+    {
+      "code": "D16",
+      "title": "Editor de tópico · Link externo",
+      "device": "desktop",
+      "image": "/screens/31e60a909413ef1e79a44f9dba3dbdb8a608e9c8.jpg",
+      "figmaId": "10:83",
+      "hash": "31e60a909413ef1e79a44f9dba3dbdb8a608e9c8"
+    },
+    {
+      "code": "D17",
+      "title": "Sistema · Criar subseção",
+      "device": "desktop",
+      "image": "/screens/d3e625bb140323fae26fe15d0e3247ea04245f9f.jpg",
+      "figmaId": "10:88",
+      "hash": "d3e625bb140323fae26fe15d0e3247ea04245f9f"
+    },
+    {
+      "code": "D18",
+      "title": "Editor de tópico · Saída protegida",
+      "device": "desktop",
+      "image": "/screens/403ba93102f4d902cc50f6ed1aa6bd81b10876a3.jpg",
+      "figmaId": "10:93",
+      "hash": "403ba93102f4d902cc50f6ed1aa6bd81b10876a3"
+    },
+    {
+      "code": "D19",
+      "title": "Sistema · Gerenciar ficha-modelo",
+      "device": "desktop",
+      "image": "/screens/7f815105fe3ce6a26838b5b7f09e0fdfdabbfb44.jpg",
+      "figmaId": "10:98",
+      "hash": "7f815105fe3ce6a26838b5b7f09e0fdfdabbfb44"
+    },
+    {
+      "code": "D20",
+      "title": "Ficha-modelo · Editor vinculado",
+      "device": "desktop",
+      "image": "/screens/bb84f0ffb312026b014c632da9535685bffdc1a4.jpg",
+      "figmaId": "10:103",
+      "hash": "bb84f0ffb312026b014c632da9535685bffdc1a4"
+    },
+    {
+      "code": "D21",
+      "title": "Sistema · Confirmação de remoção",
+      "device": "desktop",
+      "image": "/screens/c8b076d46200ffe44e0fb82312d1f6ecb63b972f.jpg",
+      "figmaId": "10:108",
+      "hash": "c8b076d46200ffe44e0fb82312d1f6ecb63b972f"
+    },
+    {
+      "code": "D22",
+      "title": "Sistema · Editar conjunto",
+      "device": "desktop",
+      "image": "/screens/d59857e6fb49ee5366cdbbf2dfd4d20302708f6d.jpg",
+      "figmaId": "10:115",
+      "hash": "d59857e6fb49ee5366cdbbf2dfd4d20302708f6d"
+    },
+    {
+      "code": "D23",
+      "title": "Personalizar · Computador",
+      "device": "desktop",
+      "image": "/screens/7acb70ea1e9c443171f6e95b2197c445dc245a35.jpg",
+      "figmaId": "10:120",
+      "hash": "7acb70ea1e9c443171f6e95b2197c445dc245a35"
+    },
+    {
+      "code": "D24",
+      "title": "Personalizar · Celular",
+      "device": "desktop",
+      "image": "/screens/357a4f2e84c6b3b4bbf864ea9fcb101986d08efa.jpg",
+      "figmaId": "10:125",
+      "hash": "357a4f2e84c6b3b4bbf864ea9fcb101986d08efa"
+    },
+    {
+      "code": "D25",
+      "title": "Personalizar · Super PNG",
+      "device": "desktop",
+      "image": "/screens/dd6818c36f620f877a24c564c0dafb3adedc72ef.jpg",
+      "figmaId": "10:130",
+      "hash": "dd6818c36f620f877a24c564c0dafb3adedc72ef"
+    },
+    {
+      "code": "D26",
+      "title": "Personalizar · Logo aplicada na prévia",
+      "device": "desktop",
+      "image": "/screens/a55987fbba78549c20df4dd6f8f87f3abdb55036.jpg",
+      "figmaId": "10:135",
+      "hash": "a55987fbba78549c20df4dd6f8f87f3abdb55036"
+    },
+    {
+      "code": "D27",
+      "title": "Personalizar · Capa aplicada",
+      "device": "desktop",
+      "image": "/screens/d41e5254edf19a35ce43954771b5e3f481e75ce8.jpg",
+      "figmaId": "10:140",
+      "hash": "d41e5254edf19a35ce43954771b5e3f481e75ce8"
+    },
+    {
+      "code": "D28",
+      "title": "Sistema · Dados",
+      "device": "desktop",
+      "image": "/screens/b36776f411ae405daa48e7d8af5993d88d739a1a.jpg",
+      "figmaId": "10:145",
+      "hash": "b36776f411ae405daa48e7d8af5993d88d739a1a"
+    },
+    {
+      "code": "D29",
+      "title": "Sistema · Configuração",
+      "device": "desktop",
+      "image": "/screens/7e03e602034129ccd556205750295684d218a53a.jpg",
+      "figmaId": "10:150",
+      "hash": "7e03e602034129ccd556205750295684d218a53a"
+    },
+    {
+      "code": "D30",
+      "title": "Dados · Faces personalizadas",
+      "device": "desktop",
+      "image": "/screens/b0b9ec1bfc95c64c8781e6d21c303da73c972d06.jpg",
+      "figmaId": "10:155",
+      "hash": "b0b9ec1bfc95c64c8781e6d21c303da73c972d06"
+    },
+    {
+      "code": "D31",
+      "title": "Dados · Símbolos e resolução",
+      "device": "desktop",
+      "image": "/screens/1e38be88eab52a0c498c78f4272b1dd37a6c4fd6.jpg",
+      "figmaId": "10:160",
+      "hash": "1e38be88eab52a0c498c78f4272b1dd37a6c4fd6"
+    },
+    {
+      "code": "D32",
+      "title": "Dados · Editor de faces",
+      "device": "desktop",
+      "image": "/screens/db12e9255bdd70d8f579274a743dd8baadb711c1.jpg",
+      "figmaId": "10:165",
+      "hash": "db12e9255bdd70d8f579274a743dd8baadb711c1"
+    },
+    {
+      "code": "D33",
+      "title": "Aparência · Paletas e tema",
+      "device": "desktop",
+      "image": "/screens/2f043b89839c2010e56bd796b8f32d4d391202db.jpg",
+      "figmaId": "10:170",
+      "hash": "2f043b89839c2010e56bd796b8f32d4d391202db"
+    },
+    {
+      "code": "D34",
+      "title": "Aparência · Escuro e paleta",
+      "device": "desktop",
+      "image": "/screens/f2035f2815b980b788bf468050ee84befded8b16.jpg",
+      "figmaId": "10:175",
+      "hash": "f2035f2815b980b788bf468050ee84befded8b16"
+    },
+    {
+      "code": "D35",
+      "title": "Ajuda contextual",
+      "device": "desktop",
+      "image": "/screens/4e82f274777b618a005706df6e59f0a681f595cf.jpg",
+      "figmaId": "10:180",
+      "hash": "4e82f274777b618a005706df6e59f0a681f595cf"
+    },
+    {
+      "code": "D36",
+      "title": "Suas fichas",
+      "device": "desktop",
+      "image": "/screens/e23a5113792fb3be9fc35ec1c9238236aec2b6c6.jpg",
+      "figmaId": "10:231",
+      "hash": "e23a5113792fb3be9fc35ec1c9238236aec2b6c6"
+    },
+    {
+      "code": "D37",
+      "title": "Ficha · Entrada sem personagem",
+      "device": "desktop",
+      "image": "/screens/87aad563e230232067f0d994b8c279cdccfe1ced.jpg",
+      "figmaId": "10:236",
+      "hash": "87aad563e230232067f0d994b8c279cdccfe1ced"
+    },
+    {
+      "code": "D38",
+      "title": "Criar nova ficha",
+      "device": "desktop",
+      "image": "/screens/71d69b0c21e507b3de8e5572dbdf3979417225e8.jpg",
+      "figmaId": "10:241",
+      "hash": "71d69b0c21e507b3de8e5572dbdf3979417225e8"
+    },
+    {
+      "code": "D39",
+      "title": "Criar ficha · Com sistema vinculado",
+      "device": "desktop",
+      "image": "/screens/600f754254d990d28ea9847fc310ae7288bf11e4.jpg",
+      "figmaId": "10:246",
+      "hash": "600f754254d990d28ea9847fc310ae7288bf11e4"
+    },
+    {
+      "code": "D40",
+      "title": "Ficha · Primeiro bloco",
+      "device": "desktop",
+      "image": "/screens/d628df414ca04b54e17602ab682d89e6d1f7b65b.jpg",
+      "figmaId": "10:251",
+      "hash": "d628df414ca04b54e17602ab682d89e6d1f7b65b"
+    },
+    {
+      "code": "D41",
+      "title": "Ficha · Personagem criado pelo modelo",
+      "device": "desktop",
+      "image": "/screens/4e9d413c29f117e8ddd40aaee4a8af0717b0088c.jpg",
+      "figmaId": "10:256",
+      "hash": "4e9d413c29f117e8ddd40aaee4a8af0717b0088c"
+    },
+    {
+      "code": "D42",
+      "title": "Ficha · Importação cruzada",
+      "device": "desktop",
+      "image": "/screens/372139855aa3fbf7cc4e81c88e0e3463784f244b.jpg",
+      "figmaId": "10:261",
+      "hash": "372139855aa3fbf7cc4e81c88e0e3463784f244b"
+    },
+    {
+      "code": "D43",
+      "title": "Ficha · Modo edição",
+      "device": "desktop",
+      "image": "/screens/36e5a1687d9aec12c68c6c350e21ba0177119fe6.jpg",
+      "figmaId": "10:266",
+      "hash": "36e5a1687d9aec12c68c6c350e21ba0177119fe6"
+    },
+    {
+      "code": "D44",
+      "title": "Ficha · Modo ficha",
+      "device": "desktop",
+      "image": "/screens/23527d32ff94fea2296282cb2bb3a16d4e035706.jpg",
+      "figmaId": "10:271",
+      "hash": "23527d32ff94fea2296282cb2bb3a16d4e035706"
+    },
+    {
+      "code": "D45",
+      "title": "Ficha · Propriedades do bloco",
+      "device": "desktop",
+      "image": "/screens/e9c3a0fbba3afebdb11fc5517f73d870f468fad0.jpg",
+      "figmaId": "10:276",
+      "hash": "e9c3a0fbba3afebdb11fc5517f73d870f468fad0"
+    },
+    {
+      "code": "D46",
+      "title": "Ficha · Criar aba",
+      "device": "desktop",
+      "image": "/screens/c5ff5e9884f53cb3a76e3ae64793a64502732402.jpg",
+      "figmaId": "10:281",
+      "hash": "c5ff5e9884f53cb3a76e3ae64793a64502732402"
+    },
+    {
+      "code": "D47",
+      "title": "Ficha · Tipos de bloco",
+      "device": "desktop",
+      "image": "/screens/6fc89e8a6cb69eed44bc910c8247692de72ffe24.jpg",
+      "figmaId": "10:286",
+      "hash": "6fc89e8a6cb69eed44bc910c8247692de72ffe24"
+    },
+    {
+      "code": "D48",
+      "title": "Ficha · Conectar blocos",
+      "device": "desktop",
+      "image": "/screens/5359f1aa04a8cb9394ca088d12a1e252aa984dbd.jpg",
+      "figmaId": "10:291",
+      "hash": "5359f1aa04a8cb9394ca088d12a1e252aa984dbd"
+    },
+    {
+      "code": "D49",
+      "title": "Ficha · Editar campo",
+      "device": "desktop",
+      "image": "/screens/c741331bc0d34a8c0312a810f1b98160e818e2a1.jpg",
+      "figmaId": "10:296",
+      "hash": "c741331bc0d34a8c0312a810f1b98160e818e2a1"
+    },
+    {
+      "code": "D50",
+      "title": "Ficha · Campo comparativo",
+      "device": "desktop",
+      "image": "/screens/08ab7bd7643278f88081e95144b02fa2ef363d82.jpg",
+      "figmaId": "10:301",
+      "hash": "08ab7bd7643278f88081e95144b02fa2ef363d82"
+    },
+    {
+      "code": "D51",
+      "title": "Ficha · Campo calculado",
+      "device": "desktop",
+      "image": "/screens/b69e949311cedf4ae0588399f8f6a8637fc6ca0e.jpg",
+      "figmaId": "10:306",
+      "hash": "b69e949311cedf4ae0588399f8f6a8637fc6ca0e"
+    },
+    {
+      "code": "D52",
+      "title": "Ficha · Detalhes no hover",
+      "device": "desktop",
+      "image": "/screens/610742b4cc313ade9978a51ba96177874e8f48d1.jpg",
+      "figmaId": "10:311",
+      "hash": "610742b4cc313ade9978a51ba96177874e8f48d1"
+    },
+    {
+      "code": "D53",
+      "title": "Ficha · Rolagem de campo",
+      "device": "desktop",
+      "image": "/screens/1dfbb93478804ddbe4099c50a500ebdf80e39c0c.jpg",
+      "figmaId": "10:365",
+      "hash": "1dfbb93478804ddbe4099c50a500ebdf80e39c0c"
+    },
+    {
+      "code": "D54",
+      "title": "Ficha · Lançamentos",
+      "device": "desktop",
+      "image": "/screens/ddbec055d5a306b7e041c1c41d7362574a05dd79.jpg",
+      "figmaId": "10:370",
+      "hash": "ddbec055d5a306b7e041c1c41d7362574a05dd79"
+    },
+    {
+      "code": "D55",
+      "title": "Ficha · Programar rolagem",
+      "device": "desktop",
+      "image": "/screens/30299107ce03c50a29d1df88f272963ec7c168d7.jpg",
+      "figmaId": "10:375",
+      "hash": "30299107ce03c50a29d1df88f272963ec7c168d7"
+    },
+    {
+      "code": "D56",
+      "title": "Ficha · Resultado e histórico",
+      "device": "desktop",
+      "image": "/screens/c7ae9cb80b937d43c1f8177b2323765ed14c6b97.jpg",
+      "figmaId": "10:380",
+      "hash": "c7ae9cb80b937d43c1f8177b2323765ed14c6b97"
+    },
+    {
+      "code": "D57",
+      "title": "Dados · Roll and Keep",
+      "device": "desktop",
+      "image": "/screens/d3054433d04495811ce25173b3e4564c801afe5e.jpg",
+      "figmaId": "10:385",
+      "hash": "d3054433d04495811ce25173b3e4564c801afe5e"
+    },
+    {
+      "code": "D58",
+      "title": "Dados · Seleção manual",
+      "device": "desktop",
+      "image": "/screens/b755ab25d2d73ddaf9131e9fcae90a5ec3286add.jpg",
+      "figmaId": "10:390",
+      "hash": "b755ab25d2d73ddaf9131e9fcae90a5ec3286add"
+    },
+    {
+      "code": "D59",
+      "title": "Ficha · Salvar cópia",
+      "device": "desktop",
+      "image": "/screens/6071f4ebb57ab73c95cec0e8aabbc176a04aa9ba.jpg",
+      "figmaId": "10:395",
+      "hash": "6071f4ebb57ab73c95cec0e8aabbc176a04aa9ba"
+    },
+    {
+      "code": "D60",
+      "title": "Salvar regras · JSON",
+      "device": "desktop",
+      "image": "/screens/37684693d12d0cd0775ae6ecba85dd41f515e05f.jpg",
+      "figmaId": "10:400",
+      "hash": "37684693d12d0cd0775ae6ecba85dd41f515e05f"
+    },
+    {
+      "code": "D61",
+      "title": "Salvar regras · Super PNG",
+      "device": "desktop",
+      "image": "/screens/12440c730ae33d05458427cb32e1d3d0c298ad90.jpg",
+      "figmaId": "10:405",
+      "hash": "12440c730ae33d05458427cb32e1d3d0c298ad90"
+    },
+    {
+      "code": "D62",
+      "title": "Super PNG · Capa personalizada",
+      "device": "desktop",
+      "image": "/screens/57ec1bc5fba5642da9bcda1c0a9000341a607b48.jpg",
+      "figmaId": "10:410",
+      "hash": "57ec1bc5fba5642da9bcda1c0a9000341a607b48"
+    },
+    {
+      "code": "D63",
+      "title": "Sistema · Reimportação Super PNG",
+      "device": "desktop",
+      "image": "/screens/3bd817d6265cc2c3bf21b123bfcf537e0ce9ef1c.jpg",
+      "figmaId": "10:415",
+      "hash": "3bd817d6265cc2c3bf21b123bfcf537e0ce9ef1c"
+    },
+    {
+      "code": "D64",
+      "title": "Sistema · Arquivo inválido",
+      "device": "desktop",
+      "image": "/screens/a94377311439c0ca8cf29838cf3b083e30463fc3.jpg",
+      "figmaId": "10:420",
+      "hash": "a94377311439c0ca8cf29838cf3b083e30463fc3"
+    },
+    {
+      "code": "D65",
+      "title": "PDFs · Biblioteca vazia",
+      "device": "desktop",
+      "image": "/screens/97f5795dc1b17ef900140a5f5dcb690ab6ee6756.jpg",
+      "figmaId": "10:427",
+      "hash": "97f5795dc1b17ef900140a5f5dcb690ab6ee6756"
+    },
+    {
+      "code": "D66",
+      "title": "PDFs · Adicionar à biblioteca",
+      "device": "desktop",
+      "image": "/screens/964e879256607c2d05bae0fe9f1dce76494a410c.jpg",
+      "figmaId": "10:432",
+      "hash": "964e879256607c2d05bae0fe9f1dce76494a410c"
+    },
+    {
+      "code": "D67",
+      "title": "PDFs · Arquivo local listado",
+      "device": "desktop",
+      "image": "/screens/1c508bd63e2d882c3b127750c3d3c6258f73570a.jpg",
+      "figmaId": "10:437",
+      "hash": "1c508bd63e2d882c3b127750c3d3c6258f73570a"
+    },
+    {
+      "code": "D68",
+      "title": "PDFs · Sem resultados",
+      "device": "desktop",
+      "image": "/screens/a8a25321e1e9bc89164569bed0ab80660d7e4e17.jpg",
+      "figmaId": "10:442",
+      "hash": "a8a25321e1e9bc89164569bed0ab80660d7e4e17"
+    },
+    {
+      "code": "D69",
+      "title": "PDFs · Confirmação de remoção",
+      "device": "desktop",
+      "image": "/screens/8f5987a48f3440877e24c001efc4b1777ca29a43.jpg",
+      "figmaId": "10:447",
+      "hash": "8f5987a48f3440877e24c001efc4b1777ca29a43"
+    },
+    {
+      "code": "D70",
+      "title": "PDFs · Falha de leitura",
+      "device": "desktop",
+      "image": "/screens/99a3244b09351c83320d66b12a0178d54a73eb54.jpg",
+      "figmaId": "10:452",
+      "hash": "99a3244b09351c83320d66b12a0178d54a73eb54"
+    },
+    {
+      "code": "D71",
+      "title": "Agenda · Visitante",
+      "device": "desktop",
+      "image": "/screens/46f9062978e524e959ab3897b8ec727809c16379.jpg",
+      "figmaId": "10:516",
+      "hash": "46f9062978e524e959ab3897b8ec727809c16379"
+    },
+    {
+      "code": "D72",
+      "title": "Perfil · Entrada",
+      "device": "desktop",
+      "image": "/screens/907983621d2f73c207b194f02d8bc49626cf4489.jpg",
+      "figmaId": "10:521",
+      "hash": "907983621d2f73c207b194f02d8bc49626cf4489"
+    },
+    {
+      "code": "D73",
+      "title": "Perfil · Cadastro de teste",
+      "device": "desktop",
+      "image": "/screens/b463443546fc41ab46ba297864cdba28a1553c16.jpg",
+      "figmaId": "10:526",
+      "hash": "b463443546fc41ab46ba297864cdba28a1553c16"
+    },
+    {
+      "code": "D74",
+      "title": "Perfil · Conta temporária",
+      "device": "desktop",
+      "image": "/screens/34f88b687b180d282c6ceb788b87a37072a6039f.jpg",
+      "figmaId": "10:531",
+      "hash": "34f88b687b180d282c6ceb788b87a37072a6039f"
+    },
+    {
+      "code": "D75",
+      "title": "Modo Sistema · Perfil global",
+      "device": "desktop",
+      "image": "/screens/ef49e20ad71aff419ec9fe53a69b76e85f7a295b.jpg",
+      "figmaId": "10:536",
+      "hash": "ef49e20ad71aff419ec9fe53a69b76e85f7a295b"
+    },
+    {
+      "code": "D76",
+      "title": "Agenda · Calendário autenticado",
+      "device": "desktop",
+      "image": "/screens/34b39b7b3940533fcd4350ad9e9ab88f128e9123.jpg",
+      "figmaId": "10:541",
+      "hash": "34b39b7b3940533fcd4350ad9e9ab88f128e9123"
+    },
+    {
+      "code": "D77",
+      "title": "Agenda · Agendar one-shot",
+      "device": "desktop",
+      "image": "/screens/8ef62d7cb86007086726de6dd66b10068b542e18.jpg",
+      "figmaId": "10:546",
+      "hash": "8ef62d7cb86007086726de6dd66b10068b542e18"
+    },
+    {
+      "code": "D78",
+      "title": "Agenda · Recorrência",
+      "device": "desktop",
+      "image": "/screens/d360eb7f9321f9406969230e2da41db0b7f30852.jpg",
+      "figmaId": "10:551",
+      "hash": "d360eb7f9321f9406969230e2da41db0b7f30852"
+    },
+    {
+      "code": "D79",
+      "title": "Agenda · Sessão agendada",
+      "device": "desktop",
+      "image": "/screens/e490a768efd4bad5d434198fc4a6ee9a6a36c0d9.jpg",
+      "figmaId": "10:556",
+      "hash": "e490a768efd4bad5d434198fc4a6ee9a6a36c0d9"
+    },
+    {
+      "code": "D80",
+      "title": "Agenda · Editar série",
+      "device": "desktop",
+      "image": "/screens/f26fccbbb47ae93c44111e80bfdca81b376ea26e.jpg",
+      "figmaId": "10:561",
+      "hash": "f26fccbbb47ae93c44111e80bfdca81b376ea26e"
+    },
+    {
+      "code": "D81",
+      "title": "Agenda · Confirmação de exclusão",
+      "device": "desktop",
+      "image": "/screens/841fad3227bc00d28a0dee74580f49fab37f8c40.jpg",
+      "figmaId": "10:566",
+      "hash": "841fad3227bc00d28a0dee74580f49fab37f8c40"
+    },
+    {
+      "code": "EX13",
+      "title": "Imagem extra do Figma",
+      "device": "extra",
+      "image": "/screens/a143bf78381dfa2916e6b1fbf7639535e9b10e32.jpg",
+      "hash": "a143bf78381dfa2916e6b1fbf7639535e9b10e32"
+    },
+    {
+      "code": "M01",
+      "title": "Início · ANTROPOLOGO",
+      "device": "mobile",
+      "image": "/screens/56bd474a5b93a7f00f43fefd7286170ac90fb6d4.jpg",
+      "figmaId": "10:190",
+      "hash": "56bd474a5b93a7f00f43fefd7286170ac90fb6d4"
+    },
+    {
+      "code": "M02",
+      "title": "Início · Cards e atalhos",
+      "device": "mobile",
+      "image": "/screens/89888f81ce02e058254a7ca7afd4f6d6f5fad9f4.jpg",
+      "figmaId": "10:194",
+      "hash": "89888f81ce02e058254a7ca7afd4f6d6f5fad9f4"
+    },
+    {
+      "code": "M03",
+      "title": "Início · Modo Sistema",
+      "device": "mobile",
+      "image": "/screens/1a1d03bcbd4d0afdaa82a89d70e8c42bbd2e08ae.jpg",
+      "figmaId": "10:199",
+      "hash": "1a1d03bcbd4d0afdaa82a89d70e8c42bbd2e08ae"
+    },
+    {
+      "code": "M04",
+      "title": "Modo Sistema · Logo no cabeçalho",
+      "device": "mobile",
+      "image": "/screens/a45e37bb9c7b8cd5eed6cfb9b93677f7e5220287.jpg",
+      "figmaId": "10:204",
+      "hash": "a45e37bb9c7b8cd5eed6cfb9b93677f7e5220287"
+    },
+    {
+      "code": "M05",
+      "title": "Sistema · Biblioteca",
+      "device": "mobile",
+      "image": "/screens/952913936cd532e4b88420907b979bfd76da050d.jpg",
+      "figmaId": "10:209",
+      "hash": "952913936cd532e4b88420907b979bfd76da050d"
+    },
+    {
+      "code": "M06",
+      "title": "AB10 · Leitura",
+      "device": "mobile",
+      "image": "/screens/8acc5a07db013509dc24e260b325fce2b7f7c9e7.jpg",
+      "figmaId": "10:214",
+      "hash": "8acc5a07db013509dc24e260b325fce2b7f7c9e7"
+    },
+    {
+      "code": "M07",
+      "title": "AB10 · Sobre o sistema",
+      "device": "mobile",
+      "image": "/screens/4ac7cd7d118285239a49caadf3ee2aef9290618f.jpg",
+      "figmaId": "10:219",
+      "hash": "4ac7cd7d118285239a49caadf3ee2aef9290618f"
+    },
+    {
+      "code": "M08",
+      "title": "AB10 · Índice no celular",
+      "device": "mobile",
+      "image": "/screens/597b7d23e91f032dc87dfb4fa85a5ffe0b3afc4e.jpg",
+      "figmaId": "10:224",
+      "hash": "597b7d23e91f032dc87dfb4fa85a5ffe0b3afc4e"
+    },
+    {
+      "code": "M09",
+      "title": "Sistema · Criar conjunto",
+      "device": "mobile",
+      "image": "/screens/9a7cb473addd71d26aa42997c4dfb5d73f5cac95.jpg",
+      "figmaId": "10:318",
+      "hash": "9a7cb473addd71d26aa42997c4dfb5d73f5cac95"
+    },
+    {
+      "code": "M10",
+      "title": "Sistema próprio · Primeiro capítulo",
+      "device": "mobile",
+      "image": "/screens/f03358d3cbc2338c4337dfbee9d5dbb9a00491bd.jpg",
+      "figmaId": "10:323",
+      "hash": "f03358d3cbc2338c4337dfbee9d5dbb9a00491bd"
+    },
+    {
+      "code": "M11",
+      "title": "Sistema próprio · Leitura",
+      "device": "mobile",
+      "image": "/screens/06e70163076bcb4bf6d4a32b31632eb1bbd26f8c.jpg",
+      "figmaId": "10:328",
+      "hash": "06e70163076bcb4bf6d4a32b31632eb1bbd26f8c"
+    },
+    {
+      "code": "M12",
+      "title": "Sistema · Editor de tópico",
+      "device": "mobile",
+      "image": "/screens/b66a7469088b8885d7b1b2ae1946906118f76d6c.jpg",
+      "figmaId": "10:333",
+      "hash": "b66a7469088b8885d7b1b2ae1946906118f76d6c"
+    },
+    {
+      "code": "M13",
+      "title": "Editor de tópico · Barra móvel",
+      "device": "mobile",
+      "image": "/screens/d8aa7bb826f3d1abaa3ee00c3b55453261728c1f.jpg",
+      "figmaId": "10:338",
+      "hash": "d8aa7bb826f3d1abaa3ee00c3b55453261728c1f"
+    },
+    {
+      "code": "M14",
+      "title": "Editor de tópico · Mais formatação",
+      "device": "mobile",
+      "image": "/screens/5deaee5405196e2b0bc189f0a2faac07c2520ff6.jpg",
+      "figmaId": "10:343",
+      "hash": "5deaee5405196e2b0bc189f0a2faac07c2520ff6"
+    },
+    {
+      "code": "M15",
+      "title": "Editor de tópico · Link interno",
+      "device": "mobile",
+      "image": "/screens/1816a851a95a13b997f2ed6442df1878552fe230.jpg",
+      "figmaId": "10:348",
+      "hash": "1816a851a95a13b997f2ed6442df1878552fe230"
+    },
+    {
+      "code": "M16",
+      "title": "Sistema · Gerenciar ficha-modelo",
+      "device": "mobile",
+      "image": "/screens/5e046f283177c9c5f06b755cc08f3b47f01ee977.jpg",
+      "figmaId": "10:353",
+      "hash": "5e046f283177c9c5f06b755cc08f3b47f01ee977"
+    },
+    {
+      "code": "M17",
+      "title": "Ficha-modelo · Editor vinculado",
+      "device": "mobile",
+      "image": "/screens/05123bfeda1a4d830cad0c334eea8a082502d4bf.jpg",
+      "figmaId": "10:358",
+      "hash": "05123bfeda1a4d830cad0c334eea8a082502d4bf"
+    },
+    {
+      "code": "M18",
+      "title": "Sistema · Editar conjunto",
+      "device": "mobile",
+      "image": "/screens/617c02eed9aee072535486ac85ad2688bab34d3d.jpg",
+      "figmaId": "10:459",
+      "hash": "617c02eed9aee072535486ac85ad2688bab34d3d"
+    },
+    {
+      "code": "M19",
+      "title": "Personalizar · Computador",
+      "device": "mobile",
+      "image": "/screens/1ca8a69f9df775831b61a00929ab7901268cd693.jpg",
+      "figmaId": "10:464",
+      "hash": "1ca8a69f9df775831b61a00929ab7901268cd693"
+    },
+    {
+      "code": "M20",
+      "title": "Personalizar · Celular",
+      "device": "mobile",
+      "image": "/screens/84a3ca361605af5b44908c4528704cb3c14f000f.jpg",
+      "figmaId": "10:469",
+      "hash": "84a3ca361605af5b44908c4528704cb3c14f000f"
+    },
+    {
+      "code": "M21",
+      "title": "Personalizar · Super PNG",
+      "device": "mobile",
+      "image": "/screens/17ba32fff8de5584cefcb8c209aa7d8be3de86f6.jpg",
+      "figmaId": "10:474",
+      "hash": "17ba32fff8de5584cefcb8c209aa7d8be3de86f6"
+    },
+    {
+      "code": "M22",
+      "title": "Personalizar · Logo aplicada na prévia",
+      "device": "mobile",
+      "image": "/screens/3a5d5652e2896ec714556a1ab71d9103810621b2.jpg",
+      "figmaId": "10:479",
+      "hash": "3a5d5652e2896ec714556a1ab71d9103810621b2"
+    },
+    {
+      "code": "M23",
+      "title": "Personalizar · Capa aplicada",
+      "device": "mobile",
+      "image": "/screens/77d6927c8ffd1a6b09c165043a69e496f644d3ae.jpg",
+      "figmaId": "10:484",
+      "hash": "77d6927c8ffd1a6b09c165043a69e496f644d3ae"
+    },
+    {
+      "code": "M24",
+      "title": "Sistema · Dados",
+      "device": "mobile",
+      "image": "/screens/ff5d6c1c6bf332c42d9910b7db3aa74442f53aa5.jpg",
+      "figmaId": "10:489",
+      "hash": "ff5d6c1c6bf332c42d9910b7db3aa74442f53aa5"
+    },
+    {
+      "code": "M25",
+      "title": "Sistema · Configuração",
+      "device": "mobile",
+      "image": "/screens/40f6486a7290947deee22778052c2a21f073dd14.jpg",
+      "figmaId": "10:494",
+      "hash": "40f6486a7290947deee22778052c2a21f073dd14"
+    },
+    {
+      "code": "M26",
+      "title": "Dados · Editor de faces",
+      "device": "mobile",
+      "image": "/screens/98bd1782f4ea033f3181ff5a80a6c59a9b2d69a9.jpg",
+      "figmaId": "10:499",
+      "hash": "98bd1782f4ea033f3181ff5a80a6c59a9b2d69a9"
+    },
+    {
+      "code": "M27",
+      "title": "Aparência · Paletas e tema",
+      "device": "mobile",
+      "image": "/screens/4a8f612acf0134b7529c3ce9cea58c88535c43ed.jpg",
+      "figmaId": "10:504",
+      "hash": "4a8f612acf0134b7529c3ce9cea58c88535c43ed"
+    },
+    {
+      "code": "M28",
+      "title": "Aparência · Escuro e paleta",
+      "device": "mobile",
+      "image": "/screens/9b639e0f453c9682ad73ae340bf3690861a347f3.jpg",
+      "figmaId": "10:509",
+      "hash": "9b639e0f453c9682ad73ae340bf3690861a347f3"
+    },
+    {
+      "code": "M29",
+      "title": "Suas fichas",
+      "device": "mobile",
+      "image": "/screens/fbe918fadd75602d3b4a1c0250f6c4163fb31008.jpg",
+      "figmaId": "10:573",
+      "hash": "fbe918fadd75602d3b4a1c0250f6c4163fb31008"
+    },
+    {
+      "code": "M30",
+      "title": "Ficha · Entrada sem personagem",
+      "device": "mobile",
+      "image": "/screens/41a90beb1565a3adb321df81dd93b3a6e844a77b.jpg",
+      "figmaId": "10:578",
+      "hash": "41a90beb1565a3adb321df81dd93b3a6e844a77b"
+    },
+    {
+      "code": "M31",
+      "title": "Criar nova ficha",
+      "device": "mobile",
+      "image": "/screens/1b324a264d53ba99ee540f47758225f21088c0b6.jpg",
+      "figmaId": "10:583",
+      "hash": "1b324a264d53ba99ee540f47758225f21088c0b6"
+    },
+    {
+      "code": "M32",
+      "title": "Ficha · Primeiro bloco",
+      "device": "mobile",
+      "image": "/screens/2b3b01af9e0cbb39ea411d310b384c1176445529.jpg",
+      "figmaId": "10:588",
+      "hash": "2b3b01af9e0cbb39ea411d310b384c1176445529"
+    },
+    {
+      "code": "M33",
+      "title": "Ficha · Importação cruzada",
+      "device": "mobile",
+      "image": "/screens/264f1040bab768f6814f710f85b8e6f4fade57d5.jpg",
+      "figmaId": "10:593",
+      "hash": "264f1040bab768f6814f710f85b8e6f4fade57d5"
+    },
+    {
+      "code": "M34",
+      "title": "Ficha · Modo edição",
+      "device": "mobile",
+      "image": "/screens/d796feadd57ef08911c90a77f067e4b66233bc3a.jpg",
+      "figmaId": "10:598",
+      "hash": "d796feadd57ef08911c90a77f067e4b66233bc3a"
+    },
+    {
+      "code": "M35",
+      "title": "Ficha · Modo ficha",
+      "device": "mobile",
+      "image": "/screens/b30bc771c2817f624a03f1abedca4d564ea93f39.jpg",
+      "figmaId": "10:603",
+      "hash": "b30bc771c2817f624a03f1abedca4d564ea93f39"
+    },
+    {
+      "code": "M36",
+      "title": "Ficha · Propriedades do bloco",
+      "device": "mobile",
+      "image": "/screens/7ba95c9abccd163918d36a8871cf647d84b5b168.jpg",
+      "figmaId": "10:608",
+      "hash": "7ba95c9abccd163918d36a8871cf647d84b5b168"
+    },
+    {
+      "code": "M37",
+      "title": "Ficha · Tipos de bloco",
+      "device": "mobile",
+      "image": "/screens/efb1154497f61ea707c402e12430757d39dcb1a3.jpg",
+      "figmaId": "10:613",
+      "hash": "efb1154497f61ea707c402e12430757d39dcb1a3"
+    },
+    {
+      "code": "M38",
+      "title": "Ficha · Editar campo",
+      "device": "mobile",
+      "image": "/screens/971ab87eb50c39c30f1b828111fddb1bd211abf0.jpg",
+      "figmaId": "10:618",
+      "hash": "971ab87eb50c39c30f1b828111fddb1bd211abf0"
+    },
+    {
+      "code": "M39",
+      "title": "Ficha · Campo comparativo",
+      "device": "mobile",
+      "image": "/screens/258f0d3de879935dd40d6ebca2041a4a185b7c80.jpg",
+      "figmaId": "10:623",
+      "hash": "258f0d3de879935dd40d6ebca2041a4a185b7c80"
+    },
+    {
+      "code": "M40",
+      "title": "Ficha · Detalhes no toque",
+      "device": "mobile",
+      "image": "/screens/f02ce3d7d375a0ab6fc448a1dad3c8a01636b430.jpg",
+      "figmaId": "10:628",
+      "hash": "f02ce3d7d375a0ab6fc448a1dad3c8a01636b430"
+    },
+    {
+      "code": "M41",
+      "title": "Ficha · Rolagem de campo",
+      "device": "mobile",
+      "image": "/screens/29ecfa01a3fae5734707cbc38277452438151257.jpg",
+      "figmaId": "10:635",
+      "hash": "29ecfa01a3fae5734707cbc38277452438151257"
+    },
+    {
+      "code": "M42",
+      "title": "Ficha · Lançamentos",
+      "device": "mobile",
+      "image": "/screens/087640914958247b4e93065c66fdad3a33827fe5.jpg",
+      "figmaId": "10:640",
+      "hash": "087640914958247b4e93065c66fdad3a33827fe5"
+    },
+    {
+      "code": "M43",
+      "title": "Ficha · Programar rolagem",
+      "device": "mobile",
+      "image": "/screens/eb48978b5527f77a88fc2b16485a40ee056afdde.jpg",
+      "figmaId": "10:645",
+      "hash": "eb48978b5527f77a88fc2b16485a40ee056afdde"
+    },
+    {
+      "code": "M44",
+      "title": "Ficha · Resultado e histórico",
+      "device": "mobile",
+      "image": "/screens/2abd3dfa1c5f7ea523046a25934dcc0b065298bf.jpg",
+      "figmaId": "10:650",
+      "hash": "2abd3dfa1c5f7ea523046a25934dcc0b065298bf"
+    },
+    {
+      "code": "M45",
+      "title": "Dados · Roll and Keep",
+      "device": "mobile",
+      "image": "/screens/7bd596efb417d3ea0c983d17fdf835d6a22d39be.jpg",
+      "figmaId": "10:655",
+      "hash": "7bd596efb417d3ea0c983d17fdf835d6a22d39be"
+    },
+    {
+      "code": "M46",
+      "title": "Dados · Seleção manual",
+      "device": "mobile",
+      "image": "/screens/7ed62e5ac77c4111b248f45966c18510b819200d.jpg",
+      "figmaId": "10:660",
+      "hash": "7ed62e5ac77c4111b248f45966c18510b819200d"
+    },
+    {
+      "code": "M47",
+      "title": "Ficha · Salvar cópia",
+      "device": "mobile",
+      "image": "/screens/128d7fd8bdc8ab5085731714ec9352e46e3e800d.jpg",
+      "figmaId": "10:665",
+      "hash": "128d7fd8bdc8ab5085731714ec9352e46e3e800d"
+    },
+    {
+      "code": "M48",
+      "title": "Salvar regras · Super PNG",
+      "device": "mobile",
+      "image": "/screens/80a9cd3b0bfc036644e77b0cb7ef2a93eebb50f9.jpg",
+      "figmaId": "10:670",
+      "hash": "80a9cd3b0bfc036644e77b0cb7ef2a93eebb50f9"
+    },
+    {
+      "code": "M49",
+      "title": "Super PNG · Capa personalizada",
+      "device": "mobile",
+      "image": "/screens/9319bb2caf17b1a45fd38e837de3b6fa844bc558.jpg",
+      "figmaId": "10:675",
+      "hash": "9319bb2caf17b1a45fd38e837de3b6fa844bc558"
+    },
+    {
+      "code": "M50",
+      "title": "Sistema · Reimportação Super PNG",
+      "device": "mobile",
+      "image": "/screens/f9bcbdb9c0f9ac7a412043b628eee04d465a5690.jpg",
+      "figmaId": "10:680",
+      "hash": "f9bcbdb9c0f9ac7a412043b628eee04d465a5690"
+    },
+    {
+      "code": "M51",
+      "title": "Sistema · Arquivo inválido",
+      "device": "mobile",
+      "image": "/screens/904278375d64468f879a3672989724683e181be5.jpg",
+      "figmaId": "10:685",
+      "hash": "904278375d64468f879a3672989724683e181be5"
+    },
+    {
+      "code": "M52",
+      "title": "PDFs · Biblioteca vazia",
+      "device": "mobile",
+      "image": "/screens/634d39521942cc2d7bea35791ecec2e3760228e5.jpg",
+      "hash": "634d39521942cc2d7bea35791ecec2e3760228e5",
+      "formerCode": "EX07"
+    },
+    {
+      "code": "M53",
+      "title": "PDFs · Adicionar à biblioteca",
+      "device": "mobile",
+      "image": "/screens/b7dd2d8c708848f601f0dcc86308a213587fc657.jpg",
+      "hash": "b7dd2d8c708848f601f0dcc86308a213587fc657",
+      "formerCode": "EX15"
+    },
+    {
+      "code": "M54",
+      "title": "PDFs · Arquivo local listado",
+      "device": "mobile",
+      "image": "/screens/852b90b30c3f7b17a73e7f7a2415e255863c2e41.jpg",
+      "hash": "852b90b30c3f7b17a73e7f7a2415e255863c2e41",
+      "formerCode": "EX11"
+    },
+    {
+      "code": "M55",
+      "title": "PDFs · Confirmação de remoção",
+      "device": "mobile",
+      "image": "/screens/5ee6fe3095efeeb6294d35db96612645e9e445bb.jpg",
+      "hash": "5ee6fe3095efeeb6294d35db96612645e9e445bb",
+      "formerCode": "EX06"
+    },
+    {
+      "code": "M56",
+      "title": "PDFs · Falha de leitura",
+      "device": "mobile",
+      "image": "/screens/9c2d20af562e07e01b297fdb4d35d9cfda450b26.jpg",
+      "hash": "9c2d20af562e07e01b297fdb4d35d9cfda450b26",
+      "formerCode": "EX12"
+    },
+    {
+      "code": "M57",
+      "title": "Agenda · Visitante",
+      "device": "mobile",
+      "image": "/screens/4dd3cf8554221202df3746e9c13e6dd049269631.jpg",
+      "hash": "4dd3cf8554221202df3746e9c13e6dd049269631",
+      "formerCode": "EX05"
+    },
+    {
+      "code": "M58",
+      "title": "Perfil · Entrada",
+      "device": "mobile",
+      "image": "/screens/d1be299b06ce39e68486338b3f8b24d80737946d.jpg",
+      "hash": "d1be299b06ce39e68486338b3f8b24d80737946d",
+      "formerCode": "EX17"
+    },
+    {
+      "code": "M59",
+      "title": "Perfil · Cadastro de teste",
+      "device": "mobile",
+      "image": "/screens/0a38fb6f5626e60bac0d1634c1e0f5a7966119c2.jpg",
+      "hash": "0a38fb6f5626e60bac0d1634c1e0f5a7966119c2",
+      "formerCode": "EX01"
+    },
+    {
+      "code": "M60",
+      "title": "Perfil · Conta temporária",
+      "device": "mobile",
+      "image": "/screens/1d37455801fca54f6e7a077b05486d512b3bbe18.jpg",
+      "hash": "1d37455801fca54f6e7a077b05486d512b3bbe18",
+      "formerCode": "EX02"
+    },
+    {
+      "code": "M61",
+      "title": "Modo Sistema · Perfil global",
+      "device": "mobile",
+      "image": "/screens/729dd46669a1d54e9169dd5adc3f0dc40c4ea674.jpg",
+      "hash": "729dd46669a1d54e9169dd5adc3f0dc40c4ea674",
+      "formerCode": "EX10"
+    },
+    {
+      "code": "M62",
+      "title": "Agenda · Calendário autenticado",
+      "device": "mobile",
+      "image": "/screens/ccd25ced420cbf9cf8989f3fda4d41850111d445.jpg",
+      "hash": "ccd25ced420cbf9cf8989f3fda4d41850111d445",
+      "formerCode": "EX16"
+    },
+    {
+      "code": "M63",
+      "title": "Agenda · Agendar one-shot",
+      "device": "mobile",
+      "image": "/screens/a7abb59c5b164622733a46735f7e18883cdd9a74.jpg",
+      "hash": "a7abb59c5b164622733a46735f7e18883cdd9a74",
+      "formerCode": "EX14"
+    },
+    {
+      "code": "M64",
+      "title": "Agenda · Recorrência",
+      "device": "mobile",
+      "image": "/screens/6a410a27e78ec5feaedc17519cc1ac08459e33fb.jpg",
+      "hash": "6a410a27e78ec5feaedc17519cc1ac08459e33fb",
+      "formerCode": "EX09"
+    },
+    {
+      "code": "M65",
+      "title": "Agenda · Sessão agendada",
+      "device": "mobile",
+      "image": "/screens/664f7846eb59eec446b377cb57a28482b4515971.jpg",
+      "hash": "664f7846eb59eec446b377cb57a28482b4515971",
+      "formerCode": "EX08"
+    },
+    {
+      "code": "M66",
+      "title": "Agenda · Editar série",
+      "device": "mobile",
+      "image": "/screens/239a9e2596d02c361446c36c2ab5e84464dee312.jpg",
+      "hash": "239a9e2596d02c361446c36c2ab5e84464dee312",
+      "formerCode": "EX03"
+    },
+    {
+      "code": "M67",
+      "title": "Agenda · Editar one-shot",
+      "device": "mobile",
+      "image": "/screens/319e899cd2a18f10d19ed4275a31bc9d4f464858.jpg",
+      "hash": "319e899cd2a18f10d19ed4275a31bc9d4f464858",
+      "formerCode": "EX04"
+    },
+    {
+      "code": "M68",
+      "title": "Agenda · Confirmação de exclusão",
+      "device": "mobile",
+      "image": "/screens/ff1c68baf523cf8c10cd231ddef834ca2d4a0870.jpg",
+      "hash": "ff1c68baf523cf8c10cd231ddef834ca2d4a0870",
+      "formerCode": "EX18"
+    }
+  ],
+  "journeys": [
+    {
+      "source": "30:212",
+      "target": "30:306",
+      "label": "Faixa de personagens"
+    },
+    {
+      "source": "30:212",
+      "target": "30:278",
+      "label": "Criar personagem"
+    },
+    {
+      "source": "30:212",
+      "target": "30:346",
+      "label": "Card de materiais"
+    },
+    {
+      "source": "30:212",
+      "target": "30:355",
+      "label": "Card da próxima sessão"
+    },
+    {
+      "source": "30:212",
+      "target": "30:252",
+      "label": "Selecionar card AB10 ou próprio"
+    },
+    {
+      "source": "30:449",
+      "target": "30:436",
+      "label": "Explorar regras / aba Sistema"
+    },
+    {
+      "source": "30:436",
+      "target": "30:225",
+      "label": "Conjuntos de regras"
+    },
+    {
+      "source": "30:463",
+      "target": "30:225",
+      "label": "Clique na identidade do sistema"
+    },
+    {
+      "source": "30:476",
+      "target": "30:499",
+      "label": "Aba PDFs"
+    },
+    {
+      "source": "30:476",
+      "target": "30:509",
+      "label": "Aba Agenda"
+    },
+    {
+      "source": "30:523",
+      "target": "30:549",
+      "label": "Criar personagem"
+    },
+    {
+      "source": "30:537",
+      "target": "30:436",
+      "label": "Voltar às regras"
+    },
+    {
+      "source": "30:537",
+      "target": "30:560",
+      "label": "Trocar com mudanças pendentes"
+    },
+    {
+      "source": "30:660",
+      "target": "30:701",
+      "label": "Novo capítulo / editar / subseção"
+    },
+    {
+      "source": "30:660",
+      "target": "30:755",
+      "label": "Editar sistema"
+    },
+    {
+      "source": "30:755",
+      "target": "30:795",
+      "label": "Aba Regras de Dados"
+    },
+    {
+      "source": "30:660",
+      "target": "30:1100",
+      "label": "Salvar regras"
+    },
+    {
+      "source": "30:687",
+      "target": "30:701",
+      "label": "Escrever conteúdo / editar"
+    },
+    {
+      "source": "30:833",
+      "target": "30:889",
+      "label": "Modo ficha"
+    },
+    {
+      "source": "30:889",
+      "target": "30:833",
+      "label": "Modo edição"
+    },
+    {
+      "source": "30:833",
+      "target": "30:1002",
+      "label": "Rolagem avulsa"
+    },
+    {
+      "source": "30:875",
+      "target": "30:833",
+      "label": "Aplicar ou Cancelar"
+    },
+    {
+      "source": "30:833",
+      "target": "30:925",
+      "label": "Salvar"
+    },
+    {
+      "source": "30:1002",
+      "target": "30:1030",
+      "label": "Rolar / dado rápido / rolagem extra"
+    },
+    {
+      "source": "30:961",
+      "target": "30:1002",
+      "label": "Selecionar sistema dos dados"
+    },
+    {
+      "source": "30:1016",
+      "target": "30:1002",
+      "label": "Salvar rolagem"
+    },
+    {
+      "source": "30:1072",
+      "target": "30:1086",
+      "label": "O conteúdo define o destino"
+    },
+    {
+      "source": "30:1086",
+      "target": "30:660",
+      "label": "Sistema detectado"
+    },
+    {
+      "source": "30:1086",
+      "target": "30:889",
+      "label": "Personagem detectado"
+    },
+    {
+      "source": "30:1141",
+      "target": "30:1114",
+      "label": "Limpar filtros"
+    },
+    {
+      "source": "30:1155",
+      "target": "30:1141",
+      "label": "Cancelar"
+    },
+    {
+      "source": "30:1199",
+      "target": "30:1228",
+      "label": "Acesso com Agenda já aberta"
+    },
+    {
+      "source": "30:1213",
+      "target": "30:1228",
+      "label": "Ver agenda / próximas sessões"
+    },
+    {
+      "source": "30:1228",
+      "target": "30:1241",
+      "label": "Nova sessão / ação do dia"
+    },
+    {
+      "source": "30:1255",
+      "target": "30:1279",
+      "label": "Excluir no card"
+    },
+    {
+      "source": "30:1268",
+      "target": "30:1228",
+      "label": "Salvar ou cancelar"
+    },
+    {
+      "source": "30:1279",
+      "target": "30:1228",
+      "label": "Cancelar"
+    }
+  ]
+}
