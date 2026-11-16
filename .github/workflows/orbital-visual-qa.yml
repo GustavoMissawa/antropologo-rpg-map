@@ -1,0 +1,85 @@
+name: Validar prévia da Home Orbital
+on:
+  push:
+    branches: [qa/v0.40-polimento-orbital]
+
+permissions:
+  contents: read
+
+jobs:
+  validar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        shell: bash
+        working-directory: aplicacao/v0.40
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - uses: pnpm/action-setup@v4
+        with:
+          package_json_file: aplicacao/v0.40/package.json
+      - name: Instalar dependências da aplicação
+        run: pnpm install --frozen-lockfile
+      - name: Verificar tipos, versão e regressão
+        run: |
+          pnpm exec tsc --noEmit
+          pnpm version:check
+          node --experimental-strip-types --test --test-force-exit --test-concurrency=4 tests/*.test.mjs
+          git diff --exit-code v0.38-alpha HEAD -- ../v0.38
+      - name: Gerar pacote local
+        run: pnpm build
+      - name: Preparar Chromium
+        run: |
+          npm install --prefix "$RUNNER_TEMP/orbital-browser" --no-audit --no-fund --no-save playwright@1.57.0
+          "$RUNNER_TEMP/orbital-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Capturar a prévia com dados locais
+        run: |
+          for migration in drizzle/*.sql; do
+            pnpm exec wrangler d1 execute DB --config dist/server/wrangler.json --local --persist-to .wrangler/state --file "$migration"
+          done
+          pnpm start --port 8787 > "$RUNNER_TEMP/orbital-preview.log" 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          if ! curl --silent --show-error --fail --retry 20 --retry-connrefused --retry-delay 1 --max-time 3 http://127.0.0.1:8787/ > /dev/null; then
+            cat "$RUNNER_TEMP/orbital-preview.log"
+            exit 1
+          fi
+          node ../../.github/qa/capture-orbital.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: home-orbital-previa
+          path: ${{ runner.temp }}/orbital-capturas
+          retention-days: 7
+          if-no-files-found: error
+
+  registrar-capturas:
+    needs: validar
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: dev/v0.40-polimento-orbital
+      - uses: actions/download-artifact@v4
+        with:
+          name: home-orbital-previa
+          path: capturas-validadas
+      - name: Atualizar a galeria da branch de revisão
+        run: |
+          set -eu
+          test "$(git rev-parse HEAD)" = '4ff9cf08f98bf095dee263b9a152eae950405ff8'
+          for file in README.md aparencia.jpg sobre.jpg home-claro-floresta-dourado.jpg home-claro-ametista-rosa.jpg home-escuro-floresta-dourado.jpg home-escuro-safira-ciano.jpg d20-01.jpg d20-02.jpg d20-03.jpg d20-04.jpg; do
+            cp "capturas-validadas/$file" "docs/home-orbital-v040/$file"
+          done
+          sed -i 's/capturas da v0.40 no site publicado/capturas da prévia da v0.40/' README.md
+          git add README.md docs/home-orbital-v040
+          git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'Atualiza capturas da prévia e sequência do D20'
+          git push origin HEAD:refs/heads/dev/v0.40-polimento-orbital
