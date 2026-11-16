@@ -1,0 +1,425 @@
+{
+  "format": "rpg-ruleset",
+  "version": 1,
+  "id": "6fe80cc6-2a43-41b0-a770-8704d0d32e98",
+  "name": "Reinos de Aurora",
+  "description": "Um sistema de teste com regras, ficha-modelo e cálculos interligados.",
+  "sheetTemplate": {
+    "format": "ab10-character",
+    "version": 6,
+    "id": "0b8f4240-d5d4-4e85-957d-054cc980dcfc",
+    "name": "Modelo — Reinos de Aurora",
+    "player": "",
+    "description": "",
+    "updatedAt": "2026-10-25T07:32:06.911Z",
+    "blocks": [
+      {
+        "id": "61eb73f5-9172-4c69-a826-e8383635a869",
+        "title": "Atributos",
+        "description": "Corpo, mente e os valores que guiam a aventura.",
+        "kind": "attributes",
+        "tabId": "e4815d20-bb45-4d64-8191-bd4d39ef3b54",
+        "layout": {
+          "x": 48,
+          "y": 96,
+          "width": 360
+        },
+        "fields": [
+          {
+            "id": "f1e8a1cd-56a0-4de5-8256-4d92de3d9367",
+            "label": "Destreza",
+            "type": "composite",
+            "value": 16,
+            "details": "Agilidade, equilíbrio e precisão.\nO modificador é usado em testes de Destreza.",
+            "composite": {
+              "mode": "ability",
+              "modifier": 0
+            },
+            "roll": {
+              "formula": "1d20 + @modificador",
+              "variables": []
+            }
+          },
+          {
+            "id": "dce3f84d-bf83-4aaf-855a-0e918c985b41",
+            "label": "Rajada",
+            "type": "number",
+            "value": 3,
+            "details": "Lance um d20 para cada ponto de Rajada.\nSegurar para consultar não lança dados.",
+            "roll": {
+              "formula": "(@valor)d20",
+              "variables": []
+            }
+          },
+          {
+            "id": "cc7bdbd7-c16b-42ee-9af5-5e7754b960b9",
+            "label": "Antecedente",
+            "type": "text",
+            "value": "Viajante",
+            "details": "Conhece trilhas antigas e atalhos entre as vilas."
+          }
+        ]
+      },
+      {
+        "id": "eb3d3d52-9f7d-4879-b0ce-47b494a7055a",
+        "title": "Perícias",
+        "description": "",
+        "kind": "skills",
+        "tabId": "e4815d20-bb45-4d64-8191-bd4d39ef3b54",
+        "layout": {
+          "x": 456,
+          "y": 96,
+          "width": 360
+        },
+        "fields": [
+          {
+            "id": "495a9a02-868b-4e87-8ebf-87db0b483335",
+            "label": "Furtividade",
+            "type": "calculated",
+            "value": "",
+            "details": "Mover-se sem ser percebido.\nDestreza + 2 de treinamento.",
+            "dependency": {
+              "sourceId": "f1e8a1cd-56a0-4de5-8256-4d92de3d9367",
+              "part": "modifier",
+              "offset": 2
+            },
+            "roll": {
+              "formula": "1d20 + @valor",
+              "variables": []
+            }
+          },
+          {
+            "id": "72f76d94-ef12-4c14-bbcf-7ad3133ee166",
+            "label": "Vida",
+            "type": "comparison",
+            "value": 20,
+            "details": "Atual e máximo para acompanhar durante a aventura.",
+            "comparison": {
+              "maximum": 30
+            }
+          }
+        ]
+      }
+    ],
+    "tabs": [
+      {
+        "id": "e4815d20-bb45-4d64-8191-bd4d39ef3b54",
+        "title": "Principal"
+      },
+      {
+        "id": "b58c80af-9116-47a2-b4f6-ffe1a226011f",
+        "title": "História"
+      }
+    ],
+    "activeTabId": "e4815d20-bb45-4d64-8191-bd4d39ef3b54",
+    "rolls": [
+      {
+        "id": "b6ad2923-31d3-4a02-afb6-c902f764e028",
+        "name": "Ataque",
+        "formula": "2d6 + @destreza_mod",
+        "variables": [
+          {
+            "name": "destreza_mod",
+            "fieldId": "f1e8a1cd-56a0-4de5-8256-4d92de3d9367",
+            "part": "modifier"
+          }
+        ]
+      }
+    ],
+    "positionMode": "grid"
+  },
+  "updatedAt": "2026-10-25T07:32:06.911Z",
+  "chapters": [
+    {
+      "id": "3dc533e2-91fe-4867-896e-a8a95e3704d3",
+      "title": "Teste",
+      "content": "Experimente Teste e itálico, além de destaque. Consulte Informações detalhadas de teste.\n\nUma subseção no mesmo tópico\n\nUma subseção criada dentro do texto, sem abrir outro tópico.\n\nAtributos e perícias.\nDetalhes e exemplos.\n\nUma regra bem organizada é mais fácil de consultar.\n\n1d20 + atributo\nresultado >= dificuldade\n\nContinue a escrita a partir daqui.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Experimente "
+              },
+              {
+                "type": "text",
+                "text": "Teste",
+                "marks": [
+                  {
+                    "type": "bold"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " e "
+              },
+              {
+                "type": "text",
+                "text": "itálico",
+                "marks": [
+                  {
+                    "type": "italic"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ", além de "
+              },
+              {
+                "type": "text",
+                "text": "destaque",
+                "marks": [
+                  {
+                    "type": "highlight"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ". Consulte "
+              },
+              {
+                "type": "text",
+                "text": "Informações detalhadas de teste",
+                "marks": [
+                  {
+                    "type": "ruleLink",
+                    "attrs": {
+                      "kind": "internal",
+                      "topicId": "de255e03-c8ea-4f22-94e5-58f3dddf9998",
+                      "anchorId": "sec-special",
+                      "href": null
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "id": "sec-local",
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Uma subseção no mesmo tópico"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Uma subseção criada dentro do texto, sem abrir outro tópico."
+              }
+            ]
+          },
+          {
+            "type": "bulletList",
+            "content": [
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Atributos e perícias."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Detalhes e exemplos."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "blockquote",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Uma regra bem organizada é mais fácil de consultar."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "codeBlock",
+            "attrs": {
+              "language": null
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "1d20 + atributo\nresultado >= dificuldade"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Continue a escrita a partir daqui."
+              }
+            ]
+          }
+        ]
+      },
+      "status": "draft",
+      "children": [
+        {
+          "id": "de255e03-c8ea-4f22-94e5-58f3dddf9998",
+          "title": "Informações detalhadas de teste",
+          "content": "Visão geral\n\nContexto 1. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 2. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 3. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 4. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 5. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nAplicação detalhada\n\nEsta é a subseção exata que o link deve abrir.\n\nExemplo final\n\nO identificador desta subseção não muda ao renomear o cabeçalho.",
+          "document": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "heading",
+                "attrs": {
+                  "id": "sec-overview",
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Visão geral"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 1. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 2. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 3. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 4. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 5. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "id": "sec-special",
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Aplicação detalhada"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Esta é a subseção exata que o link deve abrir."
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "id": "sec-closing",
+                  "level": 3
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Exemplo final"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "O identificador desta subseção não muda ao renomear o cabeçalho."
+                  }
+                ]
+              }
+            ]
+          },
+          "status": "draft",
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "78ea7fdb-fb6b-461f-96ac-1e2100277349",
+      "title": "Capítulo vazio",
+      "content": "",
+      "status": "draft",
+      "children": []
+    }
+  ]
+}

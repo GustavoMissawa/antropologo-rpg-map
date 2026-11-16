@@ -1,0 +1,110 @@
+{
+  "format": "ab10-character",
+  "version": 5,
+  "id": "ef9a21ea-e7d9-4d4d-a2e8-f90e2d14fa21",
+  "name": "Astra — Exploradora",
+  "player": "Guss",
+  "description": "",
+  "updatedAt": "2026-10-24T04:13:42.055Z",
+  "blocks": [
+    {
+      "id": "3623cc83-1385-4670-8adf-68233cdcdc11",
+      "title": "Atributos",
+      "description": "Corpo, mente e os valores que guiam a aventura.",
+      "kind": "attributes",
+      "tabId": "main",
+      "layout": {
+        "x": 59,
+        "y": 85,
+        "width": 368
+      },
+      "fields": [
+        {
+          "id": "dex",
+          "label": "Destreza",
+          "type": "composite",
+          "value": 16,
+          "composite": {
+            "mode": "ability",
+            "modifier": 0
+          },
+          "details": "Agilidade, equilíbrio e precisão.\nO modificador é usado em testes de Destreza.",
+          "roll": {
+            "formula": "1d20 + @modificador",
+            "variables": []
+          }
+        },
+        {
+          "id": "pool",
+          "label": "Rajada",
+          "type": "number",
+          "value": 3,
+          "details": "Lance um d20 para cada ponto de Rajada.\nSegurar para consultar não lança dados.",
+          "roll": {
+            "formula": "(@valor)d20",
+            "variables": []
+          }
+        },
+        {
+          "id": "notes",
+          "label": "Antecedente",
+          "type": "text",
+          "value": "Viajante",
+          "details": "Conhece trilhas antigas e atalhos entre as vilas."
+        }
+      ]
+    },
+    {
+      "id": "76464ab5-b6f7-45ce-a4ff-0babcdb0c7c2",
+      "title": "Perícias",
+      "description": "",
+      "kind": "skills",
+      "tabId": "main",
+      "layout": {
+        "x": 461,
+        "y": 85,
+        "width": 368
+      },
+      "fields": [
+        {
+          "id": "stealth",
+          "label": "Furtividade",
+          "type": "calculated",
+          "value": "",
+          "dependency": {
+            "sourceId": "dex",
+            "part": "modifier",
+            "offset": 2
+          },
+          "details": "Mover-se sem ser percebido.\nDestreza + 2 de treinamento.",
+          "roll": {
+            "formula": "1d20 + @valor",
+            "variables": []
+          }
+        }
+      ]
+    }
+  ],
+  "tabs": [
+    {
+      "id": "main",
+      "title": "Principal"
+    }
+  ],
+  "activeTabId": "main",
+  "rolls": [
+    {
+      "id": "extra",
+      "name": "Ataque",
+      "formula": "2d6 + @destreza_mod",
+      "variables": [
+        {
+          "name": "destreza_mod",
+          "fieldId": "dex",
+          "part": "modifier"
+        }
+      ]
+    }
+  ],
+  "positionMode": "free"
+}

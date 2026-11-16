@@ -1,0 +1,2433 @@
+TAP version 13
+# Subtest: Dados ambientais giram no lugar, mantêm nós e formatos e não interceptam controles
+ok 1 - Dados ambientais giram no lugar, mantêm nós e formatos e não interceptam controles
+  ---
+  duration_ms: 917.164479
+  type: 'test'
+  ...
+# Subtest: Mobile, toque, redução de movimento e aba oculta mantêm dados estáticos
+ok 2 - Mobile, toque, redução de movimento e aba oculta mantêm dados estáticos
+  ---
+  duration_ms: 83.625176
+  type: 'test'
+  ...
+# Subtest: Após 2 s ativos o mesmo dado reaparece e aceita outro gatilho sem cooldown
+ok 3 - Após 2 s ativos o mesmo dado reaparece e aceita outro gatilho sem cooldown
+  ---
+  duration_ms: 1108.510484
+  type: 'test'
+  ...
+# Subtest: Ativar movimento reduzido durante o fade cancela timers e deixa o dado visível no local atual
+ok 4 - Ativar movimento reduzido durante o fade cancela timers e deixa o dado visível no local atual
+  ---
+  duration_ms: 659.737811
+  type: 'test'
+  ...
+# Subtest: Mobile mantém os dados durante mudanças de altura da barra do navegador e adapta à nova largura
+ok 5 - Mobile mantém os dados durante mudanças de altura da barra do navegador e adapta à nova largura
+  ---
+  duration_ms: 28.806193
+  type: 'test'
+  ...
+# Subtest: Quantidade é limitada por viewport e não há números ou símbolos no modelo ambiental
+ok 6 - Quantidade é limitada por viewport e não há números ou símbolos no modelo ambiental
+  ---
+  duration_ms: 1.739663
+  type: 'test'
+  ...
+# Subtest: A área de hit respeita a silhueta do dado em vez do retângulo inteiro
+ok 7 - A área de hit respeita a silhueta do dado em vez do retângulo inteiro
+  ---
+  duration_ms: 0.613442
+  type: 'test'
+  ...
+# Subtest: Distribuição inicial ocupa laterais e centro no desktop e no mobile
+ok 8 - Distribuição inicial ocupa laterais e centro no desktop e no mobile
+  ---
+  duration_ms: 7.171574
+  type: 'test'
+  ...
+# Subtest: Reposicionamento pode utilizar o centro quando as laterais estão protegidas
+ok 9 - Reposicionamento pode utilizar o centro quando as laterais estão protegidas
+  ---
+  duration_ms: 0.750998
+  type: 'test'
+  ...
+# Subtest: Reposicionar mantém o objeto, evita cursor, conteúdo protegido e dados próximos
+ok 10 - Reposicionar mantém o objeto, evita cursor, conteúdo protegido e dados próximos
+  ---
+  duration_ms: 0.409034
+  type: 'test'
+  ...
+# Subtest: Sem posição válida a busca termina e não cria elementos nem invade o conteúdo
+ok 11 - Sem posição válida a busca termina e não cria elementos nem invade o conteúdo
+  ---
+  duration_ms: 0.398189
+  type: 'test'
+  ...
+# Subtest: Mil reposicionamentos não aumentam a cena e nunca alteram a cena ou histórico de rolagem
+ok 12 - Mil reposicionamentos não aumentam a cena e nunca alteram a cena ou histórico de rolagem
+  ---
+  duration_ms: 6.311511
+  type: 'test'
+  ...
+# Subtest: Layout denso observado no Chrome ainda encontra uma faixa livre sem depender da sorte
+ok 13 - Layout denso observado no Chrome ainda encontra uma faixa livre sem depender da sorte
+  ---
+  duration_ms: 0.430888
+  type: 'test'
+  ...
+# Subtest: O gatilho exige dois segundos de movimento ativo, sem contar repouso ou pausas
+ok 14 - O gatilho exige dois segundos de movimento ativo, sem contar repouso ou pausas
+  ---
+  duration_ms: 1.748497
+  type: 'test'
+  ...
+# Subtest: As oito paletas mantêm contraste legível nos botões dos dois modos
+ok 15 - As oito paletas mantêm contraste legível nos botões dos dois modos
+  ---
+  duration_ms: 1.594536
+  type: 'test'
+  ...
+# Subtest: Rubi e Âmbar mantêm texto legível nas superfícies dos dois modos
+ok 16 - Rubi e Âmbar mantêm texto legível nas superfícies dos dois modos
+  ---
+  duration_ms: 1.911301
+  type: 'test'
+  ...
+# Subtest: HEX e RGB representam exatamente a mesma cor, incluindo extremos e HEX abreviado
+ok 17 - HEX e RGB representam exatamente a mesma cor, incluindo extremos e HEX abreviado
+  ---
+  duration_ms: 2.13687
+  type: 'test'
+  ...
+# Subtest: Cores inválidas ou CSS ativo são recusados sem produzir uma sobrescrita
+ok 18 - Cores inválidas ou CSS ativo são recusados sem produzir uma sobrescrita
+  ---
+  duration_ms: 0.209315
+  type: 'test'
+  ...
+# Subtest: As geometrias aprovadas de d4, d6 e d8 permanecem exatamente iguais
+ok 19 - As geometrias aprovadas de d4, d6 e d8 permanecem exatamente iguais
+  ---
+  duration_ms: 0.668899
+  type: 'test'
+  ...
+# Subtest: Leitura pode repetir uma falha transitória uma vez; mutações nunca são reenviadas
+ok 20 - Leitura pode repetir uma falha transitória uma vez; mutações nunca são reenviadas
+  ---
+  duration_ms: 2.493075
+  type: 'test'
+  ...
+# Subtest: Gateway HTML recebe mensagem clara, JSON inválido não vaza erro técnico e status 401 é preservado
+ok 21 - Gateway HTML recebe mensagem clara, JSON inválido não vaza erro técnico e status 401 é preservado
+  ---
+  duration_ms: 0.653441
+  type: 'test'
+  ...
+# Subtest: Pedido e leitura do corpo pendurados têm prazo total, mesmo se fetch ignorar o abort
+ok 22 - Pedido e leitura do corpo pendurados têm prazo total, mesmo se fetch ignorar o abort
+  ---
+  duration_ms: 31.203715
+  type: 'test'
+  ...
+# Subtest: Concluir o pedido cancela seu timer sem abortar uma resposta já entregue
+ok 23 - Concluir o pedido cancela seu timer sem abortar uma resposta já entregue
+  ---
+  duration_ms: 31.308431
+  type: 'test'
+  ...
+# Subtest: Respostas inválidas de perfil, agenda e PDFs são recusadas antes de chegarem à interface
+ok 24 - Respostas inválidas de perfil, agenda e PDFs são recusadas antes de chegarem à interface
+  ---
+  duration_ms: 2.004812
+  type: 'test'
+  ...
+# Subtest: Resposta atrasada do catálogo não remove PDFs adicionados pelo usuário durante o carregamento
+ok 25 - Resposta atrasada do catálogo não remove PDFs adicionados pelo usuário durante o carregamento
+  ---
+  duration_ms: 0.315274
+  type: 'test'
+  ...
+# Subtest: Timeout de mutação alerta para possível conclusão no servidor e não repete a operação
+ok 26 - Timeout de mutação alerta para possível conclusão no servidor e não repete a operação
+  ---
+  duration_ms: 15.866525
+  type: 'test'
+  ...
+# Subtest: Retrato oficial sobrevive ao JSON e ao Super PNG sem virar bloco
+ok 27 - Retrato oficial sobrevive ao JSON e ao Super PNG sem virar bloco
+  ---
+  duration_ms: 25.58929
+  type: 'test'
+  ...
+# Subtest: Substituir/remover retrato preserva blocos de imagem e fichas antigas
+ok 28 - Substituir/remover retrato preserva blocos de imagem e fichas antigas
+  ---
+  duration_ms: 1.273092
+  type: 'test'
+  ...
+# Subtest: Retrato recusa imagens remotas, SVG, conteúdo inválido e tamanho excessivo
+ok 29 - Retrato recusa imagens remotas, SVG, conteúdo inválido e tamanho excessivo
+  ---
+  duration_ms: 16.614097
+  type: 'test'
+  ...
+# Subtest: Retrato da ficha-modelo viaja com o sistema e cópias continuam independentes
+ok 30 - Retrato da ficha-modelo viaja com o sistema e cópias continuam independentes
+  ---
+  duration_ms: 2.529109
+  type: 'test'
+  ...
+# Subtest: Sistemas aceitam JSON próximo de 20 MiB, incluindo texto UTF-8 e reexportação
+ok 31 - Sistemas aceitam JSON próximo de 20 MiB, incluindo texto UTF-8 e reexportação
+  ---
+  duration_ms: 6208.711141
+  type: 'test'
+  ...
+# Subtest: Acima de 20 MiB há rejeição sem alterar o sistema ou relaxar limites independentes
+ok 32 - Acima de 20 MiB há rejeição sem alterar o sistema ou relaxar limites independentes
+  ---
+  duration_ms: 1815.616992
+  type: 'test'
+  ...
+# Subtest: Super PNG aceita sistema próximo da cota com escape duplo e mantém integridade
+ok 33 - Super PNG aceita sistema próximo da cota com escape duplo e mantém integridade
+  ---
+  duration_ms: 5226.663733
+  type: 'test'
+  ...
+# Subtest: Ficha avulsa continua em 5 MiB e a leitura recusa arquivos gigantes antes de alocar
+ok 34 - Ficha avulsa continua em 5 MiB e a leitura recusa arquivos gigantes antes de alocar
+  ---
+  duration_ms: 10.881853
+  type: 'test'
+  ...
+# Subtest: Sem IntersectionObserver o conteúdo permanece visível e navegável
+ok 35 - Sem IntersectionObserver o conteúdo permanece visível e navegável
+  ---
+  duration_ms: 168.765461
+  type: 'test'
+  ...
+# Subtest: Entrada anima uma vez, nunca observa conteúdo de editor e redução de movimento cancela com fallback visível
+ok 36 - Entrada anima uma vez, nunca observa conteúdo de editor e redução de movimento cancela com fallback visível
+  ---
+  duration_ms: 108.830595
+  type: 'test'
+  ...
+# Subtest: Sólidos fechados conservam faces, arestas compartilhadas e centro em todas as orientações
+ok 37 - Sólidos fechados conservam faces, arestas compartilhadas e centro em todas as orientações
+  ---
+  duration_ms: 2.919054
+  type: 'test'
+  ...
+# Subtest: Formatos têm faces regulares esperadas; d10 usa pipas congruentes e polos verticais
+ok 38 - Formatos têm faces regulares esperadas; d10 usa pipas congruentes e polos verticais
+  ---
+  duration_ms: 1.530209
+  type: 'test'
+  ...
+# Subtest: @ normaliza caixa e prefixo, e recusa caracteres inválidos
+ok 39 - @ normaliza caixa e prefixo, e recusa caracteres inválidos
+  ---
+  duration_ms: 1.81754
+  type: 'test'
+  ...
+# Subtest: Senha preserva caracteres e exige 8 a 128 caracteres
+ok 40 - Senha preserva caracteres e exige 8 a 128 caracteres
+  ---
+  duration_ms: 0.242254
+  type: 'test'
+  ...
+# Subtest: Salt individual muda o hash e a comparação reconhece somente o valor correto
+ok 41 - Salt individual muda o hash e a comparação reconhece somente o valor correto
+  ---
+  duration_ms: 63.499466
+  type: 'test'
+  ...
+# Subtest: Rotas reais de conta e agenda passam pela migração, autenticação, autorização e expiração em SQLite isolado
+ok 42 - Rotas reais de conta e agenda passam pela migração, autenticação, autorização e expiração em SQLite isolado
+  ---
+  duration_ms: 525.737455
+  type: 'test'
+  ...
+# Regras de demonstração acessíveis sem login
+# Biblioteca pública não expõe arquivos da publicação privada
+# Visitantes não persistem alterações de regras e PDFs
+# Endpoints antigos não expõem PDFs e perfis privados
+# Agenda exige login próprio, mesmo sem autenticação Sites
+# Cabeçalho externo não substitui a sessão da conta
+# Valida @ e tamanho da senha
+# Cria conta com @ único e senha escolhida
+# Cookie protege o token da sessão
+# Conta expira 2 horas depois da criação
+# Senha usa hash com salt e nunca texto puro
+# Mesmo @ com outra capitalização é recusado
+# Senha incorreta não autentica
+# Login normaliza @ e não prolonga a expiração
+# Cria evento one-shot para a conta
+# Cria série recorrente para a conta
+# Calendário reaparece ao entrar novamente
+# Outra conta não vê eventos alheios
+# Outra conta não edita evento alheio
+# Outra conta não exclui evento alheio
+# Titular pode editar seu evento
+# Recusa alteração originada de outro site
+# Botão Sair encerra a conta temporária
+# Sair invalida também outras sessões da mesma conta
+# Sair apaga conta, calendário e tokens em cascata
+# @ liberado pode ser reutilizado sem herdar calendário anterior
+# Expiração bloqueia acesso e limpa dados temporários
+# Cadastro simultâneo mantém @ globalmente único
+# Limita tentativas repetidas de senha
+# Subtest: Sessenta posições distintas preenchem as laterais da ficha, com alcance vertical e sem faixa no rodapé
+ok 43 - Sessenta posições distintas preenchem as laterais da ficha, com alcance vertical e sem faixa no rodapé
+  ---
+  duration_ms: 104.268707
+  type: 'test'
+  ...
+# Subtest: A escala visual do desktop cresce 50% sem aumentar a área reservada nem mudar a distribuição
+ok 44 - A escala visual do desktop cresce 50% sem aumentar a área reservada nem mudar a distribuição
+  ---
+  duration_ms: 4.747402
+  type: 'test'
+  ...
+# Subtest: Destinos são reservados durante a queda e não são reutilizados por outra rolagem
+ok 45 - Destinos são reservados durante a queda e não são reutilizados por outra rolagem
+  ---
+  duration_ms: 2.584071
+  type: 'test'
+  ...
+# Subtest: Uma lateral maior recebe proporcionalmente mais dados sem cobrir a área central
+ok 46 - Uma lateral maior recebe proporcionalmente mais dados sem cobrir a área central
+  ---
+  duration_ms: 5.606982
+  type: 'test'
+  ...
+# Subtest: Expandir altura conserva posições; redimensionar mantém as laterais livres de colisões
+ok 47 - Expandir altura conserva posições; redimensionar mantém as laterais livres de colisões
+  ---
+  duration_ms: 20.286243
+  type: 'test'
+  ...
+# Subtest: Após o limite, novos dados cobrem posições antigas e permanecem na pilha sem invadir o centro
+ok 48 - Após o limite, novos dados cobrem posições antigas e permanecem na pilha sem invadir o centro
+  ---
+  duration_ms: 264.523058
+  type: 'test'
+  ...
+# Subtest: Dados novos não reutilizam as posições dos que ainda estão saindo na limpeza
+ok 49 - Dados novos não reutilizam as posições dos que ainda estão saindo na limpeza
+  ---
+  duration_ms: 2.252314
+  type: 'test'
+  ...
+# Subtest: Superfícies são fechadas e formatos personalizados não se passam por d20
+ok 50 - Superfícies são fechadas e formatos personalizados não se passam por d20
+  ---
+  duration_ms: 1.271951
+  type: 'test'
+  ...
+# Subtest: Somente d100 decorativo vira um par de d10, preservando resultados e d20 reais
+ok 51 - Somente d100 decorativo vira um par de d10, preservando resultados e d20 reais
+  ---
+  duration_ms: 2.929891
+  type: 'test'
+  ...
+# Subtest: Impacto mobile funciona com cada formato e a limpeza não ressuscita o atingido
+ok 52 - Impacto mobile funciona com cada formato e a limpeza não ressuscita o atingido
+  ---
+  duration_ms: 239.597711
+  type: 'test'
+  ...
+# Subtest: Movimento reduzido não agenda quedas, impulsos ou animações de saída
+ok 53 - Movimento reduzido não agenda quedas, impulsos ou animações de saída
+  ---
+  duration_ms: 19.651089
+  type: 'test'
+  ...
+# Subtest: Cada face muda só sua representação, mantendo índice, soma, variáveis e probabilidade do dado
+ok 54 - Cada face muda só sua representação, mantendo índice, soma, variáveis e probabilidade do dado
+  ---
+  duration_ms: 5.706982
+  type: 'test'
+  ...
+# Subtest: O histórico guarda uma cópia da representação sorteada e não muda quando as regras são editadas
+ok 55 - O histórico guarda uma cópia da representação sorteada e não muda quando as regras são editadas
+  ---
+  duration_ms: 0.375544
+  type: 'test'
+  ...
+# Subtest: Faces viajam nos pacotes e fichas sem compartilhar o modelo ou outros sistemas
+ok 56 - Faces viajam nos pacotes e fichas sem compartilhar o modelo ou outros sistemas
+  ---
+  duration_ms: 10.167353
+  type: 'test'
+  ...
+# Subtest: Catálogos v1 e fichas v9 permanecem válidos sem exigir uma face por índice
+ok 57 - Catálogos v1 e fichas v9 permanecem válidos sem exigir uma face por índice
+  ---
+  duration_ms: 0.614013
+  type: 'test'
+  ...
+# Subtest: Faces inválidas, índices fora do dado e conteúdo ativo são rejeitados ou tratados como texto
+ok 58 - Faces inválidas, índices fora do dado e conteúdo ativo são rejeitados ou tratados como texto
+  ---
+  duration_ms: 0.933252
+  type: 'test'
+  ...
+# Subtest: Cada dado físico inicia uma queda correspondente; o histórico e seus valores não são alterados
+ok 59 - Cada dado físico inicia uma queda correspondente; o histórico e seus valores não são alterados
+  ---
+  duration_ms: 3.912727
+  type: 'test'
+  ...
+# Subtest: Desktop acumula 60 e renova a pilha ao receber novos dados
+ok 60 - Desktop acumula 60 e renova a pilha ao receber novos dados
+  ---
+  duration_ms: 134.888227
+  type: 'test'
+  ...
+# Subtest: Mobile limita o acúmulo a 54 e mantém quedas após o limite
+ok 61 - Mobile limita o acúmulo a 54 e mantém quedas após o limite
+  ---
+  duration_ms: 1108.5206
+  type: 'test'
+  ...
+# Subtest: Rajadas respeitam limite simultâneo e fila finita sem bloquear a rolagem real
+ok 62 - Rajadas respeitam limite simultâneo e fila finita sem bloquear a rolagem real
+  ---
+  duration_ms: 438.965075
+  type: 'test'
+  ...
+# Subtest: Limpeza anima os dados visíveis, cancela a fila e não restaura rolagens antigas
+ok 63 - Limpeza anima os dados visíveis, cancela a fila e não restaura rolagens antigas
+  ---
+  duration_ms: 1.174284
+  type: 'test'
+  ...
+# Subtest: Mudar entre desktop/mobile e reduzir movimentos conserva limites e remove animações pendentes
+ok 64 - Mudar entre desktop/mobile e reduzir movimentos conserva limites e remove animações pendentes
+  ---
+  duration_ms: 65.68189
+  type: 'test'
+  ...
+# Subtest: A nova distribuição mobile preserva ângulos, opacidade e tempos das animações
+ok 65 - A nova distribuição mobile preserva ângulos, opacidade e tempos das animações
+  ---
+  duration_ms: 0.597979
+  type: 'test'
+  ...
+# Subtest: Transições da cena não modificam estados anteriores, nem enquanto consomem a fila
+ok 66 - Transições da cena não modificam estados anteriores, nem enquanto consomem a fila
+  ---
+  duration_ms: 5.108862
+  type: 'test'
+  ...
+# Subtest: JSON e Super PNG preservam símbolos, imagens, vazios, prioridades e método no pacote do sistema
+ok 67 - JSON e Super PNG preservam símbolos, imagens, vazios, prioridades e método no pacote do sistema
+  ---
+  duration_ms: 26.242134
+  type: 'test'
+  ...
+# Subtest: Ficha exportada carrega seu catálogo sem depender do sistema aberto e mantém opções da ação
+ok 68 - Ficha exportada carrega seu catálogo sem depender do sistema aberto e mantém opções da ação
+  ---
+  duration_ms: 5.350917
+  type: 'test'
+  ...
+# Subtest: Personagens, modelos e blocos duplicados conservam opções sem compartilhar conteúdo mutável
+ok 69 - Personagens, modelos e blocos duplicados conservam opções sem compartilhar conteúdo mutável
+  ---
+  duration_ms: 1.422046
+  type: 'test'
+  ...
+# Subtest: Fichas v11 anteriores migram para v13 sem mudar sua rolagem ou exigir novas opções
+ok 70 - Fichas v11 anteriores migram para v13 sem mudar sua rolagem ou exigir novas opções
+  ---
+  duration_ms: 0.497988
+  type: 'test'
+  ...
+# Subtest: Override inválido em campo ou ação é recusado antes de substituir uma ficha
+ok 71 - Override inválido em campo ou ação é recusado antes de substituir uma ficha
+  ---
+  duration_ms: 3.363802
+  type: 'test'
+  ...
+# Subtest: Imagens de símbolos e sua cópia no modelo respeitam a cota combinada de armazenamento
+ok 72 - Imagens de símbolos e sua cópia no modelo respeitam a cota combinada de armazenamento
+  ---
+  duration_ms: 351.351195
+  type: 'test'
+  ...
+# Subtest: Pacote v0.28 migra limites somente do modelo oficial para regras do sistema
+ok 73 - Pacote v0.28 migra limites somente do modelo oficial para regras do sistema
+  ---
+  duration_ms: 8.112645
+  type: 'test'
+  ...
+# Subtest: Override de personagem antigo é preservado no arquivo, sem poder alterar o máximo do sistema
+ok 74 - Override de personagem antigo é preservado no arquivo, sem poder alterar o máximo do sistema
+  ---
+  duration_ms: 4.765968
+  type: 'test'
+  ...
+# Subtest: Ações especiais de outro sistema não são aplicadas ao trocar o vínculo
+ok 75 - Ações especiais de outro sistema não são aplicadas ao trocar o vínculo
+  ---
+  duration_ms: 1.236407
+  type: 'test'
+  ...
+# Subtest: IDs de ações e políticas inválidas são recusados antes de importar
+ok 76 - IDs de ações e políticas inválidas são recusados antes de importar
+  ---
+  duration_ms: 1.615186
+  type: 'test'
+  ...
+# Subtest: Catálogos são individuais, extensíveis e clonados sem compartilhar dados entre sistemas
+ok 77 - Catálogos são individuais, extensíveis e clonados sem compartilhar dados entre sistemas
+  ---
+  duration_ms: 3.901179
+  type: 'test'
+  ...
+# Subtest: Todas as rolagens validam os tipos antes de gerar resultados, inclusive grupos e quantidades dependentes
+ok 78 - Todas as rolagens validam os tipos antes de gerar resultados, inclusive grupos e quantidades dependentes
+  ---
+  duration_ms: 2.733145
+  type: 'test'
+  ...
+# Subtest: Presets e inserção no cursor usam os dados disponíveis sem reescrever fórmulas existentes
+ok 79 - Presets e inserção no cursor usam os dados disponíveis sem reescrever fórmulas existentes
+  ---
+  duration_ms: 0.553892
+  type: 'test'
+  ...
+# Subtest: Fichas v9 levam o catálogo consigo e continuam rolando sem o conjunto aberto
+ok 80 - Fichas v9 levam o catálogo consigo e continuam rolando sem o conjunto aberto
+  ---
+  duration_ms: 1.986443
+  type: 'test'
+  ...
+# Subtest: O pacote .regras restaura o catálogo e religa o modelo ao novo ID sem compartilhar personagens
+ok 81 - O pacote .regras restaura o catálogo e religa o modelo ao novo ID sem compartilhar personagens
+  ---
+  duration_ms: 1.507774
+  type: 'test'
+  ...
+# Subtest: Sistemas e fichas antigos não exigem catálogo nem perdem fórmulas
+ok 82 - Sistemas e fichas antigos não exigem catálogo nem perdem fórmulas
+  ---
+  duration_ms: 0.35919
+  type: 'test'
+  ...
+# Subtest: Importações recusam catálogos inválidos e tipos futuros sem destruir o conteúdo anterior
+ok 83 - Importações recusam catálogos inválidos e tipos futuros sem destruir o conteúdo anterior
+  ---
+  duration_ms: 0.877178
+  type: 'test'
+  ...
+# Subtest: Uma imagem representa somente a face sorteada; índices, totais e símbolos existentes permanecem iguais
+ok 84 - Uma imagem representa somente a face sorteada; índices, totais e símbolos existentes permanecem iguais
+  ---
+  duration_ms: 4.623805
+  type: 'test'
+  ...
+# Subtest: Imagens viajam no sistema, modelo e personagem; importar mantém o vínculo sem compartilhar mudanças
+ok 85 - Imagens viajam no sistema, modelo e personagem; importar mantém o vínculo sem compartilhar mudanças
+  ---
+  duration_ms: 4.428151
+  type: 'test'
+  ...
+# Subtest: Imagens ativas, remotas, arquivos falsos e faces acima de 150 KB são recusados
+ok 86 - Imagens ativas, remotas, arquivos falsos e faces acima de 150 KB são recusados
+  ---
+  duration_ms: 1.808836
+  type: 'test'
+  ...
+# Subtest: A cota total de 20 MiB considera as imagens e a cópia de dados da ficha-modelo
+ok 87 - A cota total de 20 MiB considera as imagens e a cópia de dados da ficha-modelo
+  ---
+  duration_ms: 434.564866
+  type: 'test'
+  ...
+# Subtest: Catálogos anteriores com números, texto e emoji continuam compatíveis sem imagens obrigatórias
+ok 88 - Catálogos anteriores com números, texto e emoji continuam compatíveis sem imagens obrigatórias
+  ---
+  duration_ms: 0.570206
+  type: 'test'
+  ...
+# Subtest: As oito cores preservam exatamente a silhueta e o traço do favicon original
+ok 89 - As oito cores preservam exatamente a silhueta e o traço do favicon original
+  ---
+  duration_ms: 2.111722
+  type: 'test'
+  ...
+# Subtest: O bootstrap escolhe imediatamente a única URL correspondente à preferência salva
+ok 90 - O bootstrap escolhe imediatamente a única URL correspondente à preferência salva
+  ---
+  duration_ms: 14.48774
+  type: 'test'
+  ...
+# Subtest: Preferências ausentes, inválidas ou storage indisponível têm um favicon válido
+ok 91 - Preferências ausentes, inválidas ou storage indisponível têm um favicon válido
+  ---
+  duration_ms: 2.399124
+  type: 'test'
+  ...
+# Subtest: Antes da hidratação o bootstrap cria apenas o ícone da paleta salva, sem URL padrão intermediária
+ok 92 - Antes da hidratação o bootstrap cria apenas o ícone da paleta salva, sem URL padrão intermediária
+  ---
+  duration_ms: 1.162355
+  type: 'test'
+  ...
+# Subtest: Verificar a mesma conta por foco não descarta uma sessão que estava sendo salva
+ok 93 - Verificar a mesma conta por foco não descarta uma sessão que estava sendo salva
+  ---
+  duration_ms: 280.47275
+  type: 'test'
+  ...
+# Subtest: Uma resposta antiga da Agenda não entra na conta que foi trocada durante o salvamento
+ok 94 - Uma resposta antiga da Agenda não entra na conta que foi trocada durante o salvamento
+  ---
+  duration_ms: 155.222874
+  type: 'test'
+  ...
+# Subtest: A última ficha escolhida permanece aberta quando uma importação anterior termina atrasada
+ok 95 - A última ficha escolhida permanece aberta quando uma importação anterior termina atrasada
+  ---
+  duration_ms: 149.621146
+  type: 'test'
+  ...
+# Subtest: A última importação de regras prevalece e uma falha anterior não apaga seu resultado
+ok 96 - A última importação de regras prevalece e uma falha anterior não apaga seu resultado
+  ---
+  duration_ms: 92.757703
+  type: 'test'
+  ...
+# Subtest: Abrir uma ficha não depende da disponibilidade de ResizeObserver
+ok 97 - Abrir uma ficha não depende da disponibilidade de ResizeObserver
+  ---
+  duration_ms: 111.113719
+  type: 'test'
+  ...
+# Subtest: Dado principal gira a geometria, conserva o centro e retoma a orientação; sem quadros contínuos após estabilizar
+ok 98 - Dado principal gira a geometria, conserva o centro e retoma a orientação; sem quadros contínuos após estabilizar
+  ---
+  duration_ms: 1006.970587
+  type: 'test'
+  ...
+# Subtest: Toque, mobile, movimento reduzido e página oculta preservam a orientação estática
+ok 99 - Toque, mobile, movimento reduzido e página oculta preservam a orientação estática
+  ---
+  duration_ms: 313.496919
+  type: 'test'
+  ...
+# Subtest: 54 dados ocupam toda a faixa mobile em posições distintas, sem fileiras ou colunas fixas
+ok 100 - 54 dados ocupam toda a faixa mobile em posições distintas, sem fileiras ou colunas fixas
+  ---
+  duration_ms: 221.27938
+  type: 'test'
+  ...
+# Subtest: Os alvos em queda são reservados e novos lançamentos não movem os dados já acumulados
+ok 101 - Os alvos em queda são reservados e novos lançamentos não movem os dados já acumulados
+  ---
+  duration_ms: 34.146725
+  type: 'test'
+  ...
+# Subtest: Pilha mobile cheia recebe impacto, substitui o atingido e conserva os 54 dados
+ok 102 - Pilha mobile cheia recebe impacto, substitui o atingido e conserva os 54 dados
+  ---
+  duration_ms: 43.098656
+  type: 'test'
+  ...
+# Subtest: Limpar mantém a saída dos 54 dados e reserva seu espaço enquanto novos dados caem
+ok 103 - Limpar mantém a saída dos 54 dados e reserva seu espaço enquanto novos dados caem
+  ---
+  duration_ms: 60.349848
+  type: 'test'
+  ...
+# Subtest: Celular estreito, paisagem e teclado conservam 54 destinos dentro da faixa disponível
+ok 104 - Celular estreito, paisagem e teclado conservam 54 destinos dentro da faixa disponível
+  ---
+  duration_ms: 104.170979
+  type: 'test'
+  ...
+# Subtest: A ficha .ab10 preserva blocos, tipos, valores e ordem em um round-trip
+ok 105 - A ficha .ab10 preserva blocos, tipos, valores e ordem em um round-trip
+  ---
+  duration_ms: 8.546298
+  type: 'test'
+  ...
+# Subtest: Arquivos inválidos, formatos futuros e campos incompatíveis são recusados
+ok 106 - Arquivos inválidos, formatos futuros e campos incompatíveis são recusados
+  ---
+  duration_ms: 0.424518
+  type: 'test'
+  ...
+# Subtest: A árvore de regras valida subseções e recusa IDs duplicados
+ok 107 - A árvore de regras valida subseções e recusa IDs duplicados
+  ---
+  duration_ms: 0.249535
+  type: 'test'
+  ...
+# Subtest: PDFs rejeitam resposta inválida sem derrubar a plataforma
+ok 108 - PDFs rejeitam resposta inválida sem derrubar a plataforma
+  ---
+  duration_ms: 235.060571
+  type: 'test'
+  ...
+# Subtest: Agenda rejeita lista inválida e oferece nova tentativa sem quebrar as outras páginas
+ok 109 - Agenda rejeita lista inválida e oferece nova tentativa sem quebrar as outras páginas
+  ---
+  duration_ms: 170.218011
+  type: 'test'
+  ...
+# Subtest: Pedido de autenticação sem resposta libera a interface e permite verificar novamente
+ok 110 - Pedido de autenticação sem resposta libera a interface e permite verificar novamente
+  ---
+  duration_ms: 105.392727
+  type: 'test'
+  ...
+# Subtest: Focos repetidos compartilham a consulta de autenticação que já está em andamento
+ok 111 - Focos repetidos compartilham a consulta de autenticação que já está em andamento
+  ---
+  duration_ms: 66.076292
+  type: 'test'
+  ...
+# Subtest: Uma consulta antiga da agenda não remove a sessão criada enquanto ela estava em andamento
+ok 112 - Uma consulta antiga da agenda não remove a sessão criada enquanto ela estava em andamento
+  ---
+  duration_ms: 127.231341
+  type: 'test'
+  ...
+# Subtest: PDF local continua acessível quando o catálogo remoto está indisponível
+ok 113 - PDF local continua acessível quando o catálogo remoto está indisponível
+  ---
+  duration_ms: 124.1123
+  type: 'test'
+  ...
+# Subtest: Resposta inicial atrasada não descarta PDF enviado durante o carregamento
+ok 114 - Resposta inicial atrasada não descarta PDF enviado durante o carregamento
+  ---
+  duration_ms: 76.499818
+  type: 'test'
+  ...
+# Subtest: Falha de uma transação não faz o salvamento seguinte omitir o conteúdo dos sistemas
+ok 115 - Falha de uma transação não faz o salvamento seguinte omitir o conteúdo dos sistemas
+  ---
+  duration_ms: 12.133325
+  type: 'test'
+  ...
+# Subtest: Falha síncrona de escrita vira rejeição tratável e permite tentar salvar novamente
+ok 116 - Falha síncrona de escrita vira rejeição tratável e permite tentar salvar novamente
+  ---
+  duration_ms: 2.826095
+  type: 'test'
+  ...
+# Subtest: Abertura sem resposta termina com erro e fecha uma conexão que chegar atrasada
+ok 117 - Abertura sem resposta termina com erro e fecha uma conexão que chegar atrasada
+  ---
+  duration_ms: 17.172309
+  type: 'test'
+  ...
+# Subtest: Leitura sem resposta encerra a espera e não altera a cópia já armazenada
+ok 118 - Leitura sem resposta encerra a espera e não altera a cópia já armazenada
+  ---
+  duration_ms: 20.646442
+  type: 'test'
+  ...
+# Subtest: Fechar e reabrir logo após duas gravações conserva o último estado aceito
+ok 119 - Fechar e reabrir logo após duas gravações conserva o último estado aceito
+  ---
+  duration_ms: 2.957016
+  type: 'test'
+  ...
+# Subtest: Remover e recolocar um sistema em gravações sobrepostas não deixa referências sem conteúdo
+ok 120 - Remover e recolocar um sistema em gravações sobrepostas não deixa referências sem conteúdo
+  ---
+  duration_ms: 3.240528
+  type: 'test'
+  ...
+# Subtest: Contexto é independente da página e só termina com saída ou sistema ausente
+ok 121 - Contexto é independente da página e só termina com saída ou sistema ausente
+  ---
+  duration_ms: 4.641912
+  type: 'test'
+  ...
+# Subtest: Restaurar cache conserva IDs, links, personalização, GIF original e vínculos sem mudar o modelo
+ok 122 - Restaurar cache conserva IDs, links, personalização, GIF original e vínculos sem mudar o modelo
+  ---
+  duration_ms: 5.47258
+  type: 'test'
+  ...
+# Subtest: AB10 é reconstituído do catálogo; cache inválido, duplicado, futuro e contexto inexistente falham com segurança
+ok 123 - AB10 é reconstituído do catálogo; cache inválido, duplicado, futuro e contexto inexistente falham com segurança
+  ---
+  duration_ms: 0.584919
+  type: 'test'
+  ...
+# Subtest: Retornar ao global preserva biblioteca e não altera objetos de conta ou personagens
+ok 124 - Retornar ao global preserva biblioteca e não altera objetos de conta ou personagens
+  ---
+  duration_ms: 0.307622
+  type: 'test'
+  ...
+# Subtest: Home global tem criação primeiro, acesso a todos e escolha explícita de sistemas sem esconder os demais
+ok 125 - Home global tem criação primeiro, acesso a todos e escolha explícita de sistemas sem esconder os demais
+  ---
+  duration_ms: 423.562026
+  type: 'test'
+  ...
+# Subtest: A fileira de fichas abre sua biblioteca completa e não filtra nem reescreve vínculos
+ok 126 - A fileira de fichas abre sua biblioteca completa e não filtra nem reescreve vínculos
+  ---
+  duration_ms: 144.67337
+  type: 'test'
+  ...
+# Subtest: Falhar na leitura inicial não apaga o cache já existente
+ok 127 - Falhar na leitura inicial não apaga o cache já existente
+  ---
+  duration_ms: 167.664743
+  type: 'test'
+  ...
+# Subtest: Leitura inicial sem resposta libera a interface sem sobrescrever o cache
+ok 128 - Leitura inicial sem resposta libera a interface sem sobrescrever o cache
+  ---
+  duration_ms: 100.497172
+  type: 'test'
+  ...
+# Subtest: Cache real da aplicação, com IndexedDB simulado, restaura tema e contexto ao remontar nas cinco páginas
+ok 129 - Cache real da aplicação, com IndexedDB simulado, restaura tema e contexto ao remontar nas cinco páginas
+  ---
+  duration_ms: 360.189147
+  type: 'test'
+  ...
+# Subtest: Perfil usa identidade global temporariamente; fechar restaura contexto e voltar pela logo não chama logout
+ok 130 - Perfil usa identidade global temporariamente; fechar restaura contexto e voltar pela logo não chama logout
+  ---
+  duration_ms: 144.053269
+  type: 'test'
+  ...
+# Subtest: Movimento reduzido e navegação direta móvel preservam o contexto, sem emular layout
+ok 131 - Movimento reduzido e navegação direta móvel preservam o contexto, sem emular layout
+  ---
+  duration_ms: 98.584461
+  type: 'test'
+  ...
+# Subtest: Armazenamento bloqueado não prende a interface: global e aviso seguro continuam acessíveis
+ok 132 - Armazenamento bloqueado não prende a interface: global e aviso seguro continuam acessíveis
+  ---
+  duration_ms: 55.059513
+  type: 'test'
+  ...
+# Subtest: Cabeçalho único mantém nome, separador e destinos nos modos desktop e móvel, incluindo troca e saída
+ok 133 - Cabeçalho único mantém nome, separador e destinos nos modos desktop e móvel, incluindo troca e saída
+  ---
+  duration_ms: 297.403862
+  type: 'test'
+  ...
+# Subtest: Cabeçalho reutiliza áreas compactas e completas sem converter ou perder os temas salvos
+ok 134 - Cabeçalho reutiliza áreas compactas e completas sem converter ou perder os temas salvos
+  ---
+  duration_ms: 134.700648
+  type: 'test'
+  ...
+# Subtest: Logo do sistema substitui visualmente o nome e uma falha da imagem recupera o nome sem alterar dados
+ok 135 - Logo do sistema substitui visualmente o nome e uma falha da imagem recupera o nome sem alterar dados
+  ---
+  duration_ms: 161.328069
+  type: 'test'
+  ...
+# Subtest: Roll and Keep numérico permite selecionar e desmarcar sem nova rolagem
+ok 136 - Roll and Keep numérico permite selecionar e desmarcar sem nova rolagem
+  ---
+  duration_ms: 4.752057
+  type: 'test'
+  ...
+# Subtest: Quantidade máxima e IDs da seleção são validados sem perder os dados originais
+ok 137 - Quantidade máxima e IDs da seleção são validados sem perder os dados originais
+  ---
+  duration_ms: 0.838449
+  type: 'test'
+  ...
+# Subtest: Dados descartados nunca entram na contagem de símbolos
+ok 138 - Dados descartados nunca entram na contagem de símbolos
+  ---
+  duration_ms: 1.522366
+  type: 'test'
+  ...
+# Subtest: ABBC + AA mantidos resultam em 3 sucessos, 2 adaptações e 1 pressão
+ok 139 - ABBC + AA mantidos resultam em 3 sucessos, 2 adaptações e 1 pressão
+  ---
+  duration_ms: 0.549255
+  type: 'test'
+  ...
+# Subtest: Uma face vazia pode ser mantida sem gerar número ou categoria
+ok 140 - Uma face vazia pode ser mantida sem gerar número ou categoria
+  ---
+  duration_ms: 0.447032
+  type: 'test'
+  ...
+# Subtest: Prioridade ordena maior/menor, empates são estáveis e dados sem prioridade não usam o índice
+ok 141 - Prioridade ordena maior/menor, empates são estáveis e dados sem prioridade não usam o índice
+  ---
+  duration_ms: 0.724858
+  type: 'test'
+  ...
+# Subtest: Prioridade nunca seleciona nem pontua, mesmo com flags automáticas antigas
+ok 142 - Prioridade nunca seleciona nem pontua, mesmo com flags automáticas antigas
+  ---
+  duration_ms: 0.433611
+  type: 'test'
+  ...
+# Subtest: Ordenar mantém a identidade dos selecionados e a contagem, nunca a posição da interface
+ok 143 - Ordenar mantém a identidade dos selecionados e a contagem, nunca a posição da interface
+  ---
+  duration_ms: 0.493581
+  type: 'test'
+  ...
+# Subtest: Sem prioridades, qualquer ordem conserva a sequência e a seleção manual
+ok 144 - Sem prioridades, qualquer ordem conserva a sequência e a seleção manual
+  ---
+  duration_ms: 0.623326
+  type: 'test'
+  ...
+# Subtest: Sobrescritas livres de ficha são ignoradas e somente ações registradas no sistema podem ter outro limite
+ok 145 - Sobrescritas livres de ficha são ignoradas e somente ações registradas no sistema podem ter outro limite
+  ---
+  duration_ms: 0.534252
+  type: 'test'
+  ...
+# Subtest: Prioridades, símbolos e imagens ficam preservados no retrato da rolagem ao editar o sistema
+ok 146 - Prioridades, símbolos e imagens ficam preservados no retrato da rolagem ao editar o sistema
+  ---
+  duration_ms: 0.446791
+  type: 'test'
+  ...
+# Subtest: Expressões numéricas mantêm multiplicadores, variáveis e quantidades calculadas
+ok 147 - Expressões numéricas mantêm multiplicadores, variáveis e quantidades calculadas
+  ---
+  duration_ms: 0.305399
+  type: 'test'
+  ...
+# Subtest: Dados que determinam uma quantidade continuam íntegros e não consomem o limite de seleção
+ok 148 - Dados que determinam uma quantidade continuam íntegros e não consomem o limite de seleção
+  ---
+  duration_ms: 0.404318
+  type: 'test'
+  ...
+# Subtest: Erro aritmético de uma seleção pode ser resolvido sem perder ou rolar os dados novamente
+ok 149 - Erro aritmético de uma seleção pode ser resolvido sem perder ou rolar os dados novamente
+  ---
+  duration_ms: 1.353383
+  type: 'test'
+  ...
+# Subtest: Flags v4 manuais/automáticas migram para seleção sempre manual
+ok 150 - Flags v4 manuais/automáticas migram para seleção sempre manual
+  ---
+  duration_ms: 0.295544
+  type: 'test'
+  ...
+# Subtest: Máximo quatro aceita de zero até quatro, rejeita o quinto e não substitui escolhas
+ok 151 - Máximo quatro aceita de zero até quatro, rejeita o quinto e não substitui escolhas
+  ---
+  duration_ms: 0.335234
+  type: 'test'
+  ...
+# Subtest: Indicador conserva o máximo do sistema mesmo com reserva menor
+ok 152 - Indicador conserva o máximo do sistema mesmo com reserva menor
+  ---
+  duration_ms: 0.120781
+  type: 'test'
+  ...
+# Subtest: Desativar Roll and Keep usa todos os dados e ignora ações especiais e overrides legados
+ok 153 - Desativar Roll and Keep usa todos os dados e ignora ações especiais e overrides legados
+  ---
+  duration_ms: 0.395685
+  type: 'test'
+  ...
+# Subtest: \#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+ok 154 - \#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+  ---
+  duration_ms: 11.629656
+  type: 'test'
+  ...
+# Subtest: \#\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+ok 155 - \#\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+  ---
+  duration_ms: 1.885171
+  type: 'test'
+  ...
+# Subtest: \#\#\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+ok 156 - \#\#\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+  ---
+  duration_ms: 2.047916
+  type: 'test'
+  ...
+# Subtest: \#\#\#\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+ok 157 - \#\#\#\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+  ---
+  duration_ms: 1.71782
+  type: 'test'
+  ...
+# Subtest: -\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+ok 158 - -\#: só o espaço ativa, o cursor continua no texto e Enter cria parágrafo normal
+  ---
+  duration_ms: 1.415115
+  type: 'test'
+  ...
+# Subtest: Marcadores no meio da frase, com espaço antes, sem espaço final ou fora dos quatro níveis ficam literais
+ok 159 - Marcadores no meio da frase, com espaço antes, sem espaço final ou fora dos quatro níveis ficam literais
+  ---
+  duration_ms: 2.59025
+  type: 'test'
+  ...
+# Subtest: Enter no meio ou sobre uma seleção preserva as duas metades e as marcas inline
+ok 160 - Enter no meio ou sobre uma seleção preserva as duas metades e as marcas inline
+  ---
+  duration_ms: 7.396759
+  type: 'test'
+  ...
+# Subtest: Enter num bloco vazio remove o estilo; no início preserva o conteúdo e a âncora do título
+ok 161 - Enter num bloco vazio remove o estilo; no início preserva o conteúdo e a âncora do título
+  ---
+  duration_ms: 4.650244
+  type: 'test'
+  ...
+# Subtest: Live Preview acompanha o caret e não grava, seleciona ou duplica os marcadores
+ok 162 - Live Preview acompanha o caret e não grava, seleciona ou duplica os marcadores
+  ---
+  duration_ms: 5.570596
+  type: 'test'
+  ...
+# Subtest: Backspace no começo revela sintaxe editável e permite trocar o marcador sem perder o texto
+ok 163 - Backspace no começo revela sintaxe editável e permite trocar o marcador sem perder o texto
+  ---
+  duration_ms: 4.449843
+  type: 'test'
+  ...
+# Subtest: Controles visuais e atalhos produzem o mesmo estilo; trocar níveis mantém links e âncoras
+ok 164 - Controles visuais e atalhos produzem o mesmo estilo; trocar níveis mantém links e âncoras
+  ---
+  duration_ms: 3.71512
+  type: 'test'
+  ...
+# Subtest: Texto pequeno em listas continua parágrafo, nunca vira lista pelo prefixo -\#
+ok 165 - Texto pequeno em listas continua parágrafo, nunca vira lista pelo prefixo -\#
+  ---
+  duration_ms: 0.687293
+  type: 'test'
+  ...
+# Subtest: Uma seleção começa no fim do bloco anterior ou termina no início do seguinte sem formatar os vizinhos
+ok 166 - Uma seleção começa no fim do bloco anterior ou termina no início do seguinte sem formatar os vizinhos
+  ---
+  duration_ms: 0.528073
+  type: 'test'
+  ...
+# Subtest: Desfazer/refazer recupera sintaxe literal, formato e divisões sem corromper conteúdo
+ok 167 - Desfazer/refazer recupera sintaxe literal, formato e divisões sem corromper conteúdo
+  ---
+  duration_ms: 4.665677
+  type: 'test'
+  ...
+# Subtest: Composição de teclado virtual fica nativa; a conversão ocorre ao finalizar sem caractere duplicado
+ok 168 - Composição de teclado virtual fica nativa; a conversão ocorre ao finalizar sem caractere duplicado
+  ---
+  duration_ms: 33.976679
+  type: 'test'
+  ...
+# Subtest: JSON e Super PNG reabrem H1, texto pequeno e marcas sem incluir notas no índice
+ok 169 - JSON e Super PNG reabrem H1, texto pequeno e marcas sem incluir notas no índice
+  ---
+  duration_ms: 24.544883
+  type: 'test'
+  ...
+# Subtest: Documentos antigos são literais; capítulo longo mantém texto e seleção ao trocar um único bloco
+ok 170 - Documentos antigos são literais; capítulo longo mantém texto e seleção ao trocar um único bloco
+  ---
+  duration_ms: 3.579325
+  type: 'test'
+  ...
+# Subtest: bold: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 171 - bold: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 6.63245
+  type: 'test'
+  ...
+# Subtest: italic: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 172 - italic: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 0.797818
+  type: 'test'
+  ...
+# Subtest: underline: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 173 - underline: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 0.588424
+  type: 'test'
+  ...
+# Subtest: strike: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 174 - strike: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 0.423456
+  type: 'test'
+  ...
+# Subtest: highlight: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 175 - highlight: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 0.63885
+  type: 'test'
+  ...
+# Subtest: code: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 176 - code: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 2.507285
+  type: 'test'
+  ...
+# Subtest: ruleLink:external: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 177 - ruleLink:external: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 0.494192
+  type: 'test'
+  ...
+# Subtest: ruleLink:internal: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+ok 178 - ruleLink:internal: fronteiras visíveis, espaço fora da marca e retorno ao trecho sem mover a seleção
+  ---
+  duration_ms: 0.298368
+  type: 'test'
+  ...
+# Subtest: Os dois limites revelam também código e links não inclusivos; um espaço de distância já fica fora
+ok 179 - Os dois limites revelam também código e links não inclusivos; um espaço de distância já fica fora
+  ---
+  duration_ms: 3.866899
+  type: 'test'
+  ...
+# Subtest: Entrada de texto e espaço não separável usam a mesma saída sem reconstruir o documento
+ok 180 - Entrada de texto e espaço não separável usam a mesma saída sem reconstruir o documento
+  ---
+  duration_ms: 1.986773
+  type: 'test'
+  ...
+# Subtest: A fronteira insere o espaço sem marca mesmo quando as marcas de digitação já estão vazias
+ok 181 - A fronteira insere o espaço sem marca mesmo quando as marcas de digitação já estão vazias
+  ---
+  duration_ms: 0.799591
+  type: 'test'
+  ...
+# Subtest: Espaços no interior do trecho continuam formatados e não acionam a saída pela fronteira
+ok 182 - Espaços no interior do trecho continuam formatados e não acionam a saída pela fronteira
+  ---
+  duration_ms: 0.955535
+  type: 'test'
+  ...
+# Subtest: Ao terminar uma marca aninhada, a formatação externa que continua depois permanece intacta
+ok 183 - Ao terminar uma marca aninhada, a formatação externa que continua depois permanece intacta
+  ---
+  duration_ms: 0.485339
+  type: 'test'
+  ...
+# Subtest: Links adjacentes mantêm destinos distintos e revelam os dois lados da fronteira
+ok 184 - Links adjacentes mantêm destinos distintos e revelam os dois lados da fronteira
+  ---
+  duration_ms: 0.329215
+  type: 'test'
+  ...
+# Subtest: Seleções de texto e marcas ativadas para começar um trecho novo conservam os comandos existentes
+ok 185 - Seleções de texto e marcas ativadas para começar um trecho novo conservam os comandos existentes
+  ---
+  duration_ms: 0.395334
+  type: 'test'
+  ...
+# Subtest: Atalhos de composição e IME não são interceptados ou reposicionados
+ok 186 - Atalhos de composição e IME não são interceptados ou reposicionados
+  ---
+  duration_ms: 0.183425
+  type: 'test'
+  ...
+# Subtest: Decorações respeitam os dois lados nativos do caret, não herdam marcas e não alteram o texto
+ok 187 - Decorações respeitam os dois lados nativos do caret, não herdam marcas e não alteram o texto
+  ---
+  duration_ms: 1.353563
+  type: 'test'
+  ...
+# Subtest: Desfazer e refazer mantêm a separação entre texto formatado e continuação normal
+ok 188 - Desfazer e refazer mantêm a separação entre texto formatado e continuação normal
+  ---
+  duration_ms: 1.097678
+  type: 'test'
+  ...
+# Subtest: Escrita: acentos, aspas, escapes, símbolos e emojis atravessam inserção, substituição e exclusão
+ok 189 - Escrita: acentos, aspas, escapes, símbolos e emojis atravessam inserção, substituição e exclusão
+  ---
+  duration_ms: 57.52829
+  type: 'test'
+  ...
+# Subtest: Enter no início/meio/fim, linhas vazias consecutivas e Shift+Enter não perdem texto
+ok 190 - Enter no início/meio/fim, linhas vazias consecutivas e Shift+Enter não perdem texto
+  ---
+  duration_ms: 45.33002
+  type: 'test'
+  ...
+# Subtest: DOM/teclado: \#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+ok 191 - DOM/teclado: \#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+  ---
+  duration_ms: 22.379161
+  type: 'test'
+  ...
+# Subtest: DOM/teclado: \#\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+ok 192 - DOM/teclado: \#\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+  ---
+  duration_ms: 17.134273
+  type: 'test'
+  ...
+# Subtest: DOM/teclado: \#\#\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+ok 193 - DOM/teclado: \#\#\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+  ---
+  duration_ms: 14.204818
+  type: 'test'
+  ...
+# Subtest: DOM/teclado: \#\#\#\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+ok 194 - DOM/teclado: \#\#\#\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+  ---
+  duration_ms: 10.711918
+  type: 'test'
+  ...
+# Subtest: DOM/teclado: -\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+ok 195 - DOM/teclado: -\#, Enter, marcador editável, Ctrl+Z e Ctrl+Y
+  ---
+  duration_ms: 10.855925
+  type: 'test'
+  ...
+# Subtest: Listas: Enter cria item, Enter vazio sai e Backspace entre parágrafos une o conteúdo
+ok 196 - Listas: Enter cria item, Enter vazio sai e Backspace entre parágrafos une o conteúdo
+  ---
+  duration_ms: 26.635668
+  type: 'test'
+  ...
+# Subtest: Texto pequeno dentro de lista retorna ao tamanho normal no próximo item
+ok 197 - Texto pequeno dentro de lista retorna ao tamanho normal no próximo item
+  ---
+  duration_ms: 10.23077
+  type: 'test'
+  ...
+# Subtest: Formatação bold: trecho parcial, remoção e histórico isolados
+ok 198 - Formatação bold: trecho parcial, remoção e histórico isolados
+  ---
+  duration_ms: 7.035657
+  type: 'test'
+  ...
+# Subtest: Formatação italic: trecho parcial, remoção e histórico isolados
+ok 199 - Formatação italic: trecho parcial, remoção e histórico isolados
+  ---
+  duration_ms: 3.581349
+  type: 'test'
+  ...
+# Subtest: Formatação underline: trecho parcial, remoção e histórico isolados
+ok 200 - Formatação underline: trecho parcial, remoção e histórico isolados
+  ---
+  duration_ms: 3.919908
+  type: 'test'
+  ...
+# Subtest: Formatação strike: trecho parcial, remoção e histórico isolados
+ok 201 - Formatação strike: trecho parcial, remoção e histórico isolados
+  ---
+  duration_ms: 5.256354
+  type: 'test'
+  ...
+# Subtest: Formatação highlight: trecho parcial, remoção e histórico isolados
+ok 202 - Formatação highlight: trecho parcial, remoção e histórico isolados
+  ---
+  duration_ms: 5.564688
+  type: 'test'
+  ...
+# Subtest: Formatação code: trecho parcial, remoção e histórico isolados
+ok 203 - Formatação code: trecho parcial, remoção e histórico isolados
+  ---
+  duration_ms: 5.213109
+  type: 'test'
+  ...
+# Subtest: Combinar marcas dentro do cabeçalho não altera a âncora nem formata os parágrafos vizinhos
+ok 204 - Combinar marcas dentro do cabeçalho não altera a âncora nem formata os parágrafos vizinhos
+  ---
+  duration_ms: 9.909312
+  type: 'test'
+  ...
+# Subtest: Live Preview: 200 mudanças de caret/seleção não gravam sintaxe, mudam foco ou criam histórico
+ok 205 - Live Preview: 200 mudanças de caret/seleção não gravam sintaxe, mudam foco ou criam histórico
+  ---
+  duration_ms: 101.749836
+  type: 'test'
+  ...
+# Subtest: Colagem simples mantém múltiplas linhas, símbolos e Markdown incompleto sem interpretar HTML
+ok 206 - Colagem simples mantém múltiplas linhas, símbolos e Markdown incompleto sem interpretar HTML
+  ---
+  duration_ms: 14.261609
+  type: 'test'
+  ...
+# Subtest: Copiar/colar entre capítulos preserva marcas, tamanho pequeno e renova âncora duplicada
+ok 207 - Copiar/colar entre capítulos preserva marcas, tamanho pequeno e renova âncora duplicada
+  ---
+  duration_ms: 22.812381
+  type: 'test'
+  ...
+# Subtest: Colagem de HTML ativo, protocolos perigosos e atributos de evento degrada com segurança
+ok 208 - Colagem de HTML ativo, protocolos perigosos e atributos de evento degrada com segurança
+  ---
+  duration_ms: 18.971097
+  type: 'test'
+  ...
+# Subtest: Links externos/internos: criar, alterar, remover e desfazer mantêm os destinos
+ok 209 - Links externos/internos: criar, alterar, remover e desfazer mantêm os destinos
+  ---
+  duration_ms: 15.425077
+  type: 'test'
+  ...
+# Subtest: Colagem de Google Docs: wrapper b normal não deixa todo o conteúdo em negrito
+ok 210 - Colagem de Google Docs: wrapper b normal não deixa todo o conteúdo em negrito
+  ---
+  duration_ms: 13.19368
+  type: 'test'
+  ...
+# Subtest: Colagem de spans web preserva somente os estilos inline suportados
+ok 211 - Colagem de spans web preserva somente os estilos inline suportados
+  ---
+  duration_ms: 19.972486
+  type: 'test'
+  ...
+# Subtest: Colagem de cabeçalho com âncora inválida torna-se um documento válido imediatamente
+ok 212 - Colagem de cabeçalho com âncora inválida torna-se um documento válido imediatamente
+  ---
+  duration_ms: 8.345393
+  type: 'test'
+  ...
+# Subtest: Tabelas não suportadas degradam em parágrafos sem juntar as palavras das células
+ok 213 - Tabelas não suportadas degradam em parágrafos sem juntar as palavras das células
+  ---
+  duration_ms: 13.364191
+  type: 'test'
+  ...
+# Subtest: Colagem e recorte formam operações completas no histórico
+ok 214 - Colagem e recorte formam operações completas no histórico
+  ---
+  duration_ms: 9.123321
+  type: 'test'
+  ...
+# Subtest: Citação e bloco de código alternam sem remover texto ou modificar vizinhos
+ok 215 - Citação e bloco de código alternam sem remover texto ou modificar vizinhos
+  ---
+  duration_ms: 11.313877
+  type: 'test'
+  ...
+# Subtest: URL externa codificada e texto escapado continuam inertes
+ok 216 - URL externa codificada e texto escapado continuam inertes
+  ---
+  duration_ms: 1.783488
+  type: 'test'
+  ...
+# Subtest: Textos antigos conservam literalmente linhas, símbolos, espaços e texto semelhante a HTML
+ok 217 - Textos antigos conservam literalmente linhas, símbolos, espaços e texto semelhante a HTML
+  ---
+  duration_ms: 3.107271
+  type: 'test'
+  ...
+# Subtest: O esquema do editor aceita todas as formatações e seus atributos padrão são portáveis
+ok 218 - O esquema do editor aceita todas as formatações e seus atributos padrão são portáveis
+  ---
+  duration_ms: 1.318994
+  type: 'test'
+  ...
+# Subtest: Salvar/carregar preserva a formatação, remapeia links entre tópicos e mantém âncoras
+ok 219 - Salvar/carregar preserva a formatação, remapeia links entre tópicos e mantém âncoras
+  ---
+  duration_ms: 2.689246
+  type: 'test'
+  ...
+# Subtest: Links internos para o próprio tópico e referências removidas continuam distintos
+ok 220 - Links internos para o próprio tópico e referências removidas continuam distintos
+  ---
+  duration_ms: 0.727218
+  type: 'test'
+  ...
+# Subtest: Busca de destinos inclui os tópicos da árvore e as subseções do conteúdo, sem outro sistema
+ok 221 - Busca de destinos inclui os tópicos da árvore e as subseções do conteúdo, sem outro sistema
+  ---
+  duration_ms: 1.011655
+  type: 'test'
+  ...
+# Subtest: Editar o nome de uma subseção conserva o identificador de destino
+ok 222 - Editar o nome de uma subseção conserva o identificador de destino
+  ---
+  duration_ms: 0.276784
+  type: 'test'
+  ...
+# Subtest: Cancelar pode descartar uma cópia de edição sem modificar o tópico original
+ok 223 - Cancelar pode descartar uma cópia de edição sem modificar o tópico original
+  ---
+  duration_ms: 0.431786
+  type: 'test'
+  ...
+# Subtest: O AB10 fixo não ganha permissões de edição pelo novo documento
+ok 224 - O AB10 fixo não ganha permissões de edição pelo novo documento
+  ---
+  duration_ms: 0.399849
+  type: 'test'
+  ...
+# Subtest: Conteúdo rico recusa HTML ativo, atributos arbitrários, protocolos perigosos e estrutura inválida
+ok 225 - Conteúdo rico recusa HTML ativo, atributos arbitrários, protocolos perigosos e estrutura inválida
+  ---
+  duration_ms: 1.972142
+  type: 'test'
+  ...
+# Subtest: Links externos aceitam apenas endereços explícitos e links internos não recebem URLs
+ok 226 - Links externos aceitam apenas endereços explícitos e links internos não recebem URLs
+  ---
+  duration_ms: 0.538126
+  type: 'test'
+  ...
+# Subtest: O limite de tamanho também considera a estrutura de formatação, não só o texto
+ok 227 - O limite de tamanho também considera a estrutura de formatação, não só o texto
+  ---
+  duration_ms: 10.793827
+  type: 'test'
+  ...
+# Subtest: Marcadores dependem do cursor real, aparecem apenas no trecho ativo e somem em outro parágrafo
+ok 228 - Marcadores dependem do cursor real, aparecem apenas no trecho ativo e somem em outro parágrafo
+  ---
+  duration_ms: 1.395499
+  type: 'test'
+  ...
+# Subtest: Marcas sobrepostas e blocos ativos mostram suas próprias pistas sem transformar o documento
+ok 229 - Marcas sobrepostas e blocos ativos mostram suas próprias pistas sem transformar o documento
+  ---
+  duration_ms: 1.385324
+  type: 'test'
+  ...
+# Subtest: Cabeçalhos novos ganham âncoras únicas; editar texto e colar um identificador duplicado não quebra o original
+ok 230 - Cabeçalhos novos ganham âncoras únicas; editar texto e colar um identificador duplicado não quebra o original
+  ---
+  duration_ms: 2.407954
+  type: 'test'
+  ...
+# Subtest: A barra se ancora à borda visível quando o teclado reduz apenas o viewport visual
+ok 231 - A barra se ancora à borda visível quando o teclado reduz apenas o viewport visual
+  ---
+  duration_ms: 1.548237
+  type: 'test'
+  ...
+# Subtest: Rolagem visual do teclado, orientação e redimensionamento do layout mantêm a barra na área visível
+ok 232 - Rolagem visual do teclado, orientação e redimensionamento do layout mantêm a barra na área visível
+  ---
+  duration_ms: 0.169013
+  type: 'test'
+  ...
+# Subtest: Teclado sobreposto usa sua geometria sem mudar overlaysContent ou forçar abertura/fechamento
+ok 233 - Teclado sobreposto usa sua geometria sem mudar overlaysContent ou forçar abertura/fechamento
+  ---
+  duration_ms: 0.130786
+  type: 'test'
+  ...
+# Subtest: Fechar teclado restaura a posição e zoom não é confundido com teclado aberto
+ok 234 - Fechar teclado restaura a posição e zoom não é confundido com teclado aberto
+  ---
+  duration_ms: 0.124947
+  type: 'test'
+  ...
+# Subtest: Sem VisualViewport há fallback e dimensões transitórias não escapam do layout
+ok 235 - Sem VisualViewport há fallback e dimensões transitórias não escapam do layout
+  ---
+  duration_ms: 0.263605
+  type: 'test'
+  ...
+# Subtest: Toque e caneta preservam o menu nativo; mouse continua com o menu desktop, inclusive em janela estreita
+ok 236 - Toque e caneta preservam o menu nativo; mouse continua com o menu desktop, inclusive em janela estreita
+  ---
+  duration_ms: 0.163134
+  type: 'test'
+  ...
+# Subtest: A versão exibida vem exclusivamente de package.json e não do contador da hospedagem
+ok 237 - A versão exibida vem exclusivamente de package.json e não do contador da hospedagem
+  ---
+  duration_ms: 0.384916
+  type: 'test'
+  ...
+# Subtest: Publicações de teste incrementam a sequência 0.x sem nunca passar automaticamente para 1.0
+ok 238 - Publicações de teste incrementam a sequência 0.x sem nunca passar automaticamente para 1.0
+  ---
+  duration_ms: 1.121279
+  type: 'test'
+  ...
+# Subtest: Logo opcional acompanha o conjunto inteiro no arquivo, sem substituir nome ou regras
+ok 239 - Logo opcional acompanha o conjunto inteiro no arquivo, sem substituir nome ou regras
+  ---
+  duration_ms: 3.256044
+  type: 'test'
+  ...
+# Subtest: Conjuntos antigos v1 carregam sem logo e o nome completo é preservado
+ok 240 - Conjuntos antigos v1 carregam sem logo e o nome completo é preservado
+  ---
+  duration_ms: 0.506018
+  type: 'test'
+  ...
+# Subtest: Trocar e remover logo mantém o restante do sistema e não altera o AB10 fixo
+ok 241 - Trocar e remover logo mantém o restante do sistema e não altera o AB10 fixo
+  ---
+  duration_ms: 0.812787
+  type: 'test'
+  ...
+# Subtest: Importar logo com identidade AB10 ainda cria um sistema independente
+ok 242 - Importar logo com identidade AB10 ainda cria um sistema independente
+  ---
+  duration_ms: 0.482191
+  type: 'test'
+  ...
+# Subtest: Logos externas, SVG, MIME falso, base64 inválido e tamanho excessivo são recusados
+ok 243 - Logos externas, SVG, MIME falso, base64 inválido e tamanho excessivo são recusados
+  ---
+  duration_ms: 3.810554
+  type: 'test'
+  ...
+# Subtest: O modelo é opcional e arquivos antigos continuam sem um vínculo obrigatório
+ok 244 - O modelo é opcional e arquivos antigos continuam sem um vínculo obrigatório
+  ---
+  duration_ms: 3.346489
+  type: 'test'
+  ...
+# Subtest: Modelos de fichas anteriores migram pelo mesmo importador, inclusive dentro do pacote
+ok 245 - Modelos de fichas anteriores migram pelo mesmo importador, inclusive dentro do pacote
+  ---
+  duration_ms: 7.13471
+  type: 'test'
+  ...
+# Subtest: Vincular uma ficha copia toda a estrutura e isola modelo e ficha de origem
+ok 246 - Vincular uma ficha copia toda a estrutura e isola modelo e ficha de origem
+  ---
+  duration_ms: 2.707874
+  type: 'test'
+  ...
+# Subtest: Personagens recebem IDs e dados independentes entre si e em relação ao modelo
+ok 247 - Personagens recebem IDs e dados independentes entre si e em relação ao modelo
+  ---
+  duration_ms: 0.905906
+  type: 'test'
+  ...
+# Subtest: Salvar um rascunho de modelo só altera o conjunto e não personagens já criados
+ok 248 - Salvar um rascunho de modelo só altera o conjunto e não personagens já criados
+  ---
+  duration_ms: 0.767208
+  type: 'test'
+  ...
+# Subtest: O pacote .regras carrega tópicos ricos, links e a ficha completa num único arquivo
+ok 249 - O pacote .regras carrega tópicos ricos, links e a ficha completa num único arquivo
+  ---
+  duration_ms: 4.861458
+  type: 'test'
+  ...
+# Subtest: Importar duas vezes o mesmo sistema não compartilha modelos ou personagens
+ok 250 - Importar duas vezes o mesmo sistema não compartilha modelos ou personagens
+  ---
+  duration_ms: 0.936382
+  type: 'test'
+  ...
+# Subtest: Desvincular e substituir modelos preserva textos, metadados e personagens
+ok 251 - Desvincular e substituir modelos preserva textos, metadados e personagens
+  ---
+  duration_ms: 0.751915
+  type: 'test'
+  ...
+# Subtest: Ficha inválida, versão futura e pacote acima do limite falham sem substituir o modelo
+ok 252 - Ficha inválida, versão futura e pacote acima do limite falham sem substituir o modelo
+  ---
+  duration_ms: 68.349979
+  type: 'test'
+  ...
+# Subtest: AB10 mantém sua proteção de conjunto fixo para criar, substituir ou remover modelo
+ok 253 - AB10 mantém sua proteção de conjunto fixo para criar, substituir ou remover modelo
+  ---
+  duration_ms: 1.174678
+  type: 'test'
+  ...
+# Subtest: Modelos com referências removidas continuam editáveis sem apontar para outros personagens
+ok 254 - Modelos com referências removidas continuam editáveis sem apontar para outros personagens
+  ---
+  duration_ms: 0.75503
+  type: 'test'
+  ...
+# Subtest: Um conjunto vazio é válido e aceita nome e descrição próprios
+ok 255 - Um conjunto vazio é válido e aceita nome e descrição próprios
+  ---
+  duration_ms: 3.070346
+  type: 'test'
+  ...
+# Subtest: Salvar/carregar preserva toda a sequência, os textos, os estados e as subdivisões
+ok 256 - Salvar/carregar preserva toda a sequência, os textos, os estados e as subdivisões
+  ---
+  duration_ms: 0.7075
+  type: 'test'
+  ...
+# Subtest: AB10 permanece fixo, isolado de outros conjuntos e das operações de edição e remoção
+ok 257 - AB10 permanece fixo, isolado de outros conjuntos e das operações de edição e remoção
+  ---
+  duration_ms: 0.708781
+  type: 'test'
+  ...
+# Subtest: Importar um arquivo chamado AB10 cria um conjunto independente sem privilégios de fixo
+ok 258 - Importar um arquivo chamado AB10 cria um conjunto independente sem privilégios de fixo
+  ---
+  duration_ms: 0.416864
+  type: 'test'
+  ...
+# Subtest: Criar e carregar vários conjuntos não substitui os que já estão na biblioteca
+ok 259 - Criar e carregar vários conjuntos não substitui os que já estão na biblioteca
+  ---
+  duration_ms: 0.581901
+  type: 'test'
+  ...
+# Subtest: Mover tópicos altera apenas a ordem dos irmãos e preserva seus filhos
+ok 260 - Mover tópicos altera apenas a ordem dos irmãos e preserva seus filhos
+  ---
+  duration_ms: 0.319799
+  type: 'test'
+  ...
+# Subtest: Busca encontra títulos e conteúdo com acentos e preserva o caminho das subdivisões
+ok 261 - Busca encontra títulos e conteúdo com acentos e preserva o caminho das subdivisões
+  ---
+  duration_ms: 0.90848
+  type: 'test'
+  ...
+# Subtest: Arquivos de ficha, versões futuras, textos grandes e estruturas ambíguas são recusados
+ok 262 - Arquivos de ficha, versões futuras, textos grandes e estruturas ambíguas são recusados
+  ---
+  duration_ms: 0.403434
+  type: 'test'
+  ...
+# Subtest: Até 300 tópicos e 12 níveis são aceitos, sem falhar no último nível vazio
+ok 263 - Até 300 tópicos e 12 níveis são aceitos, sem falhar no último nível vazio
+  ---
+  duration_ms: 0.545957
+  type: 'test'
+  ...
+# Subtest: O limite de arquivo considera os bytes UTF-8 e não modifica o conjunto recusado
+ok 264 - O limite de arquivo considera os bytes UTF-8 e não modifica o conjunto recusado
+  ---
+  duration_ms: 111.237499
+  type: 'test'
+  ...
+# Subtest: A biblioteca aceita 50 conjuntos pessoais e libera espaço após uma remoção
+ok 265 - A biblioteca aceita 50 conjuntos pessoais e libera espaço após uma remoção
+  ---
+  duration_ms: 3.115874
+  type: 'test'
+  ...
+# Subtest: One-shot acontece uma única vez, sem herdar recorrência
+ok 266 - One-shot acontece uma única vez, sem herdar recorrência
+  ---
+  duration_ms: 1.709309
+  type: 'test'
+  ...
+# Subtest: Séries semanais e quinzenais respeitam início e fim inclusivo
+ok 267 - Séries semanais e quinzenais respeitam início e fim inclusivo
+  ---
+  duration_ms: 0.236544
+  type: 'test'
+  ...
+# Subtest: Mensal mantém a data âncora e usa o último dia de meses menores
+ok 268 - Mensal mantém a data âncora e usa o último dia de meses menores
+  ---
+  duration_ms: 0.155412
+  type: 'test'
+  ...
+# Subtest: Agenda ordena horários e mantém séries como um único registro
+ok 269 - Agenda ordena horários e mantém séries como um único registro
+  ---
+  duration_ms: 7.326907
+  type: 'test'
+  ...
+# Subtest: Horário de Brasília e término no dia seguinte são explícitos
+ok 270 - Horário de Brasília e término no dia seguinte são explícitos
+  ---
+  duration_ms: 9.150607
+  type: 'test'
+  ...
+# Subtest: Valida perfil, datas inexistentes, horários e intervalos inválidos
+ok 271 - Valida perfil, datas inexistentes, horários e intervalos inválidos
+  ---
+  duration_ms: 0.879056
+  type: 'test'
+  ...
+# Subtest: Próximas sessões excluem horários que já passaram no dia
+ok 272 - Próximas sessões excluem horários que já passaram no dia
+  ---
+  duration_ms: 2.074646
+  type: 'test'
+  ...
+# Subtest: Índice da agenda mantém ordem, referências e todos os eventos de cada dia sem modificar a entrada
+ok 273 - Índice da agenda mantém ordem, referências e todos os eventos de cada dia sem modificar a entrada
+  ---
+  duration_ms: 0.324375
+  type: 'test'
+  ...
+# Subtest: Novas rolagens de composto usam o modificador por padrão; base continua selecionável
+ok 274 - Novas rolagens de composto usam o modificador por padrão; base continua selecionável
+  ---
+  duration_ms: 3.855522
+  type: 'test'
+  ...
+# Subtest: Presets identificam a configuração existente sem reescrever fórmulas ou trocar o papel dos valores
+ok 275 - Presets identificam a configuração existente sem reescrever fórmulas ou trocar o papel dos valores
+  ---
+  duration_ms: 1.557121
+  type: 'test'
+  ...
+# Subtest: Atual e máximo são números independentes, aceitando zero, negativos e excedente no atual
+ok 276 - Atual e máximo são números independentes, aceitando zero, negativos e excedente no atual
+  ---
+  duration_ms: 0.687519
+  type: 'test'
+  ...
+# Subtest: Máximos vinculados propagam atualizações de valor, modificador e de outro máximo
+ok 277 - Máximos vinculados propagam atualizações de valor, modificador e de outro máximo
+  ---
+  duration_ms: 0.283424
+  type: 'test'
+  ...
+# Subtest: Rolagens de campo e avulsas usam atual e máximo separadamente e acompanham alterações
+ok 278 - Rolagens de campo e avulsas usam atual e máximo separadamente e acompanham alterações
+  ---
+  duration_ms: 0.467199
+  type: 'test'
+  ...
+# Subtest: Aliases novos ficam restritos ao comparativo, preservando vínculos antigos de outros campos
+ok 279 - Aliases novos ficam restritos ao comparativo, preservando vínculos antigos de outros campos
+  ---
+  duration_ms: 0.532397
+  type: 'test'
+  ...
+# Subtest: Seletores distinguem cada parte e a inserção vincula um máximo à origem correta
+ok 280 - Seletores distinguem cada parte e a inserção vincula um máximo à origem correta
+  ---
+  duration_ms: 1.513656
+  type: 'test'
+  ...
+# Subtest: Salvar/carregar v6 preserva pares, detalhes, grade e remapeia todas as dependências
+ok 281 - Salvar/carregar v6 preserva pares, detalhes, grade e remapeia todas as dependências
+  ---
+  duration_ms: 0.724475
+  type: 'test'
+  ...
+# Subtest: Duplicar isola máximo e dependência e remapeia origens internas, preservando externas
+ok 282 - Duplicar isola máximo e dependência e remapeia origens internas, preservando externas
+  ---
+  duration_ms: 0.76509
+  type: 'test'
+  ...
+# Subtest: Ciclos, máximos negativos e origens removidas geram erros explícitos
+ok 283 - Ciclos, máximos negativos e origens removidas geram erros explícitos
+  ---
+  duration_ms: 0.936753
+  type: 'test'
+  ...
+# Subtest: Arquivos malformados de comparativos são recusados, sem tornar v5 um formato comparativo
+ok 284 - Arquivos malformados de comparativos são recusados, sem tornar v5 um formato comparativo
+  ---
+  duration_ms: 1.529891
+  type: 'test'
+  ...
+# Subtest: Conexões verticais e laterais encostam as bordas, conservando offsets e conteúdo independente
+ok 285 - Conexões verticais e laterais encostam as bordas, conservando offsets e conteúdo independente
+  ---
+  duration_ms: 3.321322
+  type: 'test'
+  ...
+# Subtest: As quatro direções e ligações criadas na ordem inversa mantêm a relação escolhida
+ok 286 - As quatro direções e ligações criadas na ordem inversa mantêm a relação escolhida
+  ---
+  duration_ms: 0.541281
+  type: 'test'
+  ...
+# Subtest: Conectar um bloco ao conjunto usa a borda próxima, sem sobrepor o bloco intermediário
+ok 287 - Conectar um bloco ao conjunto usa a borda próxima, sem sobrepor o bloco intermediário
+  ---
+  duration_ms: 0.268192
+  type: 'test'
+  ...
+# Subtest: Mover um bloco redefine a relação; remover ou trocar de aba limpa apenas suas conexões
+ok 288 - Mover um bloco redefine a relação; remover ou trocar de aba limpa apenas suas conexões
+  ---
+  duration_ms: 0.441621
+  type: 'test'
+  ...
+# Subtest: Salvar e carregar remapeia os IDs das conexões e mantém cores, valores, layout e independência do modelo
+ok 289 - Salvar e carregar remapeia os IDs das conexões e mantém cores, valores, layout e independência do modelo
+  ---
+  duration_ms: 3.369755
+  type: 'test'
+  ...
+# Subtest: Ligações inválidas, repetidas, ciclos e conexões entre abas são recusadas sem alterar a ficha
+ok 290 - Ligações inválidas, repetidas, ciclos e conexões entre abas são recusadas sem alterar a ficha
+  ---
+  duration_ms: 0.94865
+  type: 'test'
+  ...
+# Subtest: Fichas v10 e anteriores continuam sem conexões e conservam o posicionamento existente
+ok 291 - Fichas v10 e anteriores continuam sem conexões e conservam o posicionamento existente
+  ---
+  duration_ms: 0.252087
+  type: 'test'
+  ...
+# Subtest: Grade encaixa posição e largura, inclusive bordas e mínimo legível
+ok 292 - Grade encaixa posição e largura, inclusive bordas e mínimo legível
+  ---
+  duration_ms: 2.234855
+  type: 'test'
+  ...
+# Subtest: Alternar posicionamento alinha todas as abas sem perder dados e mantém posições ao voltar para Livre
+ok 293 - Alternar posicionamento alinha todas as abas sem perder dados e mantém posições ao voltar para Livre
+  ---
+  duration_ms: 1.827586
+  type: 'test'
+  ...
+# Subtest: v5 preserva grade, detalhes e vínculos ao salvar/carregar e duplicar um bloco
+ok 294 - v5 preserva grade, detalhes e vínculos ao salvar/carregar e duplicar um bloco
+  ---
+  duration_ms: 1.584091
+  type: 'test'
+  ...
+# Subtest: v1 a v4 continuam legíveis sem exigir detalhes nem modo novo
+ok 295 - v1 a v4 continuam legíveis sem exigir detalhes nem modo novo
+  ---
+  duration_ms: 1.291594
+  type: 'test'
+  ...
+# Subtest: Importação recusa metadados incompatíveis e detalhes excessivos sem alterar a entrada
+ok 296 - Importação recusa metadados incompatíveis e detalhes excessivos sem alterar a entrada
+  ---
+  duration_ms: 1.009652
+  type: 'test'
+  ...
+# Subtest: Validação não inventa resultados e aceita divisores aleatórios, mantendo proteção real contra zero
+ok 297 - Validação não inventa resultados e aceita divisores aleatórios, mantendo proteção real contra zero
+  ---
+  duration_ms: 2.42492
+  type: 'test'
+  ...
+# Subtest: Dados avulsos e campos aceitam operadores de teclado, símbolos e vírgula decimal igualmente
+ok 298 - Dados avulsos e campos aceitam operadores de teclado, símbolos e vírgula decimal igualmente
+  ---
+  duration_ms: 0.754249
+  type: 'test'
+  ...
+# Subtest: Inserir campo respeita o cursor, substitui seleção e completa depois de operadores
+ok 299 - Inserir campo respeita o cursor, substitui seleção e completa depois de operadores
+  ---
+  duration_ms: 0.691024
+  type: 'test'
+  ...
+# Subtest: Inserções reutilizam vínculo, evitam colisões e usam os aliases do próprio campo
+ok 300 - Inserções reutilizam vínculo, evitam colisões e usam os aliases do próprio campo
+  ---
+  duration_ms: 0.766478
+  type: 'test'
+  ...
+# Subtest: Fórmulas de campo e extras usam valores atuais, incluindo vínculos depois de inserir ou importar
+ok 301 - Fórmulas de campo e extras usam valores atuais, incluindo vínculos depois de inserir ou importar
+  ---
+  duration_ms: 1.126807
+  type: 'test'
+  ...
+# Subtest: Adicionar ao lado de um campo mantém todas as outras linhas verticais
+ok 302 - Adicionar ao lado de um campo mantém todas as outras linhas verticais
+  ---
+  duration_ms: 3.410555
+  type: 'test'
+  ...
+# Subtest: Inserir depois de Teste ou Teste 2 respeita o ponto escolhido e o limite existente de quatro campos
+ok 303 - Inserir depois de Teste ou Teste 2 respeita o ponto escolhido e o limite existente de quatro campos
+  ---
+  duration_ms: 0.840679
+  type: 'test'
+  ...
+# Subtest: Grades v7 com linhas largas e espaços vazios conservam as outras linhas ao ganhar um vizinho
+ok 304 - Grades v7 com linhas largas e espaços vazios conservam as outras linhas ao ganhar um vizinho
+  ---
+  duration_ms: 0.349103
+  type: 'test'
+  ...
+# Subtest: Mover e remover campos conserva fronteiras, dados, detalhes e rolagens
+ok 305 - Mover e remover campos conserva fronteiras, dados, detalhes e rolagens
+  ---
+  duration_ms: 0.570344
+  type: 'test'
+  ...
+# Subtest: Salvar/carregar v8 e copiar modelo preserva linhas, cores, vínculos e personagens independentes
+ok 306 - Salvar/carregar v8 e copiar modelo preserva linhas, cores, vínculos e personagens independentes
+  ---
+  duration_ms: 4.330563
+  type: 'test'
+  ...
+# Subtest: Metadados de linha inválidos são recusados sem alterar a ficha original
+ok 307 - Metadados de linha inválidos são recusados sem alterar a ficha original
+  ---
+  duration_ms: 1.159105
+  type: 'test'
+  ...
+# Subtest: Fichas novas têm uma aba ativa e blocos com posição e largura
+ok 308 - Fichas novas têm uma aba ativa e blocos com posição e largura
+  ---
+  duration_ms: 3.233039
+  type: 'test'
+  ...
+# Subtest: Exportar e carregar conserva abas, aba ativa, posições e larguras
+ok 309 - Exportar e carregar conserva abas, aba ativa, posições e larguras
+  ---
+  duration_ms: 1.61646
+  type: 'test'
+  ...
+# Subtest: Fichas antigas v1 migram integralmente para uma aba e posições distintas
+ok 310 - Fichas antigas v1 migram integralmente para uma aba e posições distintas
+  ---
+  duration_ms: 1.305474
+  type: 'test'
+  ...
+# Subtest: Dados de mapa corrompidos não passam pela importação
+ok 311 - Dados de mapa corrompidos não passam pela importação
+  ---
+  duration_ms: 0.678666
+  type: 'test'
+  ...
+# Subtest: Limites mantêm blocos no mapa e evitam larguras ilegíveis
+ok 312 - Limites mantêm blocos no mapa e evitam larguras ilegíveis
+  ---
+  duration_ms: 0.259628
+  type: 'test'
+  ...
+# Subtest: Enquadramento inclui blocos afastados e considera suas alturas medidas
+ok 313 - Enquadramento inclui blocos afastados e considera suas alturas medidas
+  ---
+  duration_ms: 0.404486
+  type: 'test'
+  ...
+# Subtest: Carregar não altera o objeto original e isola campos e coordenadas
+ok 314 - Carregar não altera o objeto original e isola campos e coordenadas
+  ---
+  duration_ms: 0.237296
+  type: 'test'
+  ...
+# Subtest: Dados respeitam precedência, parênteses, sinais e todos os valores individuais
+ok 315 - Dados respeitam precedência, parênteses, sinais e todos os valores individuais
+  ---
+  duration_ms: 2.851499
+  type: 'test'
+  ...
+# Subtest: Fórmulas recusam código, dados excessivos, referências ausentes e cálculos inválidos
+ok 316 - Fórmulas recusam código, dados excessivos, referências ausentes e cálculos inválidos
+  ---
+  duration_ms: 0.809041
+  type: 'test'
+  ...
+# Subtest: Aleatoriedade respeita limites e a notação aceita quantidades arbitrárias permitidas
+ok 317 - Aleatoriedade respeita limites e a notação aceita quantidades arbitrárias permitidas
+  ---
+  duration_ms: 1.91079
+  type: 'test'
+  ...
+# Subtest: Campos por fórmula são limitados e subtração aceita o sinal usado na interface
+ok 318 - Campos por fórmula são limitados e subtração aceita o sinal usado na interface
+  ---
+  duration_ms: 0.610104
+  type: 'test'
+  ...
+# Subtest: Campos dependentes copiam, somam, subtraem e propagam mudanças entre abas
+ok 319 - Campos dependentes copiam, somam, subtraem e propagam mudanças entre abas
+  ---
+  duration_ms: 1.542709
+  type: 'test'
+  ...
+# Subtest: Compostos têm modificador manual ou automático e arredondam negativos para baixo
+ok 320 - Compostos têm modificador manual ou automático e arredondam negativos para baixo
+  ---
+  duration_ms: 0.376975
+  type: 'test'
+  ...
+# Subtest: Ciclos, origens removidas, valores vazios e tipos incompatíveis são erros explícitos
+ok 321 - Ciclos, origens removidas, valores vazios e tipos incompatíveis são erros explícitos
+  ---
+  duration_ms: 0.462652
+  type: 'test'
+  ...
+# Subtest: Exportação e importação remapeiam IDs sem quebrar dependências e rolagens
+ok 322 - Exportação e importação remapeiam IDs sem quebrar dependências e rolagens
+  ---
+  duration_ms: 1.940816
+  type: 'test'
+  ...
+# Subtest: Rascunhos com vínculos removidos continuam exportáveis e sinalizam o erro ao carregar
+ok 323 - Rascunhos com vínculos removidos continuam exportáveis e sinalizam o erro ao carregar
+  ---
+  duration_ms: 0.408762
+  type: 'test'
+  ...
+# Subtest: Duplicação remapeia vínculos internos e preserva referências externas sem compartilhar configuração
+ok 324 - Duplicação remapeia vínculos internos e preserva referências externas sem compartilhar configuração
+  ---
+  duration_ms: 0.486948
+  type: 'test'
+  ...
+# Subtest: v1 e v2 migram sem perder os campos e ganham a coleção de rolagens
+ok 325 - v1 e v2 migram sem perder os campos e ganham a coleção de rolagens
+  ---
+  duration_ms: 0.471936
+  type: 'test'
+  ...
+# Subtest: Configurações malformadas e IDs ambíguos são recusados sem executar fórmulas importadas
+ok 326 - Configurações malformadas e IDs ambíguos são recusados sem executar fórmulas importadas
+  ---
+  duration_ms: 1.311944
+  type: 'test'
+  ...
+# Subtest: O mesmo valor 3 pode somar a um d20 ou definir três d20, conforme programado
+ok 327 - O mesmo valor 3 pode somar a um d20 ou definir três d20, conforme programado
+  ---
+  duration_ms: 5.634414
+  type: 'test'
+  ...
+# Subtest: Campos compostos usam o modificador e combinam outros valores atualizados
+ok 328 - Campos compostos usam o modificador e combinam outros valores atualizados
+  ---
+  duration_ms: 0.576773
+  type: 'test'
+  ...
+# Subtest: Quantidades variáveis são limitadas em tempo de lançamento e nunca excedem 100 dados
+ok 329 - Quantidades variáveis são limitadas em tempo de lançamento e nunca excedem 100 dados
+  ---
+  duration_ms: 0.909942
+  type: 'test'
+  ...
+# Subtest: Cada grupo preserva os resultados individuais e o total da expressão inteira
+ok 330 - Cada grupo preserva os resultados individuais e o total da expressão inteira
+  ---
+  duration_ms: 0.299058
+  type: 'test'
+  ...
+# Subtest: Salvar e carregar v4 conserva rolagens de campos, vínculos e fórmulas de quantidade
+ok 331 - Salvar e carregar v4 conserva rolagens de campos, vínculos e fórmulas de quantidade
+  ---
+  duration_ms: 2.089868
+  type: 'test'
+  ...
+# Subtest: Duplicar um bloco isola configurações e remapeia os campos das suas rolagens
+ok 332 - Duplicar um bloco isola configurações e remapeia os campos das suas rolagens
+  ---
+  duration_ms: 0.588361
+  type: 'test'
+  ...
+# Subtest: Fichas v3 continuam com valores compostos, dependências e rolagens extras
+ok 333 - Fichas v3 continuam com valores compostos, dependências e rolagens extras
+  ---
+  duration_ms: 0.916382
+  type: 'test'
+  ...
+# Subtest: Configurações inválidas são recusadas e origens removidas aparecem ao lançar
+ok 334 - Configurações inválidas são recusadas e origens removidas aparecem ao lançar
+  ---
+  duration_ms: 0.990353
+  type: 'test'
+  ...
+# Subtest: v7 salva cores, colunas, larguras e imagem sem perder dependências, fórmulas e proporções
+ok 335 - v7 salva cores, colunas, larguras e imagem sem perder dependências, fórmulas e proporções
+  ---
+  duration_ms: 6.220301
+  type: 'test'
+  ...
+# Subtest: v1 a v6 conservam todos os campos, sem exigir metadados visuais novos
+ok 336 - v1 a v6 conservam todos os campos, sem exigir metadados visuais novos
+  ---
+  duration_ms: 1.941095
+  type: 'test'
+  ...
+# Subtest: Duplicar bloco conserva estilo e remapeia campos; imagem e dimensões ficam independentes
+ok 337 - Duplicar bloco conserva estilo e remapeia campos; imagem e dimensões ficam independentes
+  ---
+  duration_ms: 0.513929
+  type: 'test'
+  ...
+# Subtest: Pacote de sistema leva imagens e layout, mantendo personagens independentes do modelo
+ok 338 - Pacote de sistema leva imagens e layout, mantendo personagens independentes do modelo
+  ---
+  duration_ms: 2.627633
+  type: 'test'
+  ...
+# Subtest: Importação recusa metadados inválidos e imagens ativas ou remotas sem modificar a entrada
+ok 339 - Importação recusa metadados inválidos e imagens ativas ou remotas sem modificar a entrada
+  ---
+  duration_ms: 2.08465
+  type: 'test'
+  ...
+# Subtest: Validação de imagem limita o tamanho e reconhece assinaturas PNG/JPEG/WebP
+ok 340 - Validação de imagem limita o tamanho e reconhece assinaturas PNG/JPEG/WebP
+  ---
+  duration_ms: 2.257749
+  type: 'test'
+  ...
+# Subtest: Grade e limites preservam altura de imagens e não adicionam altura aos blocos antigos
+ok 341 - Grade e limites preservam altura de imagens e não adicionam altura aos blocos antigos
+  ---
+  duration_ms: 0.441651
+  type: 'test'
+  ...
+# Subtest: Enquadramento da capa preserva proporções, recorte, posição e tamanho nativo
+ok 342 - Enquadramento da capa preserva proporções, recorte, posição e tamanho nativo
+  ---
+  duration_ms: 1.817912
+  type: 'test'
+  ...
+# Subtest: Capa aceita imagens estáticas, participa da cota atual e não permite GIF ou fontes executáveis
+ok 343 - Capa aceita imagens estáticas, participa da cota atual e não permite GIF ou fontes executáveis
+  ---
+  duration_ms: 688.67332
+  type: 'test'
+  ...
+# Subtest: JSON e Super PNG preservam a capa, enquadramento e regras na exportação e reimportação
+ok 344 - JSON e Super PNG preservam a capa, enquadramento e regras na exportação e reimportação
+  ---
+  duration_ms: 12.490201
+  type: 'test'
+  ...
+# Subtest: Canvas simulado usa a imagem e os ajustes da capa, sem substituir dados ou escrever textos por cima
+ok 345 - Canvas simulado usa a imagem e os ajustes da capa, sem substituir dados ou escrever textos por cima
+  ---
+  duration_ms: 2.12129
+  type: 'test'
+  ...
+# Subtest: Canvas simulado mantém a capa automática sem personalização e preserva a capa das fichas
+ok 346 - Canvas simulado mantém a capa automática sem personalização e preserva a capa das fichas
+  ---
+  duration_ms: 1.657882
+  type: 'test'
+  ...
+# Subtest: Super PNG é um PNG normal com iTXt após IDAT, CRCs válidos e dados UTF-8
+ok 347 - Super PNG é um PNG normal com iTXt após IDAT, CRCs válidos e dados UTF-8
+  ---
+  duration_ms: 14.670661
+  type: 'test'
+  ...
+# Subtest: Ficha completa sobrevive à importação do PNG com cálculos, conexões, campos e imagens
+ok 348 - Ficha completa sobrevive à importação do PNG com cálculos, conexões, campos e imagens
+  ---
+  duration_ms: 4.72313
+  type: 'test'
+  ...
+# Subtest: Sistema viaja com tópicos ricos, links, logo, dados e ficha-modelo independente
+ok 349 - Sistema viaja com tópicos ricos, links, logo, dados e ficha-modelo independente
+  ---
+  duration_ms: 9.25205
+  type: 'test'
+  ...
+# Subtest: Sistema sem logo ou modelo e ficha sem retrato continuam válidos
+ok 350 - Sistema sem logo ou modelo e ficha sem retrato continuam válidos
+  ---
+  duration_ms: 2.717968
+  type: 'test'
+  ...
+# Subtest: JSON .json, .ab10 e .regras antigos usam as mesmas migrações e não exigem PNG
+ok 351 - JSON .json, .ab10 e .regras antigos usam as mesmas migrações e não exigem PNG
+  ---
+  duration_ms: 2.890527
+  type: 'test'
+  ...
+# Subtest: PNG comum é identificado sem tentar convertê-lo numa ficha ou sistema
+ok 352 - PNG comum é identificado sem tentar convertê-lo numa ficha ou sistema
+  ---
+  duration_ms: 0.96159
+  type: 'test'
+  ...
+# Subtest: Mudança no payload com CRC do chunk recalculado falha no checksum do conteúdo
+ok 353 - Mudança no payload com CRC do chunk recalculado falha no checksum do conteúdo
+  ---
+  duration_ms: 2.249708
+  type: 'test'
+  ...
+# Subtest: Nome, tipo e algoritmo do envelope fazem parte da validação
+ok 354 - Nome, tipo e algoritmo do envelope fazem parte da validação
+  ---
+  duration_ms: 3.379889
+  type: 'test'
+  ...
+# Subtest: Corrupção no PNG, truncamento, dados extras e CRC inválido são recusados
+ok 355 - Corrupção no PNG, truncamento, dados extras e CRC inválido são recusados
+  ---
+  duration_ms: 1.761757
+  type: 'test'
+  ...
+# Subtest: Versão desconhecida e tipo incompatível não são importados
+ok 356 - Versão desconhecida e tipo incompatível não são importados
+  ---
+  duration_ms: 3.328803
+  type: 'test'
+  ...
+# Subtest: Metadados duplicados são recusados; reexportar substitui o chunk anterior
+ok 357 - Metadados duplicados são recusados; reexportar substitui o chunk anterior
+  ---
+  duration_ms: 1.380717
+  type: 'test'
+  ...
+# Subtest: Cotas de conteúdo e arquivo são preservadas sem aceitar arquivos gigantes
+ok 358 - Cotas de conteúdo e arquivo são preservadas sem aceitar arquivos gigantes
+  ---
+  duration_ms: 41.337188
+  type: 'test'
+  ...
+# Subtest: Erros de tipo, JSON inválido e PNG disfarçado são claros
+ok 359 - Erros de tipo, JSON inválido e PNG disfarçado são claros
+  ---
+  duration_ms: 0.90244
+  type: 'test'
+  ...
+# Subtest: Super PNG publicado em v0.34 continua importável e pode ser reexportado sem perder texto
+ok 360 - Super PNG publicado em v0.34 continua importável e pode ser reexportado sem perder texto
+  ---
+  duration_ms: 1.71078
+  type: 'test'
+  ...
+# Subtest: Expansão zlib acima do limite é interrompida mesmo em arquivo físico minúsculo
+ok 361 - Expansão zlib acima do limite é interrompida mesmo em arquivo físico minúsculo
+  ---
+  duration_ms: 124.535319
+  type: 'test'
+  ...
+# Subtest: UTF-8 inválido, zlib truncado e dados após o fluxo comprimido são recusados
+ok 362 - UTF-8 inválido, zlib truncado e dados após o fluxo comprimido são recusados
+  ---
+  duration_ms: 1.014018
+  type: 'test'
+  ...
+# Subtest: O limite lógico do conteúdo descomprimido não pode ser contornado por alta compressão
+ok 363 - O limite lógico do conteúdo descomprimido não pode ser contornado por alta compressão
+  ---
+  duration_ms: 447.670302
+  type: 'test'
+  ...
+# Subtest: Dados tradicionais continuam somando e guardam os mesmos índices
+ok 364 - Dados tradicionais continuam somando e guardam os mesmos índices
+  ---
+  duration_ms: 4.083082
+  type: 'test'
+  ...
+# Subtest: Face vazia é válida e não recebe o índice físico como valor
+ok 365 - Face vazia é válida e não recebe o índice físico como valor
+  ---
+  duration_ms: 2.327033
+  type: 'test'
+  ...
+# Subtest: Todas as doze faces da tabela do pedido são interpretadas como ocorrências
+ok 366 - Todas as doze faces da tabela do pedido são interpretadas como ocorrências
+  ---
+  duration_ms: 1.452915
+  type: 'test'
+  ...
+# Subtest: Face 11 contém 1 sucesso, 2 adaptações e 1 pressão, nunca 11 pontos
+ok 367 - Face 11 contém 1 sucesso, 2 adaptações e 1 pressão, nunca 11 pontos
+  ---
+  duration_ms: 0.436703
+  type: 'test'
+  ...
+# Subtest: Categorias acumulam cada repetição em vários dados sem Roll and Keep
+ok 368 - Categorias acumulam cada repetição em vários dados sem Roll and Keep
+  ---
+  duration_ms: 0.384987
+  type: 'test'
+  ...
+# Subtest: Imagem ou texto não são analisados como símbolos automaticamente
+ok 369 - Imagem ou texto não são analisados como símbolos automaticamente
+  ---
+  duration_ms: 0.495231
+  type: 'test'
+  ...
+# Subtest: Valores numéricos próprios incluem zero, negativos e imagens sem virar prioridades
+ok 370 - Valores numéricos próprios incluem zero, negativos e imagens sem virar prioridades
+  ---
+  duration_ms: 0.57463
+  type: 'test'
+  ...
+# Subtest: Conteúdo simbólico explícito não vira índice nem no método numérico
+ok 371 - Conteúdo simbólico explícito não vira índice nem no método numérico
+  ---
+  duration_ms: 0.688871
+  type: 'test'
+  ...
+# Subtest: Método simbólico não inventa resultados para faces sem configuração
+ok 372 - Método simbólico não inventa resultados para faces sem configuração
+  ---
+  duration_ms: 0.2677
+  type: 'test'
+  ...
+# Subtest: Catálogos antigos mantêm a interpretação numérica de texto, emoji, ícone e imagem
+ok 373 - Catálogos antigos mantêm a interpretação numérica de texto, emoji, ícone e imagem
+  ---
+  duration_ms: 0.6011
+  type: 'test'
+  ...
+# Subtest: Números explícitos e categorias podem coexistir sem somar índices simbólicos
+ok 374 - Números explícitos e categorias podem coexistir sem somar índices simbólicos
+  ---
+  duration_ms: 0.369123
+  type: 'test'
+  ...
+# Subtest: Fórmulas simbólicas recusam operações sem significado em categorias e preservam quantidades calculadas
+ok 375 - Fórmulas simbólicas recusam operações sem significado em categorias e preservam quantidades calculadas
+  ---
+  duration_ms: 1.995617
+  type: 'test'
+  ...
+# Subtest: Símbolos referenciados, quantidades e prioridades inválidas são recusados
+ok 376 - Símbolos referenciados, quantidades e prioridades inválidas são recusados
+  ---
+  duration_ms: 2.269462
+  type: 'test'
+  ...
+# Subtest: Roll and Keep é opcional e seu limite não é fixado em quatro para todos os sistemas
+ok 377 - Roll and Keep é opcional e seu limite não é fixado em quatro para todos os sistemas
+  ---
+  duration_ms: 0.426859
+  type: 'test'
+  ...
+# Subtest: Editor amplo usa menu lateral; janelas estreitas usam menu superior
+ok 378 - Editor amplo usa menu lateral; janelas estreitas usam menu superior
+  ---
+  duration_ms: 0.941909
+  type: 'test'
+  ...
+# Subtest: Viewport mobile limita o editor à região visível e acompanha o pan do teclado
+ok 379 - Viewport mobile limita o editor à região visível e acompanha o pan do teclado
+  ---
+  duration_ms: 1.65698
+  type: 'test'
+  ...
+# Subtest: Teclado só recolhe a navegação durante edição de texto em viewport reduzido
+ok 380 - Teclado só recolhe a navegação durante edição de texto em viewport reduzido
+  ---
+  duration_ms: 0.176284
+  type: 'test'
+  ...
+# Subtest: Pinch zoom não é tratado como teclado virtual
+ok 381 - Pinch zoom não é tratado como teclado virtual
+  ---
+  duration_ms: 0.144276
+  type: 'test'
+  ...
+# Subtest: Fallback sem VisualViewport mantém dimensões e menus corretos
+ok 382 - Fallback sem VisualViewport mantém dimensões e menus corretos
+  ---
+  duration_ms: 0.125518
+  type: 'test'
+  ...
+# Subtest: Métricas transitórias inválidas não tornam o editor invisível
+ok 383 - Métricas transitórias inválidas não tornam o editor invisível
+  ---
+  duration_ms: 0.217986
+  type: 'test'
+  ...
+# Subtest: Tema depende de capacidade do catálogo, nunca do nome ou de um campo importado
+ok 384 - Tema depende de capacidade do catálogo, nunca do nome ou de um campo importado
+  ---
+  duration_ms: 3.070757
+  type: 'test'
+  ...
+# Subtest: Alternar para nenhum sistema ou sistema comum não reaproveita o tema anterior
+ok 385 - Alternar para nenhum sistema ou sistema comum não reaproveita o tema anterior
+  ---
+  duration_ms: 0.297685
+  type: 'test'
+  ...
+# Subtest: Imagem, logo e GIF válidos preservam transparência e geram fonte estática em movimento reduzido
+ok 386 - Imagem, logo e GIF válidos preservam transparência e geram fonte estática em movimento reduzido
+  ---
+  duration_ms: 0.713007
+  type: 'test'
+  ...
+# Subtest: Fundos recusam protocolos ativos, SVG, GIF pesado, dimensões grandes e poster ausente
+ok 387 - Fundos recusam protocolos ativos, SVG, GIF pesado, dimensões grandes e poster ausente
+  ---
+  duration_ms: 3.84767
+  type: 'test'
+  ...
+# Subtest: Personalização tem Computador, Celular e Super PNG, com fundo compartilhado e controles de capa
+ok 388 - Personalização tem Computador, Celular e Super PNG, com fundo compartilhado e controles de capa
+  ---
+  duration_ms: 537.295634
+  type: 'test'
+  ...
+# Subtest: Fechar personalização com ajustes pendentes pede decisão e conserva o rascunho ao continuar
+ok 389 - Fechar personalização com ajustes pendentes pede decisão e conserva o rascunho ao continuar
+  ---
+  duration_ms: 101.180095
+  type: 'test'
+  ...
+# Subtest: Os quatro formatos são identificados pelos bytes, independentemente da extensão
+ok 390 - Os quatro formatos são identificados pelos bytes, independentemente da extensão
+  ---
+  duration_ms: 3.670062
+  type: 'test'
+  ...
+# Subtest: As áreas de personalização são independentes e alterações do rascunho não mutam a configuração anterior
+ok 391 - As áreas de personalização são independentes e alterações do rascunho não mutam a configuração anterior
+  ---
+  duration_ms: 6.203233
+  type: 'test'
+  ...
+# Subtest: Reutilizar arquivo compartilha os dados, mas o orçamento é somado por área
+ok 392 - Reutilizar arquivo compartilha os dados, mas o orçamento é somado por área
+  ---
+  duration_ms: 2.860276
+  type: 'test'
+  ...
+# Subtest: Limites estáticos individuais aceitam o byte final e recusam o seguinte
+ok 393 - Limites estáticos individuais aceitam o byte final e recusam o seguinte
+  ---
+  duration_ms: 1365.202638
+  type: 'test'
+  ...
+# Subtest: Cota visual aceita exatamente 6 MiB e recusa excesso, sem orçamento adicional ao sistema
+ok 394 - Cota visual aceita exatamente 6 MiB e recusa excesso, sem orçamento adicional ao sistema
+  ---
+  duration_ms: 780.619512
+  type: 'test'
+  ...
+# Subtest: Cota agregada de GIFs é aplicada além da cota visual e dos limites por área
+ok 395 - Cota agregada de GIFs é aplicada além da cota visual e dos limites por área
+  ---
+  duration_ms: 634.263372
+  type: 'test'
+  ...
+# Subtest: GIFs têm duração, quadros, resolução e alternativa estática validados sem decodificar todos os pixels
+ok 396 - GIFs têm duração, quadros, resolução e alternativa estática validados sem decodificar todos os pixels
+  ---
+  duration_ms: 2.312664
+  type: 'test'
+  ...
+# Subtest: Arquivos truncados, CRC inválido, MIME falso e referências externas são recusados
+ok 397 - Arquivos truncados, CRC inválido, MIME falso e referências externas são recusados
+  ---
+  duration_ms: 1.106122
+  type: 'test'
+  ...
+# Subtest: JSON e Super PNG preservam GIF original, cinco ajustes e sistemas comuns editáveis
+ok 398 - JSON e Super PNG preservam GIF original, cinco ajustes e sistemas comuns editáveis
+  ---
+  duration_ms: 14.422334
+  type: 'test'
+  ...
+# Subtest: Fontes animadas são distintas por estado e movimento reduzido retorna apenas o poster
+ok 399 - Fontes animadas são distintas por estado e movimento reduzido retorna apenas o poster
+  ---
+  duration_ms: 1.155486
+  type: 'test'
+  ...
+1..399
+# tests 399
+# suites 0
+# pass 399
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 71803.79332

@@ -2,7 +2,7 @@ import React, {useEffect, useRef, useState} from 'react';
 import {fetchSharedMap, publishSharedMap, REPOSITORY_URL} from './github-sync.js';
 import {canPublish, mapEquals} from './map-state.js';
 
-export default function GitHubSyncDialog({dirty, baseline, draft, toDraft, applyRemote, onSaved, onClose}) {
+export default function GitHubSyncDialog({version, dirty, baseline, draft, toDraft, applyRemote, onSaved, onClose}) {
   const dialog = useRef(null);
   const key = useRef(null);
   const active = useRef(true);
@@ -37,7 +37,7 @@ export default function GitHubSyncDialog({dirty, baseline, draft, toDraft, apply
 
   function check() {
     return run(async ()=>{
-      const {document} = await fetchSharedMap();
+      const {document} = await fetchSharedMap({versionId:version.id});
       const remote = {revision:document.revision,draft:toDraft(document.draft)};
       if (!active.current) return;
       setPreview(remote);
@@ -58,7 +58,7 @@ export default function GitHubSyncDialog({dirty, baseline, draft, toDraft, apply
     }
     key.current.value = '';
     return run(async ()=>{
-      const {sha,document} = await fetchSharedMap({token});
+      const {sha,document} = await fetchSharedMap({versionId:version.id,token});
       if (!active.current) return;
       const remote = {revision:document.revision,draft:toDraft(document.draft)};
       setPreview(remote);
@@ -71,7 +71,7 @@ export default function GitHubSyncDialog({dirty, baseline, draft, toDraft, apply
         setStatus('O GitHub recebeu outra edição. Exporte seu rascunho antes de carregar a versão remota e conciliar as mudanças.');
         return;
       }
-      const saved = await publishSharedMap({token,sha,draft});
+      const saved = await publishSharedMap({versionId:version.id,token,sha,draft});
       if (!active.current) return;
       const next = {revision:saved.document.revision,draft};
       onSaved(next);
@@ -98,6 +98,7 @@ export default function GitHubSyncDialog({dirty, baseline, draft, toDraft, apply
       <h2 id="sync-title">Sincronizar com GitHub</h2>
       <button type="button" className="btn secondary" onClick={onClose} disabled={busy}>Fechar</button>
     </div>
+    <p><strong>{version.label}</strong></p>
     <p>{dirty ? 'Há alterações locais neste mapa.' : 'O mapa aberto coincide com sua versão de referência.'}</p>
     <div className="sync-actions">
       <button type="button" className="btn secondary" onClick={check} disabled={busy}>Verificar versão do GitHub</button>

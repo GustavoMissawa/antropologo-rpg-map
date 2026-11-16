@@ -1,8 +1,25 @@
 # ANTROPOLOGO RPG · Atlas da Plataforma
 
-Mapa visual da versão 0.38, baseado em `Redesigner Antropologo.fig` e no inventário de cobertura da aplicação. O editor usa React Flow e funciona como site estático no GitHub Pages.
+Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flow e funciona como site estático no GitHub Pages.
 
 [Abrir o editor](https://gustavomissawa.github.io/antropologo-rpg-map/)
+
+## Versões da aplicação
+
+| Versão | Código-fonte | Mapa compartilhado |
+| --- | --- | --- |
+| v0.38 — Alpha | `aplicacao/v0.38/`, arquivada na tag `v0.38-alpha` | `public/data/map.json` e `public/data/edicoes.json` |
+| v0.40 — Desenvolvimento | `aplicacao/v0.40/`, base de trabalho | `public/data/v0.40/map.json` e `public/data/v0.40/edicoes.json` |
+
+O seletor abre v0.40 por padrão. As duas versões começaram com os mesmos arquivos de aplicação e a mesma referência visual. Cada mapa tem seu próprio rascunho, JSON e destino de sincronização. O rascunho do editor anterior pertence à Alpha e pode ser aberto pelo seletor.
+
+O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip`, correspondente à árvore Git `209a953f5c3e13941b5c8f41d5c9d9922acaf07b` do commit de origem `17d76ebfdb9fdb83514df05cc107a1837c86419b`. A cópia de desenvolvimento conserva inclusive a versão interna do pacote na origem para manter a igualdade inicial. O identificador de desenvolvimento já aparece no seletor do atlas.
+
+## Desenvolver a aplicação
+
+Trabalhe em `aplicacao/v0.40/` e consulte o README dessa pasta para os comandos de build e execução. A instalação da aplicação usa seu próprio `pnpm-lock.yaml`. As migrações do D1 e a declaração dos bindings do Worker estão no código. Os registros do D1, os objetos do R2, as credenciais e os dados das sessões do navegador são externos. Para executar a aplicação localmente, use os bindings e um banco de desenvolvimento descritos no README da aplicação.
+
+O workflow do atlas compara a pasta Alpha com a tag e publica somente o `dist/` gerado pelo editor. Para reorganizar o mapa de desenvolvimento, selecione v0.40 antes de editar. As capturas iniciais registram a v0.38, conforme o inventário de cobertura.
 
 ## Explorar e editar
 
@@ -14,7 +31,7 @@ Mapa visual da versão 0.38, baseado em `Redesigner Antropologo.fig` e no invent
 
 ## Sincronizar edições com o GitHub
 
-A versão compartilhada está em [`public/data/edicoes.json`](public/data/edicoes.json). A página publicada carrega esse arquivo na abertura e preserva rascunhos locais com alterações.
+A versão compartilhada fica no arquivo de edições da versão selecionada. A página publicada carrega esse arquivo na abertura e preserva rascunhos locais com alterações.
 
 Ao reabrir um mapa já sincronizado neste navegador, o editor consulta o GitHub se a revisão servida pelo Pages for diferente. Se a consulta falhar, a última edição sincronizada conhecida continua disponível.
 

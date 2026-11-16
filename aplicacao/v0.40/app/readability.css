@@ -1,0 +1,64 @@
+/* Keep readable text sizes without squeezing labels or shrinking the whole page. */
+body{font-size:16px}
+.nav-item{font-size:16px;gap:10px;min-height:48px}
+.nav-item>span:not(.nav-new){min-width:0}.nav-new{letter-spacing:.3px}
+.sidebar-bottom>button{line-height:1.6}
+.topbar{min-height:78px;height:auto;padding-top:14px;padding-bottom:14px}
+.topbar-left,.header-right{min-width:0}.header-right{flex-shrink:0}
+.breadcrumb{flex-wrap:wrap;gap:8px}.private-badge{letter-spacing:.5px;white-space:nowrap}
+.page-title-row{flex-wrap:wrap;row-gap:18px}.page-title-row>div:first-child{min-width:0;flex:1 1 380px}
+.page-title-row .action-group{flex-wrap:wrap}.page-title-row .action-group .button{flex-shrink:0}
+.section-heading{flex-wrap:wrap;row-gap:8px}.section-heading>span{letter-spacing:.8px;line-height:1.6;max-width:100%}
+.button{min-height:44px}.text-button{line-height:1.6}
+.footer{flex-wrap:wrap;row-gap:12px;line-height:1.7}
+.modal{width:min(550px,calc(100vw - 32px))}.modal.wide,.player-dialog.wide{width:min(700px,calc(100vw - 32px))}
+.modal-head h2{line-height:1.4}.modal-intro,.form-note,.help-content p{line-height:1.75}
+.form-label{font-size:14px;line-height:1.6}.form-label>input,.form-label>textarea,.form-label>select{font-size:16px;min-height:44px}
+.form-label>span{font-size:13px}.form-label .field-help{font-size:13px;line-height:1.65}
+.search input{font-size:16px}.rule-prose{font-size:17px;line-height:1.85}
+.rule-node summary button,.rule-link{font-size:15px;line-height:1.6}
+.subsection-list>button{flex-wrap:wrap;row-gap:6px}.reserved p{line-height:1.75}
+.test-notice{align-items:flex-start}.test-notice-icon{padding-top:2px}.test-notice p{font-size:14px;line-height:1.7}
+.test-notice strong{font-size:16px;line-height:1.55}.test-link-badge{letter-spacing:.5px}
+.profile-trigger-label{font-size:14px}.profile-note,.auth-temporary p,.auth-expires p,.logout-area>p{font-size:14px;line-height:1.7}
+.handle-input input{font-size:16px;min-height:44px}.profile-session{padding:13px}.profile-session>span{width:45px;min-width:45px;height:52px}
+.profile-session strong{white-space:normal;line-height:1.5}.profile-session>div>small{font-size:13px;line-height:1.5}
+.auth-tabs>button{min-height:44px}.profile-agenda .section-heading{align-items:flex-start}
+.calendar-toolbar{flex-wrap:wrap;row-gap:14px}.calendar-day{min-height:112px}.calendar-day>time{min-width:28px;min-height:28px}
+.calendar-event-chip{font-size:12px;line-height:1.6}.calendar-navigation .button{min-height:36px;font-size:14px}
+.calendar-weekdays{font-size:12px}.calendar-legend{font-size:12px;line-height:1.6}.calendar-legend>span:last-child{font-size:12px}
+.session-card-top{flex-wrap:wrap;row-gap:8px}.session-card h3{font-size:17px;line-height:1.5}
+.session-pill{font-size:12px;line-height:1.5}.session-time,.session-location{font-size:14px}
+.session-description{font-size:15px;line-height:1.75}.session-series-note{font-size:13px;line-height:1.7}
+.upcoming-item .session-card h3{font-size:16px}.upcoming-item .session-pill{font-size:12px}
+.map-workspace{grid-template-columns:minmax(0,1fr) 280px}.map-inspector{padding:20px}
+.map-identity{gap:18px}.map-player-label{max-width:210px}.map-character-name{min-width:210px}
+.map-character-name .subtle-label{font-size:12px;letter-spacing:.8px}.map-character-description>input{min-height:30px}
+.map-file-actions .button{min-height:44px}.map-tabbar{min-height:60px}.map-tabs>button{font-size:16px;line-height:1.5;min-height:58px}
+.map-tabs>button>small{font-size:12px}.map-tab-actions .icon-button{min-width:32px;width:32px;height:36px}
+.map-toolbar{flex-wrap:wrap;row-gap:10px}.map-canvas-label{font-size:12px;letter-spacing:.8px}
+.map-add.button{font-size:14px;min-height:42px}.map-tool-pair>button{width:34px;height:34px}
+.map-zoom-tools .icon-button{width:32px;min-width:32px;height:34px}.map-zoom-value{font-size:14px;width:52px}
+.map-block-header{min-height:62px}.map-block-drag{font-size:18px;min-height:36px}
+.map-block-header>h3{font-size:18px}.map-block-description{font-size:15px;line-height:1.7}
+.map-field>label{font-size:16px;line-height:1.55}.map-field-type{font-size:12px;min-width:18px;width:18px;height:21px}
+.map-field>input:not([type=checkbox]),.map-field>textarea{font-size:16px;min-height:40px}
+.map-field>input[type=number]{font-size:22px}.map-field-readout{font-size:16px}.map-field-readout.number{font-size:26px}
+.map-block-count{font-size:12px}.map-add-field{font-size:15px;min-height:42px}.map-block-empty>p{font-size:15px}
+.map-inspector .form-label{font-size:14px}.map-inspector .form-label>input,.map-inspector .form-label>textarea,.map-inspector .form-label>select{font-size:16px;min-height:42px}
+.map-inspector-heading .subtle-label{font-size:12px;letter-spacing:.8px}.map-inspector-heading h3{font-size:17px}
+.map-position-inputs>label{font-size:12px}.map-position-inputs input{font-size:16px;min-height:40px}
+.map-block-index>button{min-height:44px}.map-block-index strong{font-size:14px;white-space:normal;line-height:1.5}
+.map-index-help,.map-tip>p{font-size:14px;line-height:1.75}.map-tip>h4{font-size:16px}
+.map-inspector-actions .button{font-size:14px;white-space:normal}.map-direction-buttons{flex-wrap:wrap;row-gap:7px}
+.map-direction-buttons>span{font-size:13px}.map-direction-buttons .icon-button{min-width:30px;width:30px;height:32px}
+.map-statusbar{flex-wrap:wrap;row-gap:6px;font-size:12px;line-height:1.6}.map-status-hint{font-size:12px}
+.map-bottom-note{flex-wrap:wrap;row-gap:8px;font-size:13px;line-height:1.65}.map-empty>p{font-size:16px;line-height:1.7}
+.map-empty-steps{font-size:13px;flex-wrap:wrap;justify-content:center}.map-empty>.button{font-size:15px}
+.map-dialog .modal-footer .button{font-size:15px}.map-expanded .map-viewport{height:calc(100dvh - 345px)}
+@media(min-width:791px){.sidebar{width:260px}.main-wrap{margin-left:260px}.toast{left:calc(50% + 130px)}}
+@media(max-width:1190px){.header-right>.private-badge{display:none}.map-canvas-label{display:none}}
+@media(max-width:1100px){.map-workspace{grid-template-columns:minmax(0,1fr)}.map-inspector{max-height:none;grid-template-columns:1fr 1fr;display:grid;gap:0 20px;border-left:0;border-top:1px solid var(--line)}.map-inspector-heading,.map-index-help,.map-block-index,.map-position-heading,.map-position-inputs,.map-direction-buttons,.map-inspector-actions{grid-column:1/-1}.map-inspector-actions{flex-direction:row}.map-block-index{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.map-expanded .map-inspector{max-height:none}}
+@media(max-width:790px){.sidebar{width:260px}.topbar{min-height:68px;padding-top:10px;padding-bottom:10px}.test-link-badge{display:none}.agenda-overview{gap:16px}.map-canvas-label{display:none}}
+@media(max-width:570px){.topbar .breadcrumb{font-size:0;gap:0}.topbar .breadcrumb svg{display:none}.topbar .breadcrumb strong{font-size:15px}.header-right{gap:8px}.profile-trigger-label{max-width:70px;font-size:14px}.profile-trigger{gap:5px}.appearance-controls{gap:5px}.appearance-trigger,.mode-toggle{min-height:36px;min-width:36px;width:36px}.page-title-row>div:first-child{flex-basis:auto}.page-title-row p,.hero p,.sheet-welcome p,.portal-card p{font-size:16px;line-height:1.75}.section-heading>span{font-size:12px}.nav-new{font-size:12px}.test-notice p{font-size:14px}.form-label>input,.form-label>textarea,.form-label>select{font-size:16px}.map-identity{padding:17px 13px;gap:14px}.map-character-name{min-width:170px}.map-character-name>input,.map-character-name>h2{font-size:24px}.map-character-name .subtle-label{font-size:11px;letter-spacing:.5px}.map-player-label{max-width:none}.map-file-actions .button{font-size:14px;padding:9px 7px}.map-tabs>button{font-size:15px;min-width:118px;padding:14px 9px}.map-tab-actions{padding-left:2px}.map-tab-actions .icon-button{min-width:28px;width:28px}.map-toolbar{padding:11px 9px}.map-add.button{font-size:14px;padding:8px 9px}.map-tool-pair>button{height:34px;width:31px}.map-zoom-tools .icon-button{min-width:34px;width:34px}.map-zoom-value{font-size:14px}.map-workspace{grid-template-columns:minmax(0,1fr)}.map-inspector{padding:19px 14px;gap:0 12px}.map-inspector>.form-label{grid-column:1/-1}.map-position-inputs>label{font-size:12px}.map-inspector-actions .button{font-size:14px}.map-block-index{grid-template-columns:repeat(2,minmax(0,1fr))}.map-tip{grid-column:1/-1}.map-statusbar{font-size:12px}.map-bottom-note{font-size:13px}.map-direction-buttons .icon-button{min-width:34px;width:34px;height:36px}.calendar-day{min-height:82px}.calendar-toolbar{gap:12px;padding:17px 12px}.calendar-toolbar h2{font-size:24px}.calendar-navigation{margin-left:auto}.calendar-weekdays{font-size:12px}.agenda-filters .filter-row{flex-wrap:wrap;gap:6px}.agenda-filters .filter-row button{font-size:14px}.profile-agenda .section-heading{gap:12px}.profile-session strong{font-size:16px}.auth-temporary p,.auth-expires p{font-size:14px}.session-type-options>label{padding:14px 10px}.session-type-options strong{font-size:16px}.session-type-options small{font-size:13px}.session-form-grid .form-label{font-size:14px}.map-dialog .modal-footer .button{font-size:14px}.map-expanded .map-viewport{height:60dvh}}
+@media(max-width:370px){.profile-trigger-label{display:none}.topbar .breadcrumb strong{font-size:14px}}

@@ -7,9 +7,10 @@ function readStorage(browser, area, key) {
   catch { return undefined; }
 }
 
-export function openDraftStorage(browser = window) {
-  let shared = readStorage(browser, 'localStorage', STORAGE_KEY);
-  const tab = readStorage(browser, 'sessionStorage', TAB_DRAFT_KEY);
+export function openDraftStorage(browser = window, storageKey = STORAGE_KEY) {
+  const tabKey = `${storageKey}:tab`;
+  let shared = readStorage(browser, 'localStorage', storageKey);
+  const tab = readStorage(browser, 'sessionStorage', tabKey);
   let tabOnly = tab != null;
   let saved = null;
   let invalid = false;
@@ -28,8 +29,8 @@ export function openDraftStorage(browser = window) {
       if (!tabOnly) {
         try {
           const storage = browser.localStorage;
-          if (storage.getItem(STORAGE_KEY) === shared) {
-            storage.setItem(STORAGE_KEY, serialized);
+          if (storage.getItem(storageKey) === shared) {
+            storage.setItem(storageKey, serialized);
             shared = serialized;
             return 'shared';
           }
@@ -39,7 +40,7 @@ export function openDraftStorage(browser = window) {
         tabOnly = true;
       }
       try {
-        browser.sessionStorage.setItem(TAB_DRAFT_KEY, serialized);
+        browser.sessionStorage.setItem(tabKey, serialized);
         return 'tab';
       } catch {
         return 'unavailable';

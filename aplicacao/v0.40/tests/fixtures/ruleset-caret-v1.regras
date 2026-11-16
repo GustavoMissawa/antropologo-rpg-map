@@ -1,0 +1,302 @@
+{
+  "format": "rpg-ruleset",
+  "version": 1,
+  "id": "4b10cbd5-e97b-4795-a60e-685623fd4a96",
+  "name": "Teste de cursor",
+  "description": "Fronteiras de formatação no editor de Regras.",
+  "updatedAt": "2026-10-25T16:40:50.114Z",
+  "chapters": [
+    {
+      "id": "bold",
+      "title": "Negrito",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "bold"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "italic",
+      "title": "Itálico",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "italic"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "underline",
+      "title": "Sublinhado",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "underline"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "strike",
+      "title": "Riscado",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "strike"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "highlight",
+      "title": "Destaque",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "highlight"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "code",
+      "title": "Código inline",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "code"
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "external",
+      "title": "Link externo",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "ruleLink",
+                    "attrs": {
+                      "kind": "external",
+                      "href": "https://example.com",
+                      "topicId": null,
+                      "anchorId": null
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    },
+    {
+      "id": "internal",
+      "title": "Link interno",
+      "status": "draft",
+      "content": "texto qualquer\n\nOutro parágrafo para mover o cursor.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "texto qualquer",
+                "marks": [
+                  {
+                    "type": "ruleLink",
+                    "attrs": {
+                      "kind": "internal",
+                      "topicId": "bold",
+                      "href": null,
+                      "anchorId": null
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Outro parágrafo para mover o cursor."
+              }
+            ]
+          }
+        ]
+      },
+      "children": []
+    }
+  ]
+}

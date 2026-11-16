@@ -10,8 +10,9 @@ import {openDraftStorage} from './draft-storage.js';
 import {fetchSharedMap, REPOSITORY_URL} from './github-sync.js';
 import {
   INITIAL_REVISION, MAP_FORMAT, MAX_MAP_BYTES, mapEquals,
-  readSharedDocument, resolveInitialMap, restoreMap, snapshotMap, styleEdge,
+  resolveInitialMap, restoreMap, snapshotMap, styleEdge,
 } from './map-state.js';
+import {DEFAULT_VERSION, VERSIONS, checkMapVersion, readVersionedEdition} from './versions.js';
 const asset = (path) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${path}`;
 const tagName = (s='') => s.startsWith('PÁGINA') ? 'PÁGINA' : s || 'INFORMAÇÃO';
 const baseColors = { overview: '#7b9dff', pending: '#f59e0b', global:'#3fc0a7', system:'#ad8dff', rules:'#6db4ff', sheet:'#ff8a9e', dice:'#ebb978', files:'#70c7e8', account:'#c6a5fc', cross:'#9badbf' };
@@ -68,8 +69,17 @@ const nodeTypes = { screen:ScreenNode };
 
 const serializeDraft = (draft, baseline) => JSON.stringify({...draft,sync:baseline});
 
-function AppInner() {
+function VersionPicker({version, onChange}) {
+  return (
+    <select className="version-picker" aria-label="Versão do projeto" value={version.id} onChange={event=>onChange(event.target.value)}>
+      {Object.values(VERSIONS).map(option=><option key={option.id} value={option.id}>{option.label}</option>)}
+    </select>
+  );
+}
+
+function AppInner({version, onVersionChange}) {
   const [model,setModel] = useState(null);
+  const [sourceAvailable,setSourceAvailable] = useState(false);
   const [nodes,setNodes] = useState([]);
   const [edges,setEdges] = useState([]);
   const [section,setSection] = useState('overview');
@@ -106,12 +116,13 @@ function AppInner() {
       return response.json();
     });
     Promise.all([
-      fromSite('/data/map.json'),
-      fromSite('/data/edicoes.json').then(readSharedDocument).catch(()=>null),
-    ]).then(async ([doc,published])=>{
+      fromSite(version.dataPath+'/map.json'),
+      fromSite(version.dataPath+'/edicoes.json').then(document=>readVersionedEdition(document,version.id)).catch(()=>null),
+      fromSite('/data/fontes.json').then(sources=>sources?.[version.id]===true).catch(()=>false),
+    ]).then(async ([doc,published,source])=>{
       if(signal.aborted)return;
       const defaults = {nodes:makeNodes(doc),edges:makeEdges(doc)};
-      const storage = openDraftStorage();
+      const storage = openDraftStorage(window,version.storageKey);
       const {saved} = storage;
       const initial = {revision:INITIAL_REVISION,draft:null};
       let loaded;
@@ -122,7 +133,7 @@ function AppInner() {
         signal.addEventListener('abort',cancelRequest,{once:true});
         const timeout = setTimeout(cancelRequest,3000);
         try {
-          const {document} = await fetchSharedMap({signal:request.signal});
+          const {document} = await fetchSharedMap({versionId:version.id,signal:request.signal});
           loaded = resolveInitialMap(defaults,document,saved);
         } catch {
           // A previous sync may be newer than the copy served by Pages.
@@ -147,9 +158,10 @@ function AppInner() {
       setEdges(loaded.map.edges);
       setBaseline(loaded.baseline);
       setModel(doc);
+      setSourceAvailable(source);
     }).catch(error=>{if(!signal.aborted)setLoadError(error.message);});
     return ()=>controller.abort();
-  },[message]);
+  },[message,version]);
 
   const persistDraft = useCallback((serialized)=>{
     pendingDraft.current = serialized;
@@ -157,6 +169,7 @@ function AppInner() {
     const status = draftStorage.current.save(serialized);
     if(status!=='unavailable')lastPersisted.current = serialized;
     setStoreStatus(status);
+    return status;
   },[]);
 
   useLayoutEffect(()=>{
@@ -208,12 +221,12 @@ function AppInner() {
   },[section,view,model,flow]);
 
   const exportJSON=()=>{
-    const obj={format:MAP_FORMAT,exportedAt:new Date().toISOString(),source:model.source,...draft};
+    const obj={format:MAP_FORMAT,projectVersion:version.id,exportedAt:new Date().toISOString(),source:model.source,...draft};
     const blob=new Blob([JSON.stringify(obj,null,2)],{type:'application/json'});
     const url=URL.createObjectURL(blob);
     const link=document.createElement('a');
     link.href=url;
-    link.download='antropologo-mapa-editavel.json';
+    link.download=`antropologo-mapa-v${version.id}.json`;
     document.body.appendChild(link);
     link.click();
     link.remove();
@@ -226,7 +239,8 @@ function AppInner() {
     try {
       if(file.size>MAX_MAP_BYTES)throw Error('O arquivo excede 900 kB.');
       const content=JSON.parse(await file.text());
-      if(content.format!==MAP_FORMAT)throw Error('Formato de mapa inválido.');
+      if(content?.format!==MAP_FORMAT)throw Error('Formato de mapa inválido.');
+      checkMapVersion(content,version.id);
       const restored=restoreMap(content,original);
       setSelected(null);
       setNodes(restored.nodes);
@@ -276,17 +290,27 @@ function AppInner() {
     if(!activeNode)return;
     setNodes(p=>p.map(n=>n.id===activeNode.id?{...n,data:{...n.data,title:editTitle,description:editDescription,notes}}:n));message('Alterações aplicadas ao rascunho.');
   };
+  const switchVersion=(next)=>{
+    const unapplied = activeNode && (editTitle!==activeNode.data.title ||
+      editDescription!==activeNode.data.description || notes!==(activeNode.data.notes||''));
+    if(unapplied && !window.confirm('Há alterações no cartão que ainda não foram aplicadas. Trocar de versão mesmo assim?'))return;
+    if(persistDraft(pendingDraft.current)==='unavailable' &&
+        !window.confirm('O navegador não conseguiu guardar este rascunho. Trocar de versão mesmo assim?'))return;
+    clearTimeout(toastTimer.current);
+    onVersionChange(next);
+  };
 
   const draftStatus = storeStatus==='unavailable' ? 'O navegador não está guardando o rascunho. Exporte uma cópia.'
     : storeStatus==='tab'&&dirty ? 'Rascunho guardado nesta aba. Exporte antes de fechá-la.'
     : dirty ? 'Rascunho local · envio manual ao GitHub' : 'Mapa na versão de referência';
 
   if(loadError)return <div className="loading-screen"><div role="alert">{loadError}<br/>
+    <VersionPicker version={version} onChange={onVersionChange}/>
     <button className="btn secondary" onClick={()=>window.location.reload()}>Tentar novamente</button></div></div>;
   if(!model)return <div className="loading-screen"><div className="loading-orb"/>Carregando mapa do ANTROPOLOGO RPG...</div>;
   return <div className="shell">
     <aside className="sidebar">
-      <div className="brand"><div className="brand-symbol">A<span>·</span></div><div><b>ANTROPOLOGO</b><small>ATLAS DO RPG · V0.38</small></div></div>
+      <div className="brand"><div className="brand-symbol">A<span>·</span></div><div><b>ANTROPOLOGO</b><small>ATLAS DO RPG · V{version.id}</small></div></div>
       <div className="sidebar-label">ESPAÇO DE TRABALHO</div>
       <button className={`sidebar-view ${view==='map'?'active':''}`} aria-label="Mapa interativo" onClick={()=>selectView('map')}>◇ <span>Mapa interativo</span><strong>{model.cards.length}</strong></button>
       <button className={`sidebar-view ${view==='gallery'?'active':''}`} aria-label="Galeria de capturas" onClick={()=>selectView('gallery')}>▦ <span>Galeria de capturas</span><strong>{model.summary.screenshotsInFig}</strong></button>
@@ -296,7 +320,16 @@ function AppInner() {
     </aside>
     <main className="main">
       <header className="header">
-        <div className="heading"><span className="eyebrow">MAPEAMENTO DA PLATAFORMA</span><h1>{view==='gallery'?'Biblioteca de capturas':sections.find(s=>s.id===section)?.label||'Mapa geral'}</h1><p>{view==='gallery'?'Capturas da plataforma v0.38 recuperadas da exportação original.':sections.find(s=>s.id===section)?.description || 'Fluxos, páginas, estados e ações mapeados.'}</p></div>
+        <div className="heading">
+          <div className="version-controls">
+            <VersionPicker version={version} onChange={switchVersion}/>
+            {sourceAvailable
+              ? <a href={`${REPOSITORY_URL}/${version.sourcePath}`} target="_blank" rel="noreferrer">Código-fonte ↗</a>
+              : <span>Código-fonte pendente</span>}
+          </div>
+          <h1>{view==='gallery'?'Biblioteca de capturas':sections.find(s=>s.id===section)?.label||'Mapa geral'}</h1>
+          <p>{view==='gallery'?'Capturas da v0.38 recuperadas da exportação original.':sections.find(s=>s.id===section)?.description || 'Fluxos, páginas, estados e ações mapeados.'}</p>
+        </div>
         <div className="header-controls"><button className="btn secondary" onClick={()=>setSyncOpen(true)}>Sincronizar GitHub</button><button className="btn secondary" onClick={reset} title="Voltar à base recuperada">↺ Restaurar</button><button className="btn secondary" onClick={()=>inputRef.current?.click()}>⇧ Importar JSON</button><button className="btn primary" onClick={exportJSON}>↓ Exportar mapa</button><input type="file" ref={inputRef} accept=".json,application/json" hidden onChange={importJSON}/></div>
       </header>
       <div className="toolbar"><div className="search-wrapper"><span>⌕</span><input aria-label="Buscar páginas e capturas" value={filter} onChange={e=>setFilter(e.target.value)} placeholder={view==='map'?'Buscar páginas, funções, rotas ou códigos D/M...':'Buscar códigos e nomes das capturas...'}/></div><div className="segmented"><button className={device==='todos'?'current':''} onClick={()=>setDevice('todos')}>Todos</button><button className={device==='desktop'?'current':''} onClick={()=>setDevice('desktop')}>Desktop</button><button className={device==='mobile'?'current':''} onClick={()=>setDevice('mobile')}>Mobile</button>{view==='gallery'&&<button className={device==='extra'?'current':''} onClick={()=>setDevice('extra')}>Extras</button>}</div><div className="counter">{view==='map'?`${visibleNodes.length} cartões · ${visibleEdges.length} conexões`: `${screenshots.length} referências`}</div></div>
@@ -311,9 +344,22 @@ function AppInner() {
         <span>{outgoing?'Ir para':'Chega de'} · {related.data.title}</span><small>{path.label}</small>
       </button></li>;
     })}</ul></>}<h3>Capturas relacionadas</h3>{activeNode.data.refs.length?activeNode.data.refs.map(ref=>{const s=model.screenshots.find(x=>x.code===ref);return <div className="detail-image" key={ref}><div className="detail-image-label"><strong>{ref}</strong> {s?.title||'Referência sem captura individual no arquivo'}</div>{s?.image?<img onClick={()=>window.open(asset(s.image),'_blank','noopener')} src={asset(s.image)} loading="lazy" alt={`Captura ${ref}`}/>:<div className="missing-capture">Sem imagem vinculada no .fig</div>}</div>}):<p className="muted">Nenhuma captura referenciada.</p>}<p className="detail-footer">ID Figma: {activeNode.id}<br/>Seção: {sections.find(s=>s.id===activeNode.data.section)?.label}</p></aside>}
-    {syncOpen&&<GitHubSyncDialog dirty={dirty} baseline={baseline} draft={draft} toDraft={toDraft}
+    {syncOpen&&<GitHubSyncDialog version={version} dirty={dirty} baseline={baseline} draft={draft} toDraft={toDraft}
       applyRemote={applyRemote} onSaved={rememberPublished} onClose={()=>setSyncOpen(false)}/>}
     {!!toast&&<div role="status" className="toast">{toast}</div>}
   </div>;
 }
-export default function App(){return <ReactFlowProvider><AppInner/></ReactFlowProvider>}
+export default function App(){
+  const [versionId,setVersionId] = useState(()=>{
+    const requested = new URLSearchParams(window.location.search).get('versao');
+    return Object.hasOwn(VERSIONS,requested) ? requested : DEFAULT_VERSION;
+  });
+  const changeVersion=(next)=>{
+    if(!Object.hasOwn(VERSIONS,next))return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('versao',next);
+    window.history.replaceState(window.history.state,'',url);
+    setVersionId(next);
+  };
+  return <ReactFlowProvider key={versionId}><AppInner version={VERSIONS[versionId]} onVersionChange={changeVersion}/></ReactFlowProvider>;
+}

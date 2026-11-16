@@ -1,0 +1,138 @@
+{
+  "format": "ab10-character",
+  "version": 4,
+  "id": "9c6bd7a4-d22b-4c73-a609-cccff785d484",
+  "name": "Astra — ficha de exemplo",
+  "player": "Jogador de teste",
+  "description": "",
+  "updatedAt": "2026-10-23T23:28:51.451Z",
+  "blocks": [
+    {
+      "id": "c7941d80-bc37-4709-93d1-d86bc73c4e4d",
+      "title": "Atributos",
+      "description": "",
+      "kind": "attributes",
+      "tabId": "0dd56ef4-0535-4ed6-8131-a96bfa1d8c0f",
+      "layout": {
+        "x": 48,
+        "y": 48,
+        "width": 390
+      },
+      "fields": [
+        {
+          "id": "6e0f6aa1-10b1-4082-8973-58ae9530d8d9",
+          "label": "Destreza",
+          "type": "composite",
+          "value": 16,
+          "composite": {
+            "mode": "ability",
+            "modifier": 0
+          },
+          "roll": {
+            "formula": "1d20 + @modificador",
+            "variables": []
+          }
+        },
+        {
+          "id": "64edeeb2-a4a0-450b-9c97-732ac3bdcf85",
+          "label": "Foco",
+          "type": "number",
+          "value": 3,
+          "roll": {
+            "formula": "1d20 + @valor",
+            "variables": []
+          }
+        },
+        {
+          "id": "bf34274e-f32c-41e4-a5ff-6be6f5e1e281",
+          "label": "Rajada",
+          "type": "number",
+          "value": 3,
+          "roll": {
+            "formula": "(@valor)d20",
+            "variables": []
+          }
+        }
+      ]
+    },
+    {
+      "id": "b76af22e-0624-432a-a1d8-0c9be0099087",
+      "title": "Perícias",
+      "description": "",
+      "kind": "skills",
+      "tabId": "0dd56ef4-0535-4ed6-8131-a96bfa1d8c0f",
+      "layout": {
+        "x": 470,
+        "y": 48,
+        "width": 390
+      },
+      "fields": [
+        {
+          "id": "27bc9276-0e4b-406b-b3d8-7d0a15d4adda",
+          "label": "Furtividade",
+          "type": "calculated",
+          "value": "",
+          "dependency": {
+            "sourceId": "64edeeb2-a4a0-450b-9c97-732ac3bdcf85",
+            "part": "value",
+            "offset": 0
+          },
+          "roll": {
+            "formula": "1d20 + @valor",
+            "variables": []
+          }
+        },
+        {
+          "id": "cd3b6b66-a4cf-4869-ac98-7bd3e395ad80",
+          "label": "Acrobacia",
+          "type": "calculated",
+          "value": "",
+          "dependency": {
+            "sourceId": "6e0f6aa1-10b1-4082-8973-58ae9530d8d9",
+            "part": "modifier",
+            "offset": 2
+          }
+        }
+      ]
+    }
+  ],
+  "tabs": [
+    {
+      "id": "0dd56ef4-0535-4ed6-8131-a96bfa1d8c0f",
+      "title": "Principal"
+    }
+  ],
+  "activeTabId": "0dd56ef4-0535-4ed6-8131-a96bfa1d8c0f",
+  "rolls": [
+    {
+      "id": "c0074d8b-ca0c-4f6e-be70-fe9b97d31ed5",
+      "name": "Teste de Furtividade",
+      "formula": "1d20 + @furtividade",
+      "variables": [
+        {
+          "name": "furtividade",
+          "fieldId": "27bc9276-0e4b-406b-b3d8-7d0a15d4adda",
+          "part": "value"
+        }
+      ]
+    },
+    {
+      "id": "5a3a69ab-b822-491f-8d28-ce4a976898ed",
+      "name": "Teste de Acrobacia",
+      "formula": "1d20 + @destreza_mod + 2",
+      "variables": [
+        {
+          "name": "destreza_mod",
+          "fieldId": "6e0f6aa1-10b1-4082-8973-58ae9530d8d9",
+          "part": "modifier"
+        }
+      ]
+    },
+    {
+      "id": "e951796a-2bf2-4fed-9414-455bb96bc75e",
+      "name": "Dano da arma",
+      "formula": "2d6 + 3",
+      "variables": []
+    }
+  ]
+}

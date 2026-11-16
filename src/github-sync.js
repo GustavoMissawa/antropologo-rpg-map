@@ -1,10 +1,10 @@
-import {MAP_FORMAT, MAX_MAP_BYTES, readSharedDocument} from './map-state.js';
+import {MAP_FORMAT, MAX_MAP_BYTES} from './map-state.js';
+import {ALPHA_VERSION, editionFile, readVersionedEdition} from './versions.js';
 
 export const REPOSITORY = 'GustavoMissawa/antropologo-rpg-map';
 export const REPOSITORY_URL = `https://github.com/${REPOSITORY}`;
 const BRANCH = 'main';
-const EDITIONS_FILE = 'public/data/edicoes.json';
-const EDITIONS_API = `https://api.github.com/repos/${REPOSITORY}/contents/${EDITIONS_FILE}`;
+const editionsApi = versionId => `https://api.github.com/repos/${REPOSITORY}/contents/${editionFile(versionId)}`;
 
 function headers(token) {
   return {
@@ -49,30 +49,30 @@ async function send(url, options, fetcher) {
   throw Error(`O GitHub devolveu o erro ${response.status}.`);
 }
 
-export async function fetchSharedMap({token='',signal,fetcher=fetch}={}) {
-  const file = await send(`${EDITIONS_API}?ref=${BRANCH}`,{
+export async function fetchSharedMap({versionId=ALPHA_VERSION,token='',signal,fetcher=fetch}={}) {
+  const file = await send(`${editionsApi(versionId)}?ref=${BRANCH}`,{
     headers:headers(token),cache:'no-store',redirect:'error',signal,
   },fetcher);
   if (file?.encoding !== 'base64' || typeof file.content !== 'string' ||
       typeof file.sha !== 'string' || !/^[0-9a-f]{40}$/.test(file.sha)) {
     throw Error('O GitHub devolveu um arquivo de edições inválido.');
   }
-  return {sha:file.sha, document:readSharedDocument(decodeContent(file.content))};
+  return {sha:file.sha, document:readVersionedEdition(decodeContent(file.content),versionId)};
 }
 
-export async function publishSharedMap({token,sha,draft,fetcher=fetch,newRevision=()=>crypto.randomUUID()}) {
+export async function publishSharedMap({versionId=ALPHA_VERSION,token,sha,draft,fetcher=fetch,newRevision=()=>crypto.randomUUID()}) {
   if (!token?.trim()) throw Error('Informe o token de escrita do GitHub.');
   if (typeof sha !== 'string' || !/^[0-9a-f]{40}$/.test(sha)) {
     throw Error('Verifique a versão remota antes de salvar.');
   }
-  const document = readSharedDocument({format:MAP_FORMAT,version:1,revision:newRevision(),draft});
-  const reply = await send(EDITIONS_API,{
+  const document = readVersionedEdition({format:MAP_FORMAT,version:1,projectVersion:versionId,revision:newRevision(),draft},versionId);
+  const reply = await send(editionsApi(versionId),{
     method:'PUT',redirect:'error',
     headers:{...headers(token.trim()),'Content-Type':'application/json'},
     body:JSON.stringify({
       branch:BRANCH,
       sha,
-      message:'Atualiza mapa visual pelo editor',
+      message:`Atualiza mapa visual v${versionId} pelo editor`,
       content:encodeContent(JSON.stringify(document,null,2)+'\n'),
     }),
   },fetcher);

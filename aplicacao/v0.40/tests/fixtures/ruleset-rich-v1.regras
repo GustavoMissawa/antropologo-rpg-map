@@ -1,0 +1,301 @@
+{
+  "format": "rpg-ruleset",
+  "version": 1,
+  "id": "editor-fixture",
+  "name": "Caderno de teste",
+  "description": "Conjunto para validar escrita, formatação e links.",
+  "updatedAt": "2026-10-25T12:00:00.000Z",
+  "chapters": [
+    {
+      "id": "test-topic",
+      "title": "Teste",
+      "status": "draft",
+      "content": "Experimente Teste e itálico, além de destaque. Consulte Informações detalhadas de teste.\n\nUma subseção no mesmo tópico\n\nUma subseção criada dentro do texto, sem abrir outro tópico.\n\nAtributos e perícias.\nDetalhes e exemplos.\n\nUma regra bem organizada é mais fácil de consultar.\n\n1d20 + atributo\nresultado >= dificuldade\n\nContinue a escrita a partir daqui.",
+      "document": {
+        "type": "doc",
+        "content": [
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Experimente "
+              },
+              {
+                "type": "text",
+                "text": "Teste",
+                "marks": [
+                  {
+                    "type": "bold"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": " e "
+              },
+              {
+                "type": "text",
+                "text": "itálico",
+                "marks": [
+                  {
+                    "type": "italic"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ", além de "
+              },
+              {
+                "type": "text",
+                "text": "destaque",
+                "marks": [
+                  {
+                    "type": "highlight"
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": ". Consulte "
+              },
+              {
+                "type": "text",
+                "text": "Informações detalhadas de teste",
+                "marks": [
+                  {
+                    "type": "ruleLink",
+                    "attrs": {
+                      "kind": "internal",
+                      "topicId": "details-topic",
+                      "anchorId": "sec-special",
+                      "href": null
+                    }
+                  }
+                ]
+              },
+              {
+                "type": "text",
+                "text": "."
+              }
+            ]
+          },
+          {
+            "type": "heading",
+            "attrs": {
+              "id": "sec-local",
+              "level": 2
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "Uma subseção no mesmo tópico"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Uma subseção criada dentro do texto, sem abrir outro tópico."
+              }
+            ]
+          },
+          {
+            "type": "bulletList",
+            "content": [
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Atributos e perícias."
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "type": "listItem",
+                "content": [
+                  {
+                    "type": "paragraph",
+                    "content": [
+                      {
+                        "type": "text",
+                        "text": "Detalhes e exemplos."
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "blockquote",
+            "content": [
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Uma regra bem organizada é mais fácil de consultar."
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "type": "codeBlock",
+            "attrs": {
+              "language": null
+            },
+            "content": [
+              {
+                "type": "text",
+                "text": "1d20 + atributo\nresultado >= dificuldade"
+              }
+            ]
+          },
+          {
+            "type": "paragraph",
+            "content": [
+              {
+                "type": "text",
+                "text": "Continue a escrita a partir daqui."
+              }
+            ]
+          }
+        ]
+      },
+      "children": [
+        {
+          "id": "details-topic",
+          "title": "Informações detalhadas de teste",
+          "status": "draft",
+          "content": "Visão geral\n\nContexto 1. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 2. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 3. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 4. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nContexto 5. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. \n\nAplicação detalhada\n\nEsta é a subseção exata que o link deve abrir.\n\nExemplo final\n\nO identificador desta subseção não muda ao renomear o cabeçalho.",
+          "document": {
+            "type": "doc",
+            "content": [
+              {
+                "type": "heading",
+                "attrs": {
+                  "id": "sec-overview",
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Visão geral"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 1. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 2. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 3. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 4. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Contexto 5. As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. . As instruções explicam quando aplicar a regra e como interpretar seus resultados. "
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "id": "sec-special",
+                  "level": 2
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Aplicação detalhada"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Esta é a subseção exata que o link deve abrir."
+                  }
+                ]
+              },
+              {
+                "type": "heading",
+                "attrs": {
+                  "id": "sec-closing",
+                  "level": 3
+                },
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "Exemplo final"
+                  }
+                ]
+              },
+              {
+                "type": "paragraph",
+                "content": [
+                  {
+                    "type": "text",
+                    "text": "O identificador desta subseção não muda ao renomear o cabeçalho."
+                  }
+                ]
+              }
+            ]
+          },
+          "children": []
+        }
+      ]
+    },
+    {
+      "id": "empty-topic",
+      "title": "Capítulo vazio",
+      "content": "",
+      "status": "draft",
+      "children": []
+    }
+  ]
+}

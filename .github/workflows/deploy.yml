@@ -20,6 +20,8 @@ jobs:
     steps:
       - name: Baixar codigo
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Preparar Node.js
         uses: actions/setup-node@v4
@@ -35,6 +37,9 @@ jobs:
 
       - name: Verificar mapa e sincronização
         run: npm test
+
+      - name: Verificar integridade da Alpha
+        run: git diff --exit-code v0.38-alpha HEAD -- aplicacao/v0.38
 
       - name: Gerar versao publica
         run: npm run build

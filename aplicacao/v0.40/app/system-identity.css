@@ -1,0 +1,4 @@
+/* Decorative media stays behind the interface and never receives input. */
+.theme-image-background{position:absolute;inset:0;overflow:hidden;pointer-events:none;user-select:none}.theme-image-background>img,.theme-image-background>span{position:absolute;inset:0;width:100%;height:100%;display:block}.theme-image-background>img{object-fit:cover}
+.main-wrap.has-system-main-background{position:relative;isolation:isolate}.system-main-ambient{inset:78px 0 0;z-index:-2}.system-main-ambient:after{content:"";position:absolute;inset:0;background:var(--bg);opacity:.64;pointer-events:none}
+@media(forced-colors:active){.theme-image-background{display:none}}

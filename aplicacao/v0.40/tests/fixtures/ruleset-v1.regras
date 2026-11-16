@@ -1,0 +1,40 @@
+{
+  "format": "rpg-ruleset",
+  "version": 1,
+  "id": "e88c6d82-58ae-4981-8682-4c414716ff91",
+  "name": "Órbita de Cinzas",
+  "description": "Um conjunto de exemplo para conferir importação e subdivisões.",
+  "updatedAt": "2026-10-24T02:02:56.462Z",
+  "chapters": [
+    {
+      "id": "start",
+      "title": "Apresentação",
+      "status": "draft",
+      "content": "Este é um conjunto de exemplo.\n\nOs textos e as subdivisões podem ser editados de forma independente.",
+      "children": []
+    },
+    {
+      "id": "people",
+      "title": "Personagens",
+      "status": "test",
+      "content": "Organize aqui a criação dos personagens.",
+      "children": [
+        {
+          "id": "skills",
+          "title": "Perícias",
+          "status": "draft",
+          "content": "Um espaço para descrever as perícias do seu sistema.",
+          "children": [
+            {
+              "id": "stealth",
+              "title": "Furtividade",
+              "status": "draft",
+              "content": "Texto de exemplo para conferir uma terceira camada de regras.",
+              "children": []
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

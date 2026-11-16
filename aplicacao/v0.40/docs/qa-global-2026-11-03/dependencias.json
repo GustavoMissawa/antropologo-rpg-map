@@ -1,0 +1,129 @@
+{
+  "productionBefore": {
+    "info": 0,
+    "low": 4,
+    "moderate": 9,
+    "high": 7,
+    "critical": 3
+  },
+  "productionAfter": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0
+  },
+  "allBeforeAdditionalUpdates": {
+    "info": 0,
+    "low": 7,
+    "moderate": 27,
+    "high": 28,
+    "critical": 0
+  },
+  "allAfter": {
+    "info": 0,
+    "low": 1,
+    "moderate": 3,
+    "high": 0,
+    "critical": 0
+  },
+  "remaining": [
+    {
+      "package": "esbuild",
+      "severity": "moderate",
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "patchedVersions": ">=0.25.0",
+      "findings": [
+        {
+          "version": "0.18.20",
+          "dev": true,
+          "optional": false,
+          "pathCount": 1,
+          "examplePaths": [
+            ".>drizzle-kit>@esbuild-kit/esm-loader>@esbuild-kit/core-utils>esbuild"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "esbuild",
+      "severity": "low",
+      "title": "esbuild allows arbitrary file read when running the development server on Windows",
+      "url": "https://github.com/advisories/GHSA-g7r4-m6w7-qqqr",
+      "patchedVersions": ">=0.28.1",
+      "findings": [
+        {
+          "version": "0.27.3",
+          "dev": true,
+          "optional": false,
+          "pathCount": 2,
+          "examplePaths": [
+            ".>@cloudflare/vite-plugin>wrangler>esbuild",
+            ".>wrangler>esbuild"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "satori",
+      "severity": "moderate",
+      "title": "Satori-generated SVG has improper escaping",
+      "url": "https://github.com/advisories/GHSA-wx4j-mvgx-mqwp",
+      "patchedVersions": ">=0.33.5",
+      "findings": [
+        {
+          "version": "0.16.0",
+          "dev": true,
+          "optional": false,
+          "pathCount": 1,
+          "examplePaths": [
+            ".>vinext>@vercel/og>satori"
+          ]
+        }
+      ]
+    },
+    {
+      "package": "minimatch",
+      "severity": "moderate",
+      "title": "minimatch has potential denial of service via globparts amplification",
+      "url": "https://github.com/advisories/GHSA-g3hv-75wg-m249",
+      "patchedVersions": ">=11.0.1",
+      "findings": [
+        {
+          "version": "3.1.5",
+          "dev": true,
+          "optional": false,
+          "pathCount": 85,
+          "examplePaths": [
+            ".>eslint>@eslint/config-array>minimatch",
+            ".>eslint>@eslint/eslintrc>minimatch",
+            ".>eslint>minimatch"
+          ]
+        },
+        {
+          "version": "10.2.5",
+          "dev": true,
+          "optional": false,
+          "pathCount": 11,
+          "examplePaths": [
+            ".>eslint-config-next>eslint-import-resolver-typescript>eslint-plugin-import>eslint-module-utils>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+            ".>eslint-config-next>eslint-import-resolver-typescript>eslint-plugin-import>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch",
+            ".>eslint-config-next>eslint-plugin-import>eslint-module-utils>@typescript-eslint/parser>@typescript-eslint/typescript-estree>minimatch"
+          ]
+        }
+      ]
+    }
+  ],
+  "importantManualAdvisories": [
+    {
+      "url": "https://github.com/react/react/security/advisories/GHSA-xqc2-xf4c-x3h3",
+      "fix": "react-server-dom-webpack 19.2.9",
+      "note": "Found in official advisory review; absent from the queried npm audit response."
+    },
+    {
+      "url": "https://github.com/react/react/security/advisories/GHSA-h3gv-c5rc-p453",
+      "fix": "react-server-dom-webpack 19.2.9"
+    }
+  ]
+}
