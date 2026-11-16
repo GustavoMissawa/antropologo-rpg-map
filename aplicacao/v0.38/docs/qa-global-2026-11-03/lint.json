@@ -1,0 +1,311 @@
+{
+  "errors": 59,
+  "warnings": 60,
+  "files": [
+    {
+      "file": "app/appearance.tsx",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/content-export.tsx",
+      "errors": 1,
+      "warnings": 1,
+      "rules": [
+        "@next/next/no-img-element",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/dice-symbol-editor.tsx",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "app/die-face-image-control.tsx",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/refs"
+      ]
+    },
+    {
+      "file": "app/die-face.tsx",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@next/next/no-img-element"
+      ]
+    },
+    {
+      "file": "app/field-details.tsx",
+      "errors": 1,
+      "warnings": 2,
+      "rules": [
+        "react-hooks/exhaustive-deps",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/hero-die.tsx",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/refs"
+      ]
+    },
+    {
+      "file": "app/home-dice-background.tsx",
+      "errors": 2,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/refs",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/page.tsx",
+      "errors": 4,
+      "warnings": 22,
+      "rules": [
+        "@typescript-eslint/no-explicit-any",
+        "@typescript-eslint/no-unused-vars",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/platform-home.tsx",
+      "errors": 0,
+      "warnings": 3,
+      "rules": [
+        "@next/next/no-img-element",
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "app/player-space.tsx",
+      "errors": 2,
+      "warnings": 1,
+      "rules": [
+        "react-hooks/exhaustive-deps",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/rule-editor-extensions.ts",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "app/rule-mobile-toolbar.tsx",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/rule-topic-editor.tsx",
+      "errors": 5,
+      "warnings": 2,
+      "rules": [
+        "react-hooks/exhaustive-deps",
+        "react-hooks/refs"
+      ]
+    },
+    {
+      "file": "app/rulebook-dice.tsx",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/refs"
+      ]
+    },
+    {
+      "file": "app/rulebook-metadata.tsx",
+      "errors": 2,
+      "warnings": 2,
+      "rules": [
+        "@next/next/no-img-element",
+        "react-hooks/exhaustive-deps",
+        "react-hooks/refs",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/rules-library.tsx",
+      "errors": 1,
+      "warnings": 2,
+      "rules": [
+        "@next/next/no-img-element",
+        "react-hooks/exhaustive-deps",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/sheet-block-visuals.tsx",
+      "errors": 0,
+      "warnings": 3,
+      "rules": [
+        "@next/next/no-img-element",
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "app/sheet-comparison.tsx",
+      "errors": 1,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/sheet-dice.tsx",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "app/sheet-map.tsx",
+      "errors": 6,
+      "warnings": 4,
+      "rules": [
+        "@typescript-eslint/no-unused-vars",
+        "react-hooks/exhaustive-deps",
+        "react-hooks/refs",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/sheet-portrait.tsx",
+      "errors": 1,
+      "warnings": 3,
+      "rules": [
+        "@next/next/no-img-element",
+        "@typescript-eslint/no-unused-vars",
+        "react-hooks/refs"
+      ]
+    },
+    {
+      "file": "app/sheet-roll-background.tsx",
+      "errors": 2,
+      "warnings": 0,
+      "rules": [
+        "react-hooks/refs",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/super-png-visual-preview.tsx",
+      "errors": 1,
+      "warnings": 1,
+      "rules": [
+        "@next/next/no-img-element",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "app/system-identity.tsx",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@next/next/no-img-element"
+      ]
+    },
+    {
+      "file": "app/system-visual-editor.tsx",
+      "errors": 3,
+      "warnings": 3,
+      "rules": [
+        "@next/next/no-img-element",
+        "react-hooks/exhaustive-deps",
+        "react-hooks/refs",
+        "react-hooks/set-state-in-effect"
+      ]
+    },
+    {
+      "file": "lib/dice.ts",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "lib/model.ts",
+      "errors": 9,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-explicit-any",
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "lib/player-server.ts",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "lib/rule-document.ts",
+      "errors": 3,
+      "warnings": 0,
+      "rules": [
+        "@typescript-eslint/no-explicit-any"
+      ]
+    },
+    {
+      "file": "lib/sheet-connections.ts",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "lib/super-png.ts",
+      "errors": 2,
+      "warnings": 0,
+      "rules": [
+        "@typescript-eslint/no-explicit-any"
+      ]
+    },
+    {
+      "file": "tests/demo-auth.integration.ts",
+      "errors": 8,
+      "warnings": 0,
+      "rules": [
+        "@typescript-eslint/no-explicit-any"
+      ]
+    },
+    {
+      "file": "tests/rule-editor.test.mjs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    },
+    {
+      "file": "tests/rulebooks.test.mjs",
+      "errors": 0,
+      "warnings": 1,
+      "rules": [
+        "@typescript-eslint/no-unused-vars"
+      ]
+    }
+  ]
+}

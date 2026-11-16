@@ -1,0 +1,58 @@
+$ node scripts/run-framework.mjs build
+
+  vinext build  (Vite 8.1.6)
+
+[33m▲ [43;33m[[43;30mWARNING[43;33m][0m [1mProxy environment variables detected. We'll use your proxy for fetch requests.[0m
+
+
+[1/5] analyze client references...
+[2Ktransforming...✓ 418 modules transformed.
+rendering chunks...
+✓ built in 908ms
+[2/5] analyze server references...
+[2Ktransforming...✓ 330 modules transformed.
+rendering chunks...
+✓ built in 1.23s
+[3/5] build rsc environment...
+[2Ktransforming...✓ 420 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 1.03s
+[4/5] build client environment...
+[2Ktransforming...✓ 2068 modules transformed.
+rendering chunks...
+computing gzip size...
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 2.24s
+[5/5] build ssr environment...
+[2Ktransforming...✓ 343 modules transformed.
+rendering chunks...
+computing gzip size...
+✓ built in 1.41s
+[0m
+  Route (app)
+  ┌ ? /                 
+  ├ λ /api/auth/login   
+  ├ λ /api/auth/logout  
+  ├ λ /api/auth/register
+  ├ λ /api/auth/session 
+  ├ λ /api/export       
+  ├ λ /api/library      
+  ├ λ /api/library/:id  
+  ├ λ /api/profile      
+  ├ λ /api/rules        
+  ├ λ /api/sessions     
+  └ λ /api/sessions/:id 
+
+  λ API  ? Unknown
+
+  ? Some routes could not be classified. vinext currently uses static analysis
+    and cannot detect dynamic API usage (headers(), cookies(), etc.) at build time.
+    Automatic classification will be improved in a future release.
+
+  Build complete. Run `vinext start` to start the production server.
+

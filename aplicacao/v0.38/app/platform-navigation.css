@@ -1,0 +1,53 @@
+/* One top navigation in both platform and system contexts. */
+.app-shell{--sidebar-width:0px;--platform-header-height:78px}
+.app-shell .main-wrap{margin-left:0;width:100%}
+.app-shell .topbar{isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:18px;height:auto;min-height:78px;padding:0 clamp(24px,4vw,64px)}
+.topbar .topbar-left{display:flex;align-items:center;gap:12px;min-width:0;flex-shrink:1}
+.topbar .header-platform-brand{display:block;flex-shrink:0}
+.header-context-separator{color:var(--muted);font-size:19px;font-weight:400;line-height:1;flex:none}
+.header-system-identity{display:flex;align-items:center;gap:9px;min-width:0;max-width:240px;min-height:44px;padding:4px 0;border:0;background:transparent;color:var(--accent-ink);text-align:left;border-radius:5px}
+.header-system-identity:hover{color:var(--ink)}
+.header-system-identity>img{height:32px;width:38px;flex:none;object-fit:contain}
+.header-system-name{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:600 15px/1.4 var(--heading)}
+.header-system-identity.has-logo{min-width:44px;justify-content:center}
+.header-system-identity.has-logo .header-system-name{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;border:0}
+.topbar .global-top-nav{display:flex;min-width:0;gap:4px}
+.topbar .global-top-nav button{min-height:44px;font-size:14px;padding:9px 10px}
+.topbar .header-right{min-width:0;gap:9px}
+.topbar .private-badge{display:none}
+.system-header-ambient{z-index:-1}
+.system-header-ambient:after{content:'';position:absolute;inset:0;background:var(--paper);opacity:.86;pointer-events:none}
+.app-shell .toast{left:50%;max-width:calc(100vw - 28px)}
+.app-shell .ambient-backdrop{left:0;top:var(--platform-header-height)}
+.app-shell .system-main-ambient{inset:var(--platform-header-height) 0 0}
+.app-shell .is-home>main{max-width:1720px;padding:28px clamp(24px,4vw,64px) 50px}
+@media(max-width:1200px){
+ .app-shell{--platform-header-height:131px}
+ .app-shell .topbar{grid-template-columns:minmax(0,1fr) auto;column-gap:12px;row-gap:0;padding-bottom:8px}
+ .topbar .topbar-left{min-height:78px}
+ .topbar .header-right{grid-column:2;grid-row:1;justify-content:flex-end;min-height:78px}
+ .topbar .global-top-nav{grid-column:1/-1;grid-row:2;justify-content:center;width:100%;gap:8px}
+ .topbar .global-top-nav button{padding:8px 18px}
+ .header-system-identity{max-width:320px}
+}
+@media(max-width:790px){
+ .app-shell .topbar{padding-inline:18px;column-gap:8px}
+ .topbar .topbar-left{gap:8px}
+ .topbar .global-top-nav{justify-content:space-between;gap:2px}
+ .topbar .global-top-nav button{flex:1;min-width:0;padding:8px 4px;font-size:13px}
+ .header-system-identity{gap:6px;max-width:100%}
+ .header-system-name{font-size:13px}
+ .header-system-identity>img{width:26px;height:28px}
+ .app-shell .ambient-backdrop{height:calc(100vh - var(--platform-header-height));height:calc(100lvh - var(--platform-header-height))}
+ .app-shell .is-home>main{padding:28px 18px 50px}
+}
+@media(max-width:480px){
+ .app-shell .topbar{padding-inline:12px}
+ .topbar .header-right{gap:5px}
+ .header-context-separator{font-size:15px}
+ .header-system-identity>img{width:20px;height:24px}
+ .header-system-identity{gap:4px}
+ .topbar .header-platform-brand .platform-word{font-size:15px}
+ .topbar .header-language{display:none}
+}
+@media(forced-colors:active){.system-header-ambient{display:none}.header-system-identity{color:ButtonText}}

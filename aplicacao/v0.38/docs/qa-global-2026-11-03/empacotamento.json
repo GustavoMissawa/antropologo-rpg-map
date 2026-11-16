@@ -1,0 +1,21 @@
+{
+  "before": {
+    "files": 106,
+    "bytes": 6071624,
+    "pageChunks": 3
+  },
+  "after": {
+    "files": 90,
+    "bytes": 3502450,
+    "pageChunks": 1,
+    "staleMarkerExists": false
+  },
+  "currentPageChunkBytes": 859147,
+  "currentPageChunkGzipBytes": 261754,
+  "downloadChecks": {
+    "pdfBytesIdentical": true,
+    "jsonChapters": 2,
+    "pngChapters": 2,
+    "pngRichTextPreserved": true
+  }
+}

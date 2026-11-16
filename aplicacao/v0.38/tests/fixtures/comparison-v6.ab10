@@ -1,0 +1,104 @@
+{
+  "format": "ab10-character",
+  "version": 6,
+  "id": "75adbf0d-c40a-4970-a195-e2908371f3ba",
+  "name": "Astra — Exploradora",
+  "player": "Guss",
+  "description": "Valores compostos e comparativos durante a aventura.",
+  "updatedAt": "2026-10-24T22:43:12.866Z",
+  "blocks": [
+    {
+      "id": "735cb790-a9ac-4910-a86b-cb28803be71b",
+      "title": "Atributos",
+      "description": "",
+      "kind": "attributes",
+      "tabId": "main",
+      "layout": {
+        "x": 48,
+        "y": 48,
+        "width": 360
+      },
+      "fields": [
+        {
+          "id": "dex",
+          "label": "Destreza",
+          "type": "composite",
+          "value": 16,
+          "composite": {
+            "mode": "ability",
+            "modifier": 0
+          },
+          "roll": {
+            "formula": "1d20 + @modificador",
+            "variables": []
+          },
+          "details": "Agilidade e precisão. A rolagem usa o modificador."
+        }
+      ]
+    },
+    {
+      "id": "cfc96c1a-e77d-4fe9-818c-4de5d5b8bc5e",
+      "title": "Recursos",
+      "description": "",
+      "kind": "resources",
+      "tabId": "main",
+      "layout": {
+        "x": 456,
+        "y": 48,
+        "width": 360
+      },
+      "fields": [
+        {
+          "id": "hp",
+          "label": "Vida",
+          "type": "comparison",
+          "value": 25,
+          "comparison": {
+            "maximum": 40
+          },
+          "details": "Pontos de vida atuais e máximos."
+        },
+        {
+          "id": "mana",
+          "label": "Mana",
+          "type": "comparison",
+          "value": 12,
+          "comparison": {
+            "maximum": 0,
+            "dependency": {
+              "sourceId": "dex",
+              "part": "value",
+              "offset": 4
+            }
+          },
+          "roll": {
+            "formula": "@maximo - @atual",
+            "variables": []
+          }
+        }
+      ]
+    }
+  ],
+  "tabs": [
+    {
+      "id": "main",
+      "title": "Principal"
+    }
+  ],
+  "activeTabId": "main",
+  "rolls": [
+    {
+      "id": "roll",
+      "name": "Teste de Destreza",
+      "formula": "1d20 + @destreza_mod",
+      "variables": [
+        {
+          "name": "destreza_mod",
+          "fieldId": "dex",
+          "part": "modifier"
+        }
+      ]
+    }
+  ],
+  "positionMode": "grid"
+}

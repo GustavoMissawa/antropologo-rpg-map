@@ -1,0 +1,43 @@
+✖ Verificar a mesma conta por foco não descarta uma sessão que estava sendo salva (287.921601ms)
+✖ A última ficha escolhida permanece aberta quando uma importação anterior termina atrasada (263.877884ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7665.5509
+
+✖ failing tests:
+
+test at tests/global-workflows.test.mjs:5:1
+✖ Verificar a mesma conta por foco não descarta uma sessão que estava sendo salva (287.921601ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert([...ui.host.querySelectorAll('.session-card h3')].some(e=>e.textContent==='Sessão durante foco'))
+  
+      at TestContext.<anonymous> (file:///workspace/scratch/7c184efc4633/antropologo-original/tests/global-workflows.test.mjs:15:69)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/global-workflows.test.mjs:19:1
+✖ A última ficha escolhida permanece aberta quando uma importação anterior termina atrasada (263.877884ms)
+  AssertionError [ERR_ASSERTION]: Uma leitura antiga não deve substituir a ficha escolhida mais recentemente.
+      at TestContext.<anonymous> (file:///workspace/scratch/7c184efc4633/antropologo-original/tests/global-workflows.test.mjs:26:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }

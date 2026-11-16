@@ -1,0 +1,217 @@
+{
+  "environment": "Chrome desktop, 1363 px; interface publicada antes da correção, seguida de smoke após publicação registrado no relatório final.",
+  "palettes": [
+    {
+      "background": "color(srgb 0.947451 0.95902 0.961569)",
+      "color": "rgb(38, 50, 60)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "green",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.946275 0.958314 0.974039)",
+      "color": "rgb(38, 50, 60)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "blue",
+      "width": 1363
+    },
+    {
+      "background": "rgb(246, 242, 242)",
+      "color": "rgb(53, 46, 46)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "red",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.965804 0.965373 0.958745)",
+      "color": "rgb(38, 50, 60)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "yellow",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.956157 0.955373 0.97298)",
+      "color": "rgb(38, 50, 60)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "purple",
+      "width": 1363
+    },
+    {
+      "background": "rgb(246, 243, 239)",
+      "color": "rgb(53, 46, 40)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "orange",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.961686 0.966431 0.975216)",
+      "color": "rgb(38, 50, 60)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "silver",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.949569 0.954314 0.96298)",
+      "color": "rgb(38, 50, 60)",
+      "mode": "light",
+      "overflow": false,
+      "palette": "graphite",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.0877647 0.110745 0.12851)",
+      "color": "rgb(237, 240, 244)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "green",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.0865882 0.110039 0.14098)",
+      "color": "rgb(237, 240, 244)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "blue",
+      "width": 1363
+    },
+    {
+      "background": "rgb(36, 33, 34)",
+      "color": "rgb(247, 237, 237)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "red",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.106118 0.117098 0.125686)",
+      "color": "rgb(237, 240, 244)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "yellow",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.0964706 0.107098 0.139922)",
+      "color": "rgb(237, 240, 244)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "purple",
+      "width": 1363
+    },
+    {
+      "background": "rgb(36, 35, 34)",
+      "color": "rgb(245, 238, 230)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "orange",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.102 0.118157 0.142157)",
+      "color": "rgb(237, 240, 244)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "silver",
+      "width": 1363
+    },
+    {
+      "background": "color(srgb 0.0898823 0.106039 0.129922)",
+      "color": "rgb(237, 240, 244)",
+      "mode": "dark",
+      "overflow": false,
+      "palette": "graphite",
+      "width": 1363
+    }
+  ],
+  "navigation": [
+    {
+      "area": "Início",
+      "context": "AB10 — Absolute 10"
+    },
+    {
+      "area": "Ficha",
+      "context": "AB10 — Absolute 10"
+    },
+    {
+      "area": "PDFs",
+      "context": "AB10 — Absolute 10"
+    },
+    {
+      "area": "Agenda",
+      "context": "AB10 — Absolute 10"
+    }
+  ],
+  "profile": {
+    "globalWhileOpen": true,
+    "systemRestoredAfterClose": true
+  },
+  "editor": {
+    "headingLevels": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "smallParagraph": true,
+    "unicode": true,
+    "boldItalicToolbarAcrossBlocks": true,
+    "undoRedo": true,
+    "savedAndReopened": true,
+    "superPngReimport": {
+      "integrity": "valid",
+      "chapters": 2,
+      "headings": 4,
+      "smallParagraphs": 1,
+      "boldNodes": 6,
+      "italicNodes": 6
+    }
+  },
+  "personalization": {
+    "groups": [
+      "Computador",
+      "Celular",
+      "Super PNG"
+    ],
+    "desktopLogoHiddenName": {
+      "clipPath": "inset(50%)",
+      "width": 1
+    },
+    "mobileConfigurationPreviewOnly": true
+  },
+  "sheet": {
+    "calculatedFields": [
+      10,
+      5
+    ],
+    "numericRoll": {
+      "die": 17,
+      "field": 10,
+      "total": 27
+    },
+    "symbolicRoll": {
+      "rolled": 4,
+      "kept": 2,
+      "max": 2,
+      "thirdSelectionEnabled": false,
+      "success": 3,
+      "adaptations": 2,
+      "pressure": 2
+    }
+  },
+  "pdf": {
+    "validUpload": true,
+    "category": "Referências",
+    "searchEmpty": true,
+    "download": true,
+    "cleaned": true
+  },
+  "temporarySystemsCleaned": 3,
+  "appLogs": []
+}

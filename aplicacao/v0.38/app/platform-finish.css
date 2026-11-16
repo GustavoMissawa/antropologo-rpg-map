@@ -1,0 +1,103 @@
+/* Shared finishing touches outside rich-text contents and sensitive editing controls. */
+.topbar{box-shadow:0 4px 20px color-mix(in srgb,var(--shadow) 55%,transparent)}.page-title-row>div>h1{line-height:1.2}.ruleset-card,.pdf-card,.continue-card,.file-note{border-radius:11px}.ruleset-card{box-shadow:0 6px 24px var(--shadow)}.ruleset-section-heading h2{font-weight:600}.discovery-home .button,.global-top-nav button,.context-switch-button{border-radius:8px}.discovery-home .button:focus-visible,.discovery-card:focus-visible,.discovery-tools>button:focus-visible,.global-top-nav button:focus-visible{outline:2px solid var(--focus);outline-offset:4px}.content-rail-track:focus-visible{outline:2px solid var(--focus);border-radius:8px}.global-top-nav button:active,.discovery-tools>button:active{background:var(--accent-soft)}.content-rail-heading .text-button:hover{text-decoration:underline;text-underline-offset:4px}.discovery-card-top span{line-height:1.5}.contextual-hero .hero-signature{opacity:.85}.test-notice{line-height:1.6}.test-notice p{font-size:13px}.discovery-home button:disabled{transform:none}.global-mode .is-home .edition{display:none}
+@media(max-width:790px){.discovery-home .button{min-height:44px}.discovery-card{scroll-margin-inline:4px}.test-notice p{font-size:13px}.content-rail-track{padding-bottom:12px}.character-library-grid{grid-template-columns:repeat(auto-fill,minmax(220px,1fr))}}
+@media(prefers-reduced-motion:reduce){.global-top-nav button,.discovery-tools>button,.discovery-home .button{transition:none}}
+@supports not (mask-image:linear-gradient(90deg,#000,transparent)){.ambient-dot-edges{display:none}}
+
+/* Home glass shares the header's translucent, palette-aware finish. */
+.discovery-hero:not(.contextual-hero) h1{margin-top:0}
+.discovery-hero,.is-home .test-notice{box-shadow:inset 0 1px 0 #ffffff26,0 10px 32px var(--shadow)}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+ .is-home .test-notice{-webkit-backdrop-filter:blur(24px) saturate(115%);backdrop-filter:blur(24px) saturate(115%);border-color:color-mix(in srgb,var(--line) 75%,#ffffff40)}
+ .discovery-hero{background:linear-gradient(115deg,color-mix(in srgb,var(--paper) 64%,transparent),color-mix(in srgb,var(--surface-soft) 48%,transparent) 65%,color-mix(in srgb,var(--palette-value) 9%,transparent))}
+ .is-home .test-notice{background:linear-gradient(115deg,color-mix(in srgb,var(--accent-soft) 58%,transparent),color-mix(in srgb,var(--paper) 48%,transparent));border-color:color-mix(in srgb,var(--border-accent) 70%,#ffffff30)}
+}
+@media(forced-colors:active){.discovery-hero,.is-home .test-notice{background:Canvas;border-color:CanvasText;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}}
+
+/* Stronger glass with a soft edge; the card still reserves its content space. */
+.discovery-hero{border:0;box-shadow:0 15px 38px color-mix(in srgb,var(--shadow) 55%,transparent);-webkit-mask-image:radial-gradient(ellipse 115% 115% at 50% 47%,#000 76%,transparent 100%);mask-image:radial-gradient(ellipse 115% 115% at 50% 47%,#000 76%,transparent 100%)}
+@supports ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.discovery-hero{background:linear-gradient(115deg,color-mix(in srgb,var(--paper) 76%,transparent),color-mix(in srgb,var(--surface-soft) 66%,transparent) 67%,color-mix(in srgb,var(--palette-value) 14%,transparent))}}
+@media(max-width:480px){.header-platform-brand .platform-emblem{display:none}.discovery-hero:not(.contextual-hero) h1{font-size:clamp(34px,9vw,42px);overflow-wrap:normal}}
+@media(forced-colors:active){.discovery-hero{border:1px solid CanvasText;mask-image:none;-webkit-mask-image:none;box-shadow:none}}
+
+.discovery-hero .hero-platform-logo .platform-emblem{display:none}.discovery-hero .hero-platform-logo .platform-word{font-size:clamp(30px,4vw,56px);letter-spacing:-1.8px}.discovery-hero .hero-platform-logo .platform-lettering{gap:15px}.discovery-hero .hero-platform-logo .platform-rpg>span{font-size:14px;letter-spacing:6px}.discovery-hero .hero-platform-logo .platform-rpg>i{max-width:100px}.discovery-hero:not(.contextual-hero) h1{max-width:100%;line-height:1.2}.discovery-hero .hero-platform-logo{max-width:100%}
+@media(max-width:790px){.discovery-hero .hero-platform-logo .platform-word{font-size:clamp(25px,7vw,42px);letter-spacing:-1px}.discovery-hero .hero-platform-logo .platform-rpg>span{font-size:11px}.discovery-hero .hero-platform-logo .platform-rpg>i{max-width:70px}}
+
+/* Fade only the atmospheric surface; content and focus rings stay crisp. */
+.discovery-hero{overflow:visible;border:0;border-radius:0;background:none;box-shadow:none;mask-image:none;-webkit-mask-image:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+.discovery-hero::before{content:"";position:absolute;inset:-24px -22px;z-index:-1;pointer-events:none;background:linear-gradient(115deg,color-mix(in srgb,var(--paper) 90%,transparent),color-mix(in srgb,var(--surface-soft) 86%,transparent) 65%,color-mix(in srgb,var(--paper) 78%,var(--palette-value)));-webkit-backdrop-filter:blur(32px) saturate(125%);backdrop-filter:blur(32px) saturate(125%);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 85%,transparent),linear-gradient(0deg,transparent,#000 17%,#000 83%,transparent);mask-image:linear-gradient(90deg,transparent,#000 12%,#000 85%,transparent),linear-gradient(0deg,transparent,#000 17%,#000 83%,transparent);-webkit-mask-composite:source-in;mask-composite:intersect}
+@media(max-width:790px){.discovery-hero::before{inset:-18px -12px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(0deg,transparent,#000 12%,#000 88%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent),linear-gradient(0deg,transparent,#000 12%,#000 88%,transparent)}.discovery-hero-art{overflow:hidden;max-width:100%;right:0}}
+@media(forced-colors:active){.discovery-hero::before{display:none}.discovery-hero{background:Canvas;border:1px solid CanvasText}}
+
+/* Wider atmospheric falloff and touch-friendly rail controls. */
+.discovery-hero::before{inset:-48px -22px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 23%,#000 77%,transparent),linear-gradient(0deg,transparent,#000 27%,#000 73%,transparent);mask-image:linear-gradient(90deg,transparent,#000 23%,#000 77%,transparent),linear-gradient(0deg,transparent,#000 27%,#000 73%,transparent)}
+.content-rail-track{scrollbar-width:none}.content-rail-track::-webkit-scrollbar{display:none}
+@media(max-width:790px){.discovery-home{gap:120px}.discovery-hero::before{inset:-42px -12px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),linear-gradient(0deg,transparent,#000 24%,#000 76%,transparent);mask-image:linear-gradient(90deg,transparent,#000 16%,#000 84%,transparent),linear-gradient(0deg,transparent,#000 24%,#000 76%,transparent)}.content-rail-heading{flex-wrap:wrap}.rail-actions{width:100%;justify-content:flex-end}.rail-actions>.text-button{margin-right:auto}.rail-arrow{display:inline-flex;align-items:center;justify-content:center;min-width:44px;width:44px;height:44px;flex-shrink:0}}
+
+/* The opening content sits directly in the scene. */
+.discovery-hero::before{display:none}.discovery-hero{background:none;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+@media(max-width:790px){.discovery-home{gap:54px}.discovery-home>.discovery-hero{margin-bottom:66px}}
+
+.content-rail-viewport{position:relative;min-width:0}.content-rail-viewport>.rail-arrow{position:absolute;top:2px;bottom:13px;z-index:2;width:38px;min-width:38px;height:auto;border:0;border-radius:8px;color:white;background:linear-gradient(90deg,#10161c66,transparent);display:flex;align-items:center;justify-content:center;transition:background-color .18s ease;box-shadow:none}.content-rail-viewport>.rail-arrow[hidden]{display:none}.content-rail-viewport>.rail-arrow-left{left:0}.content-rail-viewport>.rail-arrow-right{right:0;background:linear-gradient(270deg,#10161c66,transparent)}.content-rail-viewport>.rail-arrow:hover,.content-rail-viewport>.rail-arrow:focus-visible{background-color:#10161ca8}.content-rail-viewport>.rail-arrow:focus-visible{outline:2px solid var(--focus);outline-offset:2px}.content-rail-viewport>.rail-arrow svg{filter:drop-shadow(0 1px 3px #0009)}
+@media(max-width:790px){.rail-actions{width:auto}.content-rail-viewport>.rail-arrow{width:32px;min-width:32px}.content-rail-heading{flex-wrap:nowrap}.content-rail-heading h2{font-size:22px}}
+@media(prefers-reduced-motion:reduce){.content-rail-viewport>.rail-arrow{transition:none}}
+
+.content-rail-viewport>.rail-arrow-left{background:linear-gradient(90deg,#0009 0%,#0000 100%)}.content-rail-viewport>.rail-arrow-right{background:linear-gradient(270deg,#0009 0%,#0000 100%)}.content-rail-viewport>.rail-arrow-left:hover,.content-rail-viewport>.rail-arrow-left:focus-visible{background:linear-gradient(90deg,#000e 0%,#0000 100%)}.content-rail-viewport>.rail-arrow-right:hover,.content-rail-viewport>.rail-arrow-right:focus-visible{background:linear-gradient(270deg,#000e 0%,#0000 100%)}
+
+/* Edge arrows have a clear resting state and a full-height hover shade. */
+.content-rail-viewport>.rail-arrow{border-radius:0;background:transparent;top:2px;bottom:13px}.content-rail-viewport>.rail-arrow-left,.content-rail-viewport>.rail-arrow-right{background:transparent}.content-rail-viewport>.rail-arrow-left:hover,.content-rail-viewport>.rail-arrow-left:focus-visible{background:linear-gradient(90deg,#000d,transparent)}.content-rail-viewport>.rail-arrow-right:hover,.content-rail-viewport>.rail-arrow-right:focus-visible{background:linear-gradient(270deg,#000d,transparent)}
+
+/* Animate shade opacity so the gradient itself never switches abruptly. */
+.content-rail-viewport>.rail-arrow::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:0;transition:opacity .32s ease;background:linear-gradient(90deg,#0008,transparent)}.content-rail-viewport>.rail-arrow-right::before{background:linear-gradient(270deg,#0008,transparent)}.content-rail-viewport>.rail-arrow svg{position:relative;z-index:1}.content-rail-viewport>.rail-arrow-left:hover,.content-rail-viewport>.rail-arrow-left:focus-visible,.content-rail-viewport>.rail-arrow-right:hover,.content-rail-viewport>.rail-arrow-right:focus-visible{background:transparent}.content-rail-viewport>.rail-arrow:hover::before,.content-rail-viewport>.rail-arrow:focus-visible::before{opacity:1}
+@media(prefers-reduced-motion:reduce){.content-rail-viewport>.rail-arrow::before{transition:none}}
+
+
+/* External rail arrows stay clear of the cards. */
+.content-rail-viewport>.rail-arrow{width:30px;min-width:30px;background:none!important;border:0;overflow:visible}.content-rail-viewport>.rail-arrow-left{left:-32px}.content-rail-viewport>.rail-arrow-right{right:-32px}.content-rail-viewport>.rail-arrow::before{display:none}.content-rail-viewport>.rail-arrow svg{color:var(--ink);filter:none;transition:transform .22s ease;transform-origin:center}.content-rail-viewport>.rail-arrow:hover svg,.content-rail-viewport>.rail-arrow:focus-visible svg{transform:scale(1.35)}
+@media(max-width:790px){.content-rail-viewport{margin-inline:7px}.content-rail-viewport>.rail-arrow{width:24px;min-width:24px}.content-rail-viewport>.rail-arrow-left{left:-25px}.content-rail-viewport>.rail-arrow-right{right:-25px}}
+@media(prefers-reduced-motion:reduce){.content-rail-viewport>.rail-arrow svg{transition:none}}
+
+/* Keep the night backdrop clear around the geometric dice. */
+.ambient-stars{display:none}
+
+.discovery-hero{opacity:1}
+.discovery-hero::before{display:none;opacity:0}
+@media(forced-colors:active){.discovery-hero::before{display:none}}
+
+.discovery-hero{border:1px solid var(--line);border-radius:16px}
+
+.discovery-home>.discovery-hero{background:transparent!important;background-image:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;box-shadow:none;opacity:1}.discovery-home>.discovery-hero::before,.discovery-home>.discovery-hero::after{display:none;background:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+
+/* Only the panel surface is translucent; its contents remain fully opaque. */
+.discovery-home>.discovery-hero{border:0}
+.discovery-home>.discovery-hero::before{display:block;content:"";inset:0;border-radius:16px;background:var(--paper);opacity:.3;mask-image:none;-webkit-mask-image:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+@media(forced-colors:active){.discovery-home>.discovery-hero::before{display:none}}
+
+/* Solid decorative faces: opacity belongs to the strokes, never the surface. */
+.ambient-backdrop .ambient-die{opacity:1}.ambient-die>.hero-die-3d{animation:none;transform:none;pointer-events:none}.hero-die-face{fill-opacity:1;stroke:var(--ambient-color,var(--accent-ink));stroke-opacity:var(--ambient-opacity,.5);stroke-width:1.5;vector-effect:non-scaling-stroke;stroke-linejoin:round;pointer-events:all}.ambient-solid-die .hero-die-face{pointer-events:none}
+@media(max-width:790px),(hover:none),(pointer:coarse),(prefers-reduced-motion:reduce){.hero-die-face{pointer-events:none}}
+
+/* Fade the whole opaque solid only during its deliberate relocation. */
+.ambient-backdrop .ambient-die[data-phase=fading],.ambient-backdrop .ambient-die[data-phase=waiting]{opacity:0;transition-duration:280ms}
+
+/* Header brand uses the lettering alone at every viewport. */
+.header-platform-brand .platform-emblem{display:none}
+
+/* Mobile hero alignment; decorative viewport stays stable as browser chrome moves. */
+@media(max-width:790px){
+ .discovery-hero-copy{text-align:center;margin-inline:auto}
+ .discovery-hero-copy h1,.discovery-hero-copy p{max-width:100%;margin-inline:auto}
+ .discovery-hero .hero-actions{justify-content:center}
+ .discovery-hero .hero-kicker{justify-content:center}
+ .ambient-backdrop{bottom:auto;height:calc(100vh - 78px);height:calc(100lvh - 78px)}
+}
+
+/* Same direct navigation on mobile, without a hamburger drawer. */
+
+@media(max-width:790px){
+ .topbar{height:auto;display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:8px;row-gap:0;padding-top:0;padding-bottom:8px}
+ .topbar-left,.topbar .header-right{min-height:78px;min-width:0}
+ .topbar .header-right{grid-column:2;grid-row:1;justify-content:flex-end}
+ .topbar .global-top-nav{grid-column:1/-1;grid-row:2;display:flex;justify-content:space-between;gap:2px;width:100%;min-width:0}
+ .topbar .global-top-nav button{flex:1;min-width:0;min-height:44px;padding:8px 4px;font-size:13px}
+}

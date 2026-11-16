@@ -1,0 +1,9 @@
+import { and,eq } from 'drizzle-orm';
+import { getDb } from '../../../../db';
+import { demoCalendarEvents as rpgSessions } from '../../../../db/schema';
+import { json,sameOrigin } from '../../../../lib/storage';
+import { requirePlayer,mutationBody,routeFailure,RouteError,validSessionId } from '../../../../lib/player-server';
+import { parseSession,type Session } from '../../../../lib/schedule';
+type Params={params:Promise<{id:string}>};
+export async function PUT(request:Request,{params}:Params){try{const user=await requirePlayer(request);const {id}=await params;validSessionId(id);const body=await mutationBody(request);let value;try{value=parseSession(body);}catch(e){throw new RouteError((e as Error).message,400);}const db=getDb();const condition=and(eq(rpgSessions.id,id),eq(rpgSessions.userId,user.userId));const saved=await db.select().from(rpgSessions).where(condition).get();if(!saved)throw new RouteError('Sessão não encontrada.',404);const session:Session={...value,id,createdAt:saved.data.createdAt,updatedAt:new Date().toISOString()};await db.update(rpgSessions).set({data:session,date:session.date,updatedAt:session.updatedAt}).where(condition);return json(session);}catch(e){return routeFailure(e,'Não foi possível editar a sessão. Tente novamente.');}}
+export async function DELETE(request:Request,{params}:Params){try{const user=await requirePlayer(request);if(!sameOrigin(request))throw new RouteError('Origem não autorizada.',403);const {id}=await params;validSessionId(id);const removed=await getDb().delete(rpgSessions).where(and(eq(rpgSessions.id,id),eq(rpgSessions.userId,user.userId))).returning({id:rpgSessions.id});if(!removed.length)throw new RouteError('Sessão não encontrada.',404);return json({ok:true});}catch(e){return routeFailure(e,'Não foi possível excluir a sessão. Tente novamente.');}}

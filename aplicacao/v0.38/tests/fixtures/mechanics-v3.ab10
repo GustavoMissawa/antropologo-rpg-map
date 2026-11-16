@@ -1,0 +1,126 @@
+{
+  "format": "ab10-character",
+  "version": 3,
+  "id": "9c6bd7a4-d22b-4c73-a609-cccff785d484",
+  "name": "Astra — ficha de exemplo",
+  "player": "Jogador de teste",
+  "description": "",
+  "updatedAt": "2026-10-23T23:28:51.451Z",
+  "blocks": [
+    {
+      "id": "b439a99d-23da-4151-9abe-1c156696442a",
+      "title": "Atributos",
+      "description": "",
+      "kind": "attributes",
+      "tabId": "main",
+      "layout": {
+        "x": 48,
+        "y": 48,
+        "width": 390
+      },
+      "fields": [
+        {
+          "id": "dex",
+          "label": "Destreza",
+          "type": "composite",
+          "value": 16,
+          "composite": {
+            "mode": "ability",
+            "modifier": 0
+          }
+        },
+        {
+          "id": "focus",
+          "label": "Foco",
+          "type": "number",
+          "value": 10
+        },
+        {
+          "id": "vigor",
+          "label": "Vigor",
+          "type": "composite",
+          "value": 14,
+          "composite": {
+            "mode": "manual",
+            "modifier": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "b57cdaa4-935a-4469-9ee0-2c2c0712f80b",
+      "title": "Perícias",
+      "description": "",
+      "kind": "skills",
+      "tabId": "main",
+      "layout": {
+        "x": 470,
+        "y": 48,
+        "width": 390
+      },
+      "fields": [
+        {
+          "id": "stealth",
+          "label": "Furtividade",
+          "type": "calculated",
+          "value": "",
+          "dependency": {
+            "sourceId": "focus",
+            "part": "value",
+            "offset": 0
+          }
+        },
+        {
+          "id": "acrobatics",
+          "label": "Acrobacia",
+          "type": "calculated",
+          "value": "",
+          "dependency": {
+            "sourceId": "dex",
+            "part": "modifier",
+            "offset": 2
+          }
+        }
+      ]
+    }
+  ],
+  "tabs": [
+    {
+      "id": "main",
+      "title": "Principal"
+    }
+  ],
+  "activeTabId": "main",
+  "rolls": [
+    {
+      "id": "stealth-roll",
+      "name": "Teste de Furtividade",
+      "formula": "1d20 + @furtividade",
+      "variables": [
+        {
+          "name": "furtividade",
+          "fieldId": "stealth",
+          "part": "value"
+        }
+      ]
+    },
+    {
+      "id": "acro-roll",
+      "name": "Teste de Acrobacia",
+      "formula": "1d20 + @destreza_mod + 2",
+      "variables": [
+        {
+          "name": "destreza_mod",
+          "fieldId": "dex",
+          "part": "modifier"
+        }
+      ]
+    },
+    {
+      "id": "damage",
+      "name": "Dano da arma",
+      "formula": "2d6 + 3",
+      "variables": []
+    }
+  ]
+}

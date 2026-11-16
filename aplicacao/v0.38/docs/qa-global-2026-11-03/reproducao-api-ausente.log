@@ -1,0 +1,29 @@
+✔ Verificar a mesma conta por foco não descarta uma sessão que estava sendo salva (266.861673ms)
+✔ Uma resposta antiga da Agenda não entra na conta que foi trocada durante o salvamento (211.536878ms)
+✔ A última ficha escolhida permanece aberta quando uma importação anterior termina atrasada (197.923123ms)
+✔ A última importação de regras prevalece e uma falha anterior não apaga seu resultado (101.454302ms)
+✖ Abrir uma ficha não depende da disponibilidade de ResizeObserver (67.13171ms)
+ℹ tests 5
+ℹ suites 0
+ℹ pass 4
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7437.879158
+
+✖ failing tests:
+
+test at tests/global-workflows.test.mjs:54:1
+✖ Abrir uma ficha não depende da disponibilidade de ResizeObserver (67.13171ms)
+  ReferenceError [Error]: ResizeObserver is not defined
+      at file:///workspace/scratch/7c184efc4633/antropologo-original/.sites-runtime/platform-dom-s1G7Kw/40.mjs:108:40
+      at Object.react_stack_bottom_frame (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:25989:20)
+      at runWithFiberInDEV (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:871:30)
+      at commitHookEffectListMount (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:13249:29)
+      at commitHookPassiveMountEffects (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:13336:11)
+      at commitPassiveMountOnFiber (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:15484:13)
+      at recursivelyTraversePassiveMountEffects (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:15718:11)
+      at recursivelyTraversePassiveMountEffects (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:15439:11)
+      at commitPassiveMountOnFiber (/workspace/scratch/7c184efc4633/antropologo-original/node_modules/.pnpm/react-dom@19.2.6_react@19.2.6/node_modules/react-dom/cjs/react-dom-client.development.js:15718:11)

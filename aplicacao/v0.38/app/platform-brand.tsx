@@ -1,0 +1,4 @@
+export function PlatformLogo({className=''}:{className?:string}){
+ return <span className={'platform-wordmark '+className} role="img" aria-label="ANTROPOLOGO RPG"><svg className="platform-emblem" viewBox="0 0 40 44" fill="none" aria-hidden="true"><path d="M20 2 37 12v20L20 42 3 32V12L20 2Z"/><path d="m20 2 9 17-9 23-9-23L20 2Zm-17 10 8 7h18l8-7M3 32l8-13m26 13-8-13"/></svg><span className="platform-lettering"><span className="platform-word" aria-hidden="true"><span className="metal-silver">ANTROPO</span><span className="metal-color">LOGO</span></span><span className="platform-rpg" aria-hidden="true"><i/><span>R P G</span><i/></span></span></span>;
+}
+export function AB10Logo(){return <span className="ab10-wordmark" role="img" aria-label="AB10 — ABSOLUTE 10"><span aria-hidden="true">AB<span>10</span></span><small aria-hidden="true">ABSOLUTE 10</small></span>;}

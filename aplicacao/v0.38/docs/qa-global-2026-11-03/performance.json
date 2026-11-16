@@ -1,0 +1,85 @@
+{
+  "environment": "Node v24.22.1 + jsdom 26.1.0; no native layout, mobile keyboard or browser memory measurements",
+  "limits": {
+    "characters": 50000,
+    "documentBytes": 250000
+  },
+  "samplesPerCase": 50,
+  "results": [
+    {
+      "words": 500,
+      "characters": 3140,
+      "jsonBytes": 4436,
+      "save": "round-trip-passed",
+      "mountMs": 12.20126700000003,
+      "typingP50Ms": 0.5299259999999322,
+      "typingP95Ms": 1.3602229999999054,
+      "selectionP95Ms": 0.937528000000043,
+      "countP95Ms": 0.05232899999998608,
+      "saveMs": 0.4775280000000066,
+      "reopenMs": 1.5587319999999636,
+      "heapDeltaMiB": 4.506103515625,
+      "rssMiB": 158.07421875
+    },
+    {
+      "words": 2000,
+      "characters": 12420,
+      "jsonBytes": 17885,
+      "save": "round-trip-passed",
+      "mountMs": 8.26759800000002,
+      "typingP50Ms": 0.3490040000000363,
+      "typingP95Ms": 0.5716979999999694,
+      "selectionP95Ms": 0.2887640000000147,
+      "countP95Ms": 0.05148799999994935,
+      "saveMs": 0.594372999999905,
+      "reopenMs": 1.082176000000004,
+      "heapDeltaMiB": 26.49652099609375,
+      "rssMiB": 173.69921875
+    },
+    {
+      "words": 5000,
+      "characters": 30980,
+      "jsonBytes": 44567,
+      "save": "round-trip-passed",
+      "mountMs": 10.70707200000004,
+      "typingP50Ms": 0.393271000000027,
+      "typingP95Ms": 0.5375280000000657,
+      "selectionP95Ms": 0.586351000000036,
+      "countP95Ms": 0.12069199999996272,
+      "saveMs": 0.9718500000000176,
+      "reopenMs": 1.7266230000000178,
+      "heapDeltaMiB": -18.47991180419922,
+      "rssMiB": 180.69921875
+    },
+    {
+      "words": 10000,
+      "characters": 61913,
+      "jsonBytes": 89032,
+      "save": "rejected-by-existing-limit",
+      "mountMs": 11.535837000000015,
+      "typingP50Ms": 0.3116379999999026,
+      "typingP95Ms": 0.48134299999992436,
+      "selectionP95Ms": 0.26056099999993876,
+      "countP95Ms": 0.11692600000003495,
+      "saveMs": 0,
+      "reopenMs": 0,
+      "heapDeltaMiB": 7.781318664550781,
+      "rssMiB": 182.44921875
+    },
+    {
+      "words": 20000,
+      "characters": 123780,
+      "jsonBytes": 177949,
+      "save": "rejected-by-existing-limit",
+      "mountMs": 17.78077799999994,
+      "typingP50Ms": 0.32153299999993123,
+      "typingP95Ms": 0.5662099999999555,
+      "selectionP95Ms": 0.40210400000000845,
+      "countP95Ms": 0.30313599999999497,
+      "saveMs": 0,
+      "reopenMs": 0,
+      "heapDeltaMiB": 0.58062744140625,
+      "rssMiB": 188.69921875
+    }
+  ]
+}
