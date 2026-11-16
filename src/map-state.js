@@ -115,7 +115,7 @@ export function readSharedDocument(doc) {
   return doc;
 }
 
-export function resolveInitialMap(original, published, saved) {
+export function resolveInitialMap(original, published, saved, {preserveConfirmed = false} = {}) {
   const originalDraft = snapshotMap(original.nodes,original.edges);
   const remoteMap = restoreMap(published.draft,original);
   const remoteDraft = snapshotMap(remoteMap.nodes,remoteMap.edges);
@@ -129,18 +129,20 @@ export function resolveInitialMap(original, published, saved) {
   }
   const localDraft = snapshotMap(localMap.nodes,localMap.edges);
   const storedBaseline = saved.sync;
-  let localBaseline = originalDraft;
-  if (isSnapshot(storedBaseline?.draft)) {
+  let baseline = {revision:INITIAL_REVISION,draft:originalDraft};
+  let confirmed = false;
+  if (typeof storedBaseline?.revision === 'string' && storedBaseline.revision && isSnapshot(storedBaseline.draft)) {
     try {
       const baselineMap = restoreMap(storedBaseline.draft,original);
-      localBaseline = snapshotMap(baselineMap.nodes,baselineMap.edges);
+      baseline = {revision:storedBaseline.revision,draft:snapshotMap(baselineMap.nodes,baselineMap.edges)};
+      confirmed = true;
     } catch {
       // Keep the original baseline for a recoverable local draft.
     }
   }
-  if (mapEquals(localDraft,localBaseline) || mapEquals(localDraft,remoteDraft)) return current;
-  const localRevision = typeof storedBaseline?.revision === 'string' ? storedBaseline.revision : INITIAL_REVISION;
-  return {map:localMap, baseline:{revision:localRevision,draft:localBaseline}};
+  if (preserveConfirmed && confirmed && baseline.revision !== published.revision) return {map:localMap,baseline};
+  if (mapEquals(localDraft,remoteDraft) || mapEquals(localDraft,baseline.draft)) return current;
+  return {map:localMap, baseline};
 }
 
 export function canPublish(baseline, remote) {

@@ -2,7 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile,readdir} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
-import {INITIAL_REVISION,canPublish,resolveInitialMap,restoreMap,snapshotMap,styleEdge} from '../src/map-state.js';
+import {INITIAL_REVISION,STORAGE_KEY,canPublish,resolveInitialMap,restoreMap,snapshotMap,styleEdge} from '../src/map-state.js';
+import {openDraftStorage,TAB_DRAFT_KEY} from '../src/draft-storage.js';
 import {fetchSharedMap,publishSharedMap} from '../src/github-sync.js';
 
 const read = path => readFile(new URL(path,import.meta.url));
@@ -74,6 +75,64 @@ test('publicação adota a versão compartilhada quando limpa e conserva rascunh
   assert(!canPublish(dirty.baseline,version(remoteDraft)));
   assert(!canPublish(dirty.baseline,version(remoteDraft,INITIAL_REVISION)));
   assert(canPublish(dirty.baseline,version(baseDraft,INITIAL_REVISION)));
+});
+
+test('versão confirmada permanece ao reabrir durante o deploy e acompanha o GitHub quando acessível',()=>{
+  const synced = changed(baseDraft,'Já publicado no GitHub');
+  const saved = {...synced,sync:{revision:'edicao-confirmada',draft:synced}};
+  const stalePages = version(null,INITIAL_REVISION);
+  const fallback = resolveInitialMap(original,stalePages,saved,{preserveConfirmed:true});
+  assert.equal(fallback.map.nodes[0].data.title,'Já publicado no GitHub');
+  assert.equal(fallback.baseline.revision,'edicao-confirmada');
+  assert(!canPublish(fallback.baseline,version(baseDraft,INITIAL_REVISION)));
+
+  const newer = version(changed(synced,'Edição seguinte'),'edicao-seguinte');
+  const authoritative = resolveInitialMap(original,newer,saved);
+  assert.equal(authoritative.map.nodes[0].data.title,'Edição seguinte');
+  assert(canPublish(authoritative.baseline,newer));
+
+  const dirty = {...changed(synced,'Rascunho posterior'),sync:saved.sync};
+  const draft = resolveInitialMap(original,newer,dirty);
+  assert.equal(draft.map.nodes[0].data.title,'Rascunho posterior');
+  assert(!canPublish(draft.baseline,newer));
+});
+
+function testStorage() {
+  const values = new Map();
+  return {
+    getItem: key => values.get(key) ?? null,
+    setItem: (key,value) => values.set(key,value),
+  };
+}
+
+test('uma aba desatualizada guarda suas alterações sem sobrescrever o rascunho compartilhado',()=>{
+  const localStorage = testStorage();
+  const first = openDraftStorage({localStorage,sessionStorage:testStorage()});
+  const otherBrowser = {localStorage,sessionStorage:testStorage()};
+  const second = openDraftStorage(otherBrowser);
+  const firstDraft = changed(baseDraft,'Primeira aba');
+  const secondDraft = changed(baseDraft,'Segunda aba');
+  assert.equal(first.save(JSON.stringify(firstDraft)),'shared');
+  assert.equal(second.save(JSON.stringify(secondDraft)),'tab');
+  assert.deepEqual(JSON.parse(localStorage.getItem(STORAGE_KEY)),firstDraft);
+  const reopened = openDraftStorage(otherBrowser);
+  assert.equal(reopened.status,'tab');
+  assert.deepEqual(reopened.saved,secondDraft);
+});
+
+test('falha ao escrever no armazenamento compartilhado preserva a cópia da aba ou sinaliza a falha',()=>{
+  const invalidLocal = testStorage();
+  invalidLocal.setItem(STORAGE_KEY,'rascunho interrompido');
+  const sessionStorage = testStorage();
+  const stored = openDraftStorage({localStorage:invalidLocal,sessionStorage});
+  assert(stored.invalid);
+  const json = JSON.stringify(baseDraft);
+  assert.equal(stored.save(json),'tab');
+  assert.equal(invalidLocal.getItem(STORAGE_KEY),'rascunho interrompido');
+  assert.equal(sessionStorage.getItem(TAB_DRAFT_KEY),json);
+
+  const blocked = {getItem:()=>null,setItem:()=>{throw Error('Quota excedida');}};
+  assert.equal(openDraftStorage({localStorage:blocked,sessionStorage:blocked}).save(json),'unavailable');
 });
 
 test('leitura usa o arquivo fixo em main e escrita exige o SHA da versão consultada',async ()=>{

@@ -49,9 +49,9 @@ async function send(url, options, fetcher) {
   throw Error(`O GitHub devolveu o erro ${response.status}.`);
 }
 
-export async function fetchSharedMap({token='',fetcher=fetch}={}) {
+export async function fetchSharedMap({token='',signal,fetcher=fetch}={}) {
   const file = await send(`${EDITIONS_API}?ref=${BRANCH}`,{
-    headers:headers(token),cache:'no-store',redirect:'error',
+    headers:headers(token),cache:'no-store',redirect:'error',signal,
   },fetcher);
   if (file?.encoding !== 'base64' || typeof file.content !== 'string' ||
       typeof file.sha !== 'string' || !/^[0-9a-f]{40}$/.test(file.sha)) {

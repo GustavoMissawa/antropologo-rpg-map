@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, useCallback, useRef } from 'react';
 import {
   ReactFlow, Background, Controls, MiniMap, Handle, Position,
   addEdge, applyNodeChanges, applyEdgeChanges, ReactFlowProvider,
@@ -6,9 +6,10 @@ import {
 } from '@xyflow/react';
 
 import GitHubSyncDialog from './GitHubSyncDialog.jsx';
-import {REPOSITORY_URL} from './github-sync.js';
+import {openDraftStorage} from './draft-storage.js';
+import {fetchSharedMap, REPOSITORY_URL} from './github-sync.js';
 import {
-  INITIAL_REVISION, MAP_FORMAT, MAX_MAP_BYTES, STORAGE_KEY, mapEquals,
+  INITIAL_REVISION, MAP_FORMAT, MAX_MAP_BYTES, mapEquals,
   readSharedDocument, resolveInitialMap, restoreMap, snapshotMap, styleEdge,
 } from './map-state.js';
 const asset = (path) => `${import.meta.env.BASE_URL.replace(/\/$/, '')}${path}`;
@@ -65,6 +66,8 @@ function ScreenNode({ data, selected }) {
 }
 const nodeTypes = { screen:ScreenNode };
 
+const serializeDraft = (draft, baseline) => JSON.stringify({...draft,sync:baseline});
+
 function AppInner() {
   const [model,setModel] = useState(null);
   const [nodes,setNodes] = useState([]);
@@ -77,19 +80,22 @@ function AppInner() {
   const [toast,setToast] = useState('');
   const [loadError,setLoadError] = useState('');
   const [baseline,setBaseline] = useState(null);
-  const [canStore,setCanStore] = useState(true);
+  const [storeStatus,setStoreStatus] = useState('shared');
   const [syncOpen,setSyncOpen] = useState(false);
   const [notes,setNotes] = useState('');
   const [editTitle,setEditTitle] = useState('');
   const [editDescription,setEditDescription] = useState('');
   const inputRef=useRef(null);
+  const draftStorage=useRef(null);
+  const pendingDraft=useRef(null);
+  const lastPersisted=useRef(null);
   const flow=useReactFlow();
   const toastTimer=useRef(null);
   const message = useCallback((t)=>{setToast(t);clearTimeout(toastTimer.current);toastTimer.current=setTimeout(()=>setToast(''),3500)},[]);
 
   const original = useMemo(()=>model ? {nodes:makeNodes(model),edges:makeEdges(model)} : null,[model]);
   const draft = useMemo(()=>model ? snapshotMap(nodes,edges) : null,[model,nodes,edges]);
-  const draftKey = useMemo(()=>draft ? JSON.stringify(draft) : '',[draft]);
+  const serializedDraft = useMemo(()=>draft&&baseline ? serializeDraft(draft,baseline) : null,[draft,baseline]);
   const dirty = !!baseline && !mapEquals(draft,baseline.draft);
 
   useEffect(()=>{
@@ -102,20 +108,41 @@ function AppInner() {
     Promise.all([
       fromSite('/data/map.json'),
       fromSite('/data/edicoes.json').then(readSharedDocument).catch(()=>null),
-    ]).then(([doc,published])=>{
+    ]).then(async ([doc,published])=>{
       if(signal.aborted)return;
       const defaults = {nodes:makeNodes(doc),edges:makeEdges(doc)};
-      let saved;
-      try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); }
-      catch { setCanStore(false); }
+      const storage = openDraftStorage();
+      const {saved} = storage;
       const initial = {revision:INITIAL_REVISION,draft:null};
       let loaded;
-      try { loaded = resolveInitialMap(defaults,published ?? initial,saved); }
-      catch {
-        loaded = resolveInitialMap(defaults,initial,saved);
-        message('As edições publicadas estão indisponíveis. A base recuperada foi aberta.');
+      const savedRevision = saved?.sync?.revision;
+      if (typeof savedRevision === 'string' && savedRevision && savedRevision !== published?.revision) {
+        const request = new AbortController();
+        const cancelRequest = ()=>request.abort();
+        signal.addEventListener('abort',cancelRequest,{once:true});
+        const timeout = setTimeout(cancelRequest,3000);
+        try {
+          const {document} = await fetchSharedMap({signal:request.signal});
+          loaded = resolveInitialMap(defaults,document,saved);
+        } catch {
+          // A previous sync may be newer than the copy served by Pages.
+        } finally {
+          clearTimeout(timeout);
+          signal.removeEventListener('abort',cancelRequest);
+        }
       }
-      if(loaded.invalidLocal)message('O rascunho local está inválido. Foi aberta a versão disponível do mapa.');
+      if(signal.aborted)return;
+      if(!loaded) {
+        try { loaded = resolveInitialMap(defaults,published ?? initial,saved,{preserveConfirmed:true}); }
+        catch {
+          loaded = resolveInitialMap(defaults,initial,saved,{preserveConfirmed:true});
+          message('As edições publicadas estão indisponíveis. Foi aberta a versão disponível do mapa.');
+        }
+      }
+      if(storage.invalid||loaded.invalidLocal)message('O rascunho local está inválido. Foi aberta a versão disponível do mapa.');
+      draftStorage.current = storage;
+      lastPersisted.current = serializeDraft(snapshotMap(loaded.map.nodes,loaded.map.edges),loaded.baseline);
+      setStoreStatus(storage.status);
       setNodes(loaded.map.nodes);
       setEdges(loaded.map.edges);
       setBaseline(loaded.baseline);
@@ -124,21 +151,25 @@ function AppInner() {
     return ()=>controller.abort();
   },[message]);
 
-  useEffect(()=>{
-    if(!baseline||!draftKey)return;
-    const persist = ()=>{
-      try {
-        localStorage.setItem(STORAGE_KEY,JSON.stringify({...JSON.parse(draftKey),sync:baseline}));
-        setCanStore(true);
-      }catch{setCanStore(false);}
-    };
+  const persistDraft = useCallback((serialized)=>{
+    pendingDraft.current = serialized;
+    if(!serialized||serialized===lastPersisted.current)return;
+    const status = draftStorage.current.save(serialized);
+    if(status!=='unavailable')lastPersisted.current = serialized;
+    setStoreStatus(status);
+  },[]);
+
+  useLayoutEffect(()=>{
+    pendingDraft.current = serializedDraft;
+    if(!serializedDraft||serializedDraft===lastPersisted.current)return;
+    const persist = ()=>persistDraft(pendingDraft.current);
     const timer = setTimeout(persist,400);
     window.addEventListener('pagehide',persist);
     return ()=>{
       clearTimeout(timer);
       window.removeEventListener('pagehide',persist);
     };
-  },[draftKey,baseline]);
+  },[serializedDraft,persistDraft]);
 
   const onNodesChange = useCallback(changes=>setNodes(prev=>applyNodeChanges(changes,prev)),[]);
   const onEdgesChange = useCallback(changes=>setEdges(prev=>applyEdgeChanges(changes,prev)),[]);
@@ -221,6 +252,11 @@ function AppInner() {
     setNodes(next.nodes);
     setEdges(next.edges);
     setBaseline(remote);
+    persistDraft(serializeDraft(remote.draft,remote));
+  };
+  const rememberPublished=(remote)=>{
+    persistDraft(serializeDraft(remote.draft,remote));
+    setBaseline(remote);
   };
   const selectView=(next)=>{
     setSelected(null);
@@ -238,8 +274,12 @@ function AppInner() {
   const relatedPaths=(model?.journeys||[]).filter(path=>path.source===selected||path.target===selected);
   const saveText=()=>{
     if(!activeNode)return;
-    setNodes(p=>p.map(n=>n.id===activeNode.id?{...n,data:{...n.data,title:editTitle,description:editDescription,notes}}:n));message('Anotação salva localmente.');
+    setNodes(p=>p.map(n=>n.id===activeNode.id?{...n,data:{...n.data,title:editTitle,description:editDescription,notes}}:n));message('Alterações aplicadas ao rascunho.');
   };
+
+  const draftStatus = storeStatus==='unavailable' ? 'O navegador não está guardando o rascunho. Exporte uma cópia.'
+    : storeStatus==='tab'&&dirty ? 'Rascunho guardado nesta aba. Exporte antes de fechá-la.'
+    : dirty ? 'Rascunho local · envio manual ao GitHub' : 'Mapa na versão de referência';
 
   if(loadError)return <div className="loading-screen"><div role="alert">{loadError}<br/>
     <button className="btn secondary" onClick={()=>window.location.reload()}>Tentar novamente</button></div></div>;
@@ -261,7 +301,7 @@ function AppInner() {
       </header>
       <div className="toolbar"><div className="search-wrapper"><span>⌕</span><input aria-label="Buscar páginas e capturas" value={filter} onChange={e=>setFilter(e.target.value)} placeholder={view==='map'?'Buscar páginas, funções, rotas ou códigos D/M...':'Buscar códigos e nomes das capturas...'}/></div><div className="segmented"><button className={device==='todos'?'current':''} onClick={()=>setDevice('todos')}>Todos</button><button className={device==='desktop'?'current':''} onClick={()=>setDevice('desktop')}>Desktop</button><button className={device==='mobile'?'current':''} onClick={()=>setDevice('mobile')}>Mobile</button>{view==='gallery'&&<button className={device==='extra'?'current':''} onClick={()=>setDevice('extra')}>Extras</button>}</div><div className="counter">{view==='map'?`${visibleNodes.length} cartões · ${visibleEdges.length} conexões`: `${screenshots.length} referências`}</div></div>
       {view==='map'?<div className="canvas-wrap"><ReactFlow nodeTypes={nodeTypes} nodes={visibleNodes} edges={visibleEdges} onNodesChange={onNodesChange} onEdgesChange={onEdgesChange} onConnect={onConnect} onNodeClick={(_,node)=>setSelected(node.id)} onPaneClick={()=>setSelected(null)} minZoom={0.06} maxZoom={2} fitView fitViewOptions={{padding:0.18}} nodesDraggable nodesConnectable elementsSelectable deleteKeyCode="Delete" colorMode="dark" connectionLineStyle={{stroke:'#3fc0a7',strokeWidth:2}}><Background variant={BackgroundVariant.Dots} color="#334156" gap={24} size={1}/><Controls position="bottom-left"/><MiniMap pannable zoomable nodeColor={n=>baseColors[n.data.section]||'#888'} maskColor="rgba(8, 12, 20, 0.67)" style={{background:'#111927',border:'1px solid #2b3b50'}}/><Panel position="top-left"><div className="canvas-help">Arraste cartões para reorganizar. Puxe os pontos laterais para conectar. Clique para consultar detalhes.</div></Panel></ReactFlow><div className="lane-legend">{lanes.map(l=><span key={l.id}>{l.title} <b>{l.cardIds.length}</b></span>)}</div></div>:<div className="gallery-scroll"><div className="gallery-intro"><b>{model.summary.catalogedScreenshots} capturas catalogadas</b><span>81 desktop, 68 mobile e uma prancha de referência em Extras.</span></div><div className="gallery-grid">{screenshots.map(s=><button className="gallery-card" key={s.code} onClick={()=>window.open(asset(s.image),'_blank','noopener')}><div className="gallery-img"><img src={asset(s.image)} alt={s.title} loading="lazy"/></div><div className="gallery-caption"><strong>{s.code}</strong><span>{s.title}</span></div></button>)}</div></div>}
-      <footer className="statusbar"><div><span className="green-dot"/>{!canStore?'O navegador não está guardando o rascunho':dirty?'Rascunho local · envio manual ao GitHub':'Mapa na versão de referência'}</div><div>Importação do Figma · {model.summary.flowCards} cartões · {model.summary.verifiedLabeledTransitions} conexões rotuladas</div></footer>
+      <footer className="statusbar"><div><span className="green-dot"/>{draftStatus}</div><div>Importação do Figma · {model.summary.flowCards} cartões · {model.summary.verifiedLabeledTransitions} conexões rotuladas</div></footer>
     </main>
     {activeNode&&view==='map'&&<aside className="details"><div className="details-top"><span>DETALHES DO ELEMENTO</span><button onClick={()=>setSelected(null)} title="Fechar">✕</button></div><div className="detail-subtitle">{tagName(activeNode.data.kind)} {activeNode.data.route&&<code>{activeNode.data.route}</code>}</div><label>Título<input value={editTitle} onChange={e=>setEditTitle(e.target.value)}/></label><label>Descrição<textarea rows={5} value={editDescription} onChange={e=>setEditDescription(e.target.value)}/></label><label>Suas observações<textarea rows={4} placeholder="Adicione decisões, tarefas ou notas..." value={notes} onChange={e=>setNotes(e.target.value)}/></label><button className="btn primary save-detail" onClick={saveText}>Salvar alterações</button>{relatedPaths.length>0&&<><h3>Caminhos e retornos</h3><ul className="card-journeys">{relatedPaths.map(path=>{
       const outgoing=path.source===selected;
@@ -272,7 +312,7 @@ function AppInner() {
       </button></li>;
     })}</ul></>}<h3>Capturas relacionadas</h3>{activeNode.data.refs.length?activeNode.data.refs.map(ref=>{const s=model.screenshots.find(x=>x.code===ref);return <div className="detail-image" key={ref}><div className="detail-image-label"><strong>{ref}</strong> {s?.title||'Referência sem captura individual no arquivo'}</div>{s?.image?<img onClick={()=>window.open(asset(s.image),'_blank','noopener')} src={asset(s.image)} loading="lazy" alt={`Captura ${ref}`}/>:<div className="missing-capture">Sem imagem vinculada no .fig</div>}</div>}):<p className="muted">Nenhuma captura referenciada.</p>}<p className="detail-footer">ID Figma: {activeNode.id}<br/>Seção: {sections.find(s=>s.id===activeNode.data.section)?.label}</p></aside>}
     {syncOpen&&<GitHubSyncDialog dirty={dirty} baseline={baseline} draft={draft} toDraft={toDraft}
-      applyRemote={applyRemote} onSaved={setBaseline} onClose={()=>setSyncOpen(false)}/>}
+      applyRemote={applyRemote} onSaved={rememberPublished} onClose={()=>setSyncOpen(false)}/>}
     {!!toast&&<div role="status" className="toast">{toast}</div>}
   </div>;
 }

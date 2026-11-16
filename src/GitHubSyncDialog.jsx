@@ -24,8 +24,14 @@ export default function GitHubSyncDialog({dirty, baseline, draft, toDraft, apply
     setStatus('');
     setCommit(null);
     setConfirmLoad(false);
+    setPreview(null);
     try { await callback(); }
-    catch (error) { if (active.current) setStatus(error.message); }
+    catch (error) {
+      if (active.current) {
+        setPreview(null);
+        setStatus(error.message);
+      }
+    }
     finally { if (active.current) setBusy(false); }
   }
 
