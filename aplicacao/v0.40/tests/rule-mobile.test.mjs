@@ -1,9 +1,11 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {ruleMobileViewport,usesNativeRuleMenu} from '../lib/rule-mobile.ts';
-import {SITE_VERSION} from '../lib/site-version.ts';
-import {nextDevelopmentVersion} from '../scripts/site-version.mjs';
-import {readFileSync} from 'node:fs';
+import {SITE_RELEASE,SITE_VERSION} from '../lib/site-version.ts';
+import {nextDevelopmentVersion,readBuildCommit} from '../scripts/site-version.mjs';
+import {mkdtempSync,readFileSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 
 test('A barra se ancora à borda visível quando o teclado reduz apenas o viewport visual',()=>{const v=ruleMobileViewport(390,844,{width:390,height:490,offsetTop:0,offsetLeft:0,scale:1});assert.deepEqual(v,{left:0,width:390,top:0,bottom:490,height:490,keyboard:true});assert.equal(v.bottom-56,434);});
 test('Rolagem visual do teclado, orientação e redimensionamento do layout mantêm a barra na área visível',()=>{const panned=ruleMobileViewport(390,844,{width:390,height:365,offsetTop:170,scale:1});assert.equal(panned.bottom,535);assert.equal(panned.top,170);assert.equal(panned.height,365);const resized=ruleMobileViewport(390,490,{width:390,height:490});assert.equal(resized.bottom,490);const landscape=ruleMobileViewport(844,390,{width:844,height:170,offsetTop:0,scale:1});assert.equal(landscape.bottom,170);assert.equal(landscape.width,844);});
@@ -12,4 +14,18 @@ test('Fechar teclado restaura a posição e zoom não é confundido com teclado 
 test('Sem VisualViewport há fallback e dimensões transitórias não escapam do layout',()=>{assert.equal(ruleMobileViewport(375,650).bottom,650);for(const visual of [{width:1000,height:2000,offsetTop:-1,offsetLeft:-1},{width:NaN,height:NaN,offsetTop:NaN},{width:0,height:0,offsetTop:1000,offsetLeft:1000}]){const v=ruleMobileViewport(375,650,visual);assert(v.left>=0&&v.left<375);assert(v.width>=1&&v.left+v.width<=375);assert(v.top>=0&&v.bottom<=650&&v.height>=1);}});
 test('Toque e caneta preservam o menu nativo; mouse continua com o menu desktop, inclusive em janela estreita',()=>{assert.equal(usesNativeRuleMenu('touch','mouse',false),true);assert.equal(usesNativeRuleMenu(undefined,'touch',false),true);assert.equal(usesNativeRuleMenu('pen','pen',false),true);assert.equal(usesNativeRuleMenu(undefined,'mouse',true),true);assert.equal(usesNativeRuleMenu('mouse','touch',true),true);assert.equal(usesNativeRuleMenu('mouse','mouse',true),false);assert.equal(usesNativeRuleMenu('mouse','mouse',false),false);assert.equal(usesNativeRuleMenu(undefined,'mouse',false),false);});
 test('A versão exibida vem exclusivamente de package.json e não do contador da hospedagem',()=>{const pkg=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'));assert.equal(SITE_VERSION,pkg.version.split('.').slice(0,2).join('.'));assert.match(pkg.version,/^0\.\d+\.0$/);assert.equal(pkg.version,`${SITE_VERSION}.0`);});
+test('Os metadados da versão vêm do manifesto e o commit é opcional',()=>{
+ const pkg=JSON.parse(readFileSync(new URL('../package.json',import.meta.url),'utf8'));
+ assert.deepEqual(SITE_RELEASE,{version:SITE_VERSION,...pkg.antropologoRelease,commit:null});
+});
+test('O build usa um SHA válido do ambiente e admite builds sem Git',()=>{
+ const directory=mkdtempSync(join(tmpdir(),'antropologo-build-'));
+ try {
+  assert.equal(readBuildCommit(directory,{GITHUB_SHA:' 0123456789abc ',CF_PAGES_COMMIT_SHA:'abcdef123456'}),'01234567');
+  assert.equal(readBuildCommit(directory,{GITHUB_SHA:'valor inválido',CF_PAGES_COMMIT_SHA:'ABCDEF123456'}),'abcdef12');
+  assert.equal(readBuildCommit(directory,{GITHUB_SHA:'valor inválido'}),null);
+ } finally {
+  rmSync(directory,{recursive:true,force:true});
+ }
+});
 test('Publicações de teste incrementam a sequência 0.x sem nunca passar automaticamente para 1.0',()=>{assert.equal(nextDevelopmentVersion('0.18.0'),'0.19.0');assert.equal(nextDevelopmentVersion('0.19.0'),'0.20.0');assert.equal(nextDevelopmentVersion('0.99.0'),'0.100.0');assert.equal(nextDevelopmentVersion('0.999.0'),'0.1000.0');for(const version of ['1.0.0','0.18.1','0.18','0.018.0','bad'])assert.throws(()=>nextDevelopmentVersion(version));});

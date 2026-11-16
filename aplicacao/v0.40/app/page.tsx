@@ -103,13 +103,14 @@ export default function App(){
   const visualState=useSystemVisualState();
   const selectedContext=resolveSystemContext(rulebooks,contextId);
   const contextBook=profileGlobal?undefined:selectedContext;
+  const orbitalHome=page==='home'&&!selectedContext;
   const hasIdentity=hasSystemIdentity(contextBook);
   const fieldsCount=sheet?.blocks.reduce((n,b)=>n+b.fields.length,0)||0;
-  return <PlayerSpaceProvider onProfileVisibilityChange={setProfileGlobal}>{!sessionReady&&<div className="session-restore-status" role="status">Preparando sua sessão…</div>}<div inert={!sessionReady} data-session-ready={sessionReady} data-context={contextBook?'system':'global'} data-system-id={contextBook?.id||undefined} className={'app-shell'+(hasIdentity?' has-system-identity':'')+(contextBook?' system-mode':' global-mode')}>
+  return <PlayerSpaceProvider onProfileVisibilityChange={setProfileGlobal}>{!sessionReady&&<div className="session-restore-status" role="status">Preparando sua sessão…</div>}<div inert={!sessionReady} data-session-ready={sessionReady} data-context={contextBook?'system':'global'} data-system-id={contextBook?.id||undefined} className={'app-shell'+(hasIdentity?' has-system-identity':'')+(contextBook?' system-mode':' global-mode')+(orbitalHome?' orbital-home-mode':'')}>
     <a className="skip-link" href="#main">Pular para o conteúdo</a>
     <div className={'main-wrap'+(page==='home'?' is-home':page==='sheet'?' is-sheet':'')+(contextBook?.visuals?.areas.mainBackground?.assetId?' has-system-main-background':'')}>
       {contextBook&&<SystemMainBackground book={contextBook} state={visualState}/>}
-      {!contextBook?.visuals?.areas.mainBackground?.assetId&&<HomeDiceBackground/>}
+      {!orbitalHome&&!contextBook?.visuals?.areas.mainBackground?.assetId&&<HomeDiceBackground/>}
       {page==='sheet'&&<div id="sheet-page-background" className="sheet-page-background" aria-hidden="true"/>}
       <header className="topbar">
         {contextBook&&<SystemHeaderBackground book={contextBook} state={visualState}/>}
@@ -120,9 +121,10 @@ export default function App(){
         <nav className="global-top-nav" aria-label="Áreas da plataforma">{(['home','rules','sheet','pdfs','agenda'] as Page[]).map(id=><button type="button" key={id} aria-current={page===id?'page':undefined} onClick={()=>go(id)}>{names[id]}</button>)}</nav>
         <div className="header-right"><IconButton label={'Ajuda de '+names[page]} className="icon-button contextual-help-trigger" aria-haspopup="dialog" onClick={()=>openModal('help')}><CircleHelp size={19}/></IconButton><AppearanceControls/><span className="private-badge"><Sparkles size={12}/> VERSÃO DE TESTE · v{SITE_VERSION}</span><ProfileControl onOpenAgenda={()=>go('agenda')}/></div>
       </header>
-      <main ref={mainRef} id="main" tabIndex={-1} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>{page==='home'&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
+      <main ref={mainRef} id="main" tabIndex={-1} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>{page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
 
-      {page==='home'&&<PlatformHome books={rulebooks} sheets={recent} context={contextBook} onSystem={enterSystem} onAllSystems={()=>browseSystems()} onCreateSystem={()=>browseSystems(true)} onCreateCharacter={()=>newCharacter(contextBook)} onOpenCharacter={openCharacter} onAllCharacters={()=>replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(true);go('sheet');})} onPdfs={()=>go('pdfs')} onAgenda={()=>go('agenda')}/>}
+      {page==='home'&&<PlatformHome books={rulebooks} sheets={recent} context={selectedContext} onSystem={enterSystem} onAllSystems={()=>browseSystems()} onCreateSystem={()=>browseSystems(true)} onCreateCharacter={()=>newCharacter(selectedContext)} onOpenCharacter={openCharacter} onAllCharacters={()=>replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(true);go('sheet');})} onPdfs={()=>go('pdfs')} onAgenda={()=>go('agenda')}/>}
+      {orbitalHome&&<TestNotice/>}
 
       {page==='rules'&&<RulesLibrary createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
 

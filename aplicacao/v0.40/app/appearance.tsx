@@ -1,20 +1,163 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
-import { Check, Moon, Palette, RotateCcw, Sun, X } from 'lucide-react';
-import { defaultAppearance, palettes, parseAppearance, paletteFaviconURL, type Appearance } from '../lib/appearance';
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
+import { Check, Info, Moon, Palette, RotateCcw, Settings, Sun, X } from 'lucide-react';
+import { applyOrbitalColors, defaultAppearance, palettes, secondaryPalettes, recommendedSecondary, parseAppearance, paletteFaviconURL, type Appearance } from '../lib/appearance';
+import { SITE_RELEASE } from '../lib/site-version';
 
-function AppearanceDialog({value,onChange,onClose,saveError}:{value:Appearance;onChange:(value:Appearance)=>void;onClose:()=>void;saveError:boolean}) {
-  const dialog = useRef<HTMLDialogElement>(null);
-  useEffect(() => { dialog.current?.showModal(); }, []);
-  return <dialog ref={dialog} className="modal appearance-dialog" aria-labelledby="appearance-title" onCancel={onClose} onClick={e=>{if(e.target===dialog.current)onClose();}}>
-    <div className="modal-head"><div><span className="page-eyebrow">SEU UNIVERSO, SUAS CORES</span><h2 id="appearance-title">Aparência</h2></div><button className="icon-button" type="button" aria-label="Fechar aparência" onClick={onClose}><X size={20}/></button></div>
-    <p className="modal-intro">Uma nova atmosfera para a sua aventura. As mudanças aparecem na hora.</p>
-    <fieldset className="appearance-fieldset"><legend>Modo de exibição</legend><div className="mode-options">{([{id:'light',name:'Claro',Icon:Sun},{id:'dark',name:'Escuro',Icon:Moon}] as const).map(({id,name,Icon})=><label key={id} className={'mode-choice '+(value.mode===id?'chosen':'')}><input className="appearance-radio" type="radio" name="appearance-mode" value={id} checked={value.mode===id} onChange={()=>onChange({...value,mode:id})}/><span className={'mode-thumbnail '+id}><span/><i/><i/><i/></span><span className="mode-choice-caption"><Icon size={16}/>{name}{value.mode===id&&<Check size={15}/>}</span></label>)}</div></fieldset>
-    <fieldset className="appearance-fieldset"><legend>Paleta principal <span>{palettes.find(p=>p.id===value.palette)?.name}</span></legend><div className="palette-options">{palettes.map(p=><label key={p.id} className={'palette-choice '+(value.palette===p.id?'chosen':'')}><input className="appearance-radio" type="radio" name="appearance-palette" value={p.id} checked={value.palette===p.id} onChange={()=>onChange({...value,palette:p.id})}/><span className="palette-swatch" style={{background:p.swatch,color:p.id==='silver'||p.id==='yellow'?'#26303c':'#fff'}}>{value.palette===p.id&&<Check size={17}/>}</span><span>{p.name}</span></label>)}</div><p className="appearance-hint">Prata traz tons claros e metálicos. Grafite usa um cinza profundo, distinto do preto.</p></fieldset>
-    <div className="appearance-preview"><span className="appearance-preview-icon"><Palette size={20}/></span><div><strong>Sua próxima história, em novas cores.</strong><span>{value.mode==='light'?'Modo claro':'Modo escuro'} · {palettes.find(p=>p.id===value.palette)?.name}</span></div><span className="appearance-preview-dot"/></div>
+const settingsSections = [
+  { id: 'appearance', label: 'Aparência', Icon: Palette },
+  { id: 'about', label: 'Sobre', Icon: Info },
+] as const;
+
+type SettingsSection = (typeof settingsSections)[number]['id'];
+type AppearancePreferencesProps = {
+  value: Appearance;
+  onChange: (value: Appearance) => void;
+  saveError: boolean;
+};
+
+function PaletteChoices<Id extends string>({name, options, value, onSelect}: {
+  name: string;
+  options: readonly {id: Id; name: string; swatch: string}[];
+  value: Id;
+  onSelect: (id: Id) => void;
+}) {
+  return <div className="palette-options">
+    {options.map(({id, name: label, swatch}) => {
+      const selected = id === value;
+      return <label key={id} className={'palette-choice ' + (selected ? 'chosen' : '')}>
+        <input className="appearance-radio" type="radio" name={name} value={id} checked={selected} onChange={() => onSelect(id)}/>
+        <span className="palette-swatch" style={{backgroundColor: swatch}} aria-hidden="true"/>
+        <span>{label}</span>
+        {selected && <Check className="palette-check" size={14} aria-hidden="true"/>}
+      </label>;
+    })}
+  </div>;
+}
+
+function AppearancePreferences({value,onChange,saveError}: AppearancePreferencesProps) {
+  const hintId = useId();
+  const recommended = recommendedSecondary[value.palette];
+  const secondary = value.secondaryPalette ?? recommended;
+  const recommendation = secondaryPalettes.find(option => option.id === recommended)?.name;
+  return <>
+    <fieldset className="appearance-fieldset">
+      <legend>Modo de exibição</legend>
+      <div className="mode-options">
+        {([{id: 'light', name: 'Claro', Icon: Sun}, {id: 'dark', name: 'Escuro', Icon: Moon}] as const).map(({id, name, Icon}) =>
+          <label key={id} className={'mode-choice ' + (value.mode === id ? 'chosen' : '')}>
+            <input className="appearance-radio" type="radio" name="appearance-mode" value={id} checked={value.mode === id} onChange={() => onChange({...value, mode: id})}/>
+            <span className={'mode-thumbnail ' + id} aria-hidden="true"><span/></span>
+            <span className="mode-choice-caption"><Icon size={16} aria-hidden="true"/>{name}{value.mode === id && <Check size={15} aria-hidden="true"/>}</span>
+          </label>
+        )}
+      </div>
+    </fieldset>
+    <fieldset className="appearance-fieldset">
+      <legend>Paleta primária</legend>
+      <PaletteChoices name="appearance-palette" options={palettes} value={value.palette} onSelect={palette => onChange({mode: value.mode, palette})}/>
+    </fieldset>
+    <fieldset className="appearance-fieldset appearance-secondaries" aria-describedby={hintId}>
+      <legend>Paleta secundária</legend>
+      <PaletteChoices name="appearance-secondary" options={secondaryPalettes} value={secondary} onSelect={secondaryPalette => onChange({...value, secondaryPalette})}/>
+      <p className="appearance-hint" id={hintId}>{recommendation} é a combinação recomendada para a primária atual. Trocar a primária redefine a secundária.</p>
+    </fieldset>
     <p className={'appearance-save '+(saveError?'failed':'')} role="status">{saveError?'A aparência foi aplicada, mas este navegador não permitiu salvar a preferência.':'Sua preferência fica salva neste navegador.'}</p>
-    <div className="modal-footer appearance-footer"><button className="button ghost" type="button" onClick={()=>onChange(defaultAppearance)}><RotateCcw size={14}/> Restaurar padrão</button><button className="button primary" type="button" onClick={onClose}>Pronto <Check size={15}/></button></div>
+  </>;
+}
+
+function SettingsDialog({ value, onChange, onClose, saveError }: AppearancePreferencesProps & { onClose: () => void }) {
+  const dialog = useRef<HTMLDialogElement>(null);
+  const tabRefs = useRef<Partial<Record<SettingsSection, HTMLButtonElement | null>>>({});
+  const [section, setSection] = useState<SettingsSection>('appearance');
+  const id = useId();
+
+  useEffect(() => { dialog.current?.showModal(); }, []);
+
+  function close() {
+    dialog.current?.close();
+    onClose();
+  }
+
+  function navigateTabs(event: KeyboardEvent<HTMLButtonElement>) {
+    let next: SettingsSection;
+    switch (event.key) {
+      case 'Home':
+        next = 'appearance';
+        break;
+      case 'End':
+        next = 'about';
+        break;
+      case 'ArrowLeft':
+      case 'ArrowRight':
+        next = section === 'appearance' ? 'about' : 'appearance';
+        break;
+      default:
+        return;
+    }
+    event.preventDefault();
+    setSection(next);
+    tabRefs.current[next]?.focus();
+  }
+
+  return <dialog
+    ref={dialog}
+    className="modal appearance-dialog"
+    aria-labelledby={`${id}-title`}
+    onCancel={event => { event.preventDefault(); close(); }}
+    onClick={event => { if (event.target === dialog.current) close(); }}
+  >
+    <div className="modal-head">
+      <h2 id={`${id}-title`}>Configurações</h2>
+      <button className="icon-button settings-close" type="button" aria-label="Fechar configurações" onClick={close}><X size={20}/></button>
+    </div>
+    <div className="context-help-tabs settings-tabs" role="tablist" aria-label="Seções das configurações">
+      {settingsSections.map(({ id: key, label, Icon }) => <button
+        key={key}
+        ref={element => { tabRefs.current[key] = element; }}
+        type="button"
+        role="tab"
+        id={`${id}-tab-${key}`}
+        aria-controls={`${id}-panel-${key}`}
+        aria-selected={section === key}
+        tabIndex={section === key ? 0 : -1}
+        onClick={() => setSection(key)}
+        onKeyDown={navigateTabs}
+      ><Icon size={16} aria-hidden="true"/>{label}</button>)}
+    </div>
+    <section id={`${id}-panel-appearance`} role="tabpanel" aria-labelledby={`${id}-tab-appearance`} hidden={section !== 'appearance'}>
+      <AppearancePreferences value={value} onChange={onChange} saveError={saveError}/>
+    </section>
+    <section id={`${id}-panel-about`} role="tabpanel" aria-labelledby={`${id}-tab-about`} hidden={section !== 'about'} tabIndex={0}>
+      <h3 className="settings-about-title">Sobre o ANTROPOLOGO RPG</h3>
+      <dl className="settings-release">
+        <div className="settings-release-version">
+          <dt>Versão atual</dt>
+          <dd>{SITE_RELEASE.version}</dd>
+        </div>
+        <div>
+          <dt>Estágio</dt>
+          <dd>{SITE_RELEASE.stage}</dd>
+        </div>
+        <div>
+          <dt>Identificação da versão</dt>
+          <dd>{SITE_RELEASE.name}</dd>
+        </div>
+        {SITE_RELEASE.commit && <div className="settings-release-build">
+          <dt>Commit</dt>
+          <dd><code>{SITE_RELEASE.commit}</code></dd>
+        </div>}
+      </dl>
+      <section className="settings-history" aria-labelledby={`${id}-history`}>
+        <h4 id={`${id}-history`}>Histórico de atualizações</h4>
+        <p>As notas de versão serão exibidas aqui.</p>
+      </section>
+    </section>
+    <div className="modal-footer appearance-footer">
+      {section === 'appearance' && <button className="button ghost" type="button" title="Voltar para Claro, Floresta e Dourado" onClick={() => onChange(defaultAppearance)}><RotateCcw size={14} aria-hidden="true"/> Restaurar aparência padrão</button>}
+      <button className="button primary" type="button" onClick={close}>Pronto <Check size={15}/></button>
+    </div>
   </dialog>;
 }
 
@@ -26,6 +169,7 @@ export function AppearanceControls() {
     const safe=parseAppearance(next);
     document.documentElement.dataset.mode=safe.mode;
     document.documentElement.dataset.palette=safe.palette;
+    applyOrbitalColors(document.documentElement, safe);
     const icon=document.getElementById('platform-favicon');
     if(icon)icon.setAttribute('href',paletteFaviconURL(safe.palette));
     setValue(safe);
@@ -37,5 +181,11 @@ export function AppearanceControls() {
     window.addEventListener('storage',sync);
     return ()=>window.removeEventListener('storage',sync);
   },[]);
-  return <><div className="appearance-controls"><span className="header-language" lang="pt-BR" aria-label="Idioma: português" title="Português (Brasil)">PT</span><button type="button" className="appearance-trigger" aria-label="Personalizar aparência" aria-haspopup="dialog" title="Personalizar aparência" onClick={()=>setOpen(true)}><Palette size={17}/><span>Aparência</span></button></div>{open&&<AppearanceDialog value={value} onChange={apply} onClose={()=>setOpen(false)} saveError={saveError}/>}</>;
+  return <>
+    <div className="appearance-controls">
+      <span className="header-language" lang="pt-BR" aria-label="Idioma: português" title="Português (Brasil)">PT</span>
+      <button type="button" className="appearance-trigger" aria-label="Configurações" aria-haspopup="dialog" title="Configurações" onClick={()=>setOpen(true)}><Settings size={17} aria-hidden="true"/><span>Configurações</span></button>
+    </div>
+    {open && <SettingsDialog value={value} onChange={apply} onClose={()=>setOpen(false)} saveError={saveError}/>}
+  </>;
 }

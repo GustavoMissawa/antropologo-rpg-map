@@ -20,3 +20,13 @@
   da aplicação e não deve ser usado na interface.
 - O aviso grande de teste fica exclusivamente na Visão geral. Não o
   recoloque nas páginas internas.
+
+## Direção de arte e movimento
+
+- Para análise visual da interface, leia `.agents/skills/impeccable/SKILL.md`.
+- Para composição e uso das referências, leia `.agents/skills/design-taste-frontend/SKILL.md`.
+- Para planejar e revisar movimento, leia `.agents/skills/animate/SKILL.md`,
+  `.agents/skills/animation-performance/SKILL.md` e
+  `.agents/skills/review-animations/SKILL.md`.
+- Os commits de origem e as licenças constam em
+  `docs/home-orbital-v040.md` e `.agents/skills/LICENSES/`.

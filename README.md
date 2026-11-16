@@ -15,6 +15,10 @@ O seletor abre v0.40 por padrão. As duas versões começaram com os mesmos arqu
 
 O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip`, correspondente à árvore Git `209a953f5c3e13941b5c8f41d5c9d9922acaf07b` do commit de origem `17d76ebfdb9fdb83514df05cc107a1837c86419b`. A cópia de desenvolvimento conserva inclusive a versão interna do pacote na origem para manter a igualdade inicial. O identificador de desenvolvimento já aparece no seletor do atlas.
 
+## Aparência da Home Orbital
+
+Veja as [capturas da v0.40 no site publicado](docs/home-orbital-v040/README.md), com os modos claro e escuro, as paletas primária e secundária e a aba Sobre.
+
 ## Desenvolver a aplicação
 
 Trabalhe em `aplicacao/v0.40/` e consulte o README dessa pasta para os comandos de build e execução. A instalação da aplicação usa seu próprio `pnpm-lock.yaml`. As migrações do D1 e a declaração dos bindings do Worker estão no código. Os registros do D1, os objetos do R2, as credenciais e os dados das sessões do navegador são externos. Para executar a aplicação localmente, use os bindings e um banco de desenvolvimento descritos no README da aplicação.

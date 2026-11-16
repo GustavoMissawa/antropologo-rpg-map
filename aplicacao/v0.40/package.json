@@ -1,6 +1,10 @@
 {
   "name": "site-creator-vinext-starter",
-  "version": "0.38.0",
+  "version": "0.40.0",
+  "antropologoRelease": {
+    "stage": "Desenvolvimento",
+    "name": "Home Orbital"
+  },
   "private": true,
   "engines": {
     "node": ">=22.13.0"

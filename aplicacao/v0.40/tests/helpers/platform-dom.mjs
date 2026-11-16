@@ -2,7 +2,7 @@ import {JSDOM} from 'jsdom';
 import ts from 'typescript';
 import {readFileSync,writeFileSync,mkdtempSync,mkdirSync,existsSync} from 'node:fs';
 import {resolve,dirname,join} from 'node:path';import {fileURLToPath,pathToFileURL} from 'node:url';
-import React,{act} from 'react';import {createRoot} from 'react-dom/client';
+import React,{act} from 'react';
 import 'fake-indexeddb/auto';
 
 // React + simulated DOM/IndexedDB integration. No browser layout or phone is emulated.
@@ -11,8 +11,11 @@ const output=mkdtempSync(join(rootDir,'.sites-runtime/platform-dom-')),modules=n
 function compile(file){if(modules.has(file))return modules.get(file);const dest=join(output,modules.size+'.mjs');modules.set(file,dest);let js=ts.transpileModule(readFileSync(file,'utf8'),{fileName:file,compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX}}).outputText;js=js.replace(/(from\s*|import\s*)(['"])(\.[^'"]+)\2/g,(whole,start,quote,name)=>{let next=resolve(dirname(file),name);if(!existsSync(next))next=['.ts','.tsx','.mjs'].map(ext=>next+ext).find(existsSync);if(!next)throw Error('Import não resolvido: '+name);return start+quote+pathToFileURL(/\.tsx?$/.test(next)?compile(next):next).href+quote;});writeFileSync(dest,js);return dest;}
 const dom=new JSDOM('<!doctype html><html><body></body></html>',{url:'https://platform-test.invalid',pretendToBeVisual:true});
 for(const key of ['window','document','navigator','Element','HTMLElement','HTMLDialogElement','HTMLInputElement','Event','MouseEvent','KeyboardEvent','MutationObserver','sessionStorage','FormData','getComputedStyle','requestAnimationFrame','cancelAnimationFrame'])Object.defineProperty(globalThis,key,{configurable:true,value:['getComputedStyle','requestAnimationFrame','cancelAnimationFrame'].includes(key)?dom.window[key].bind(dom.window):dom.window[key]});
+// React DOM detects input-event support during import, after the simulated DOM is available.
+const {createRoot}=await import('react-dom/client');
 const nativeTimeout=globalThis.setTimeout;globalThis.setTimeout=(fn,ms,...args)=>{const timer=nativeTimeout(fn,ms,...args);if(ms>5000)timer.unref?.();return timer;};
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;window.scrollTo=()=>{};HTMLElement.prototype.scrollIntoView=()=>{};HTMLDialogElement.prototype.showModal=function(){this.setAttribute('open','');};
+HTMLDialogElement.prototype.close=function(){this.removeAttribute('open');};
 const medias=new Map();let mobile=false,reduced=false;
 globalThis.matchMedia=window.matchMedia=query=>{if(!medias.has(query)){const listeners=new Set();medias.set(query,{media:query,get matches(){return query.includes('reduced-motion')?reduced:query.includes('max-width')?mobile:query.includes('pointer:fine')||query.includes('hover:hover');},addEventListener:(_event,fn)=>listeners.add(fn),removeEventListener:(_event,fn)=>listeners.delete(fn),notify(){for(const fn of listeners)fn();}});}return medias.get(query);};
 export const calls=[];

@@ -6,7 +6,7 @@ test('PDFs rejeitam resposta inválida sem derrubar a plataforma',async()=>{
 });
 test('Agenda rejeita lista inválida e oferece nova tentativa sem quebrar as outras páginas',async()=>{
  sessionStorage.clear();const native=globalThis.fetch;globalThis.fetch=async(path,...args)=>String(path)==='/api/sessions'?{ok:true,status:200,json:async()=>({unexpected:true})}:native(path,...args);let ui;
- try{ui=await mountPlatform();await clickButton(ui.host,'Agenda');assert(ui.host.textContent.includes('resposta inválida'));globalThis.fetch=native;await clickButton(ui.host,'Tentar novamente');assert(!ui.host.textContent.includes('resposta inválida'));await clickButton(ui.host,'Início');assert(ui.host.querySelector('.discovery-home'));}finally{globalThis.fetch=native;if(ui)await ui.close();}
+ try{ui=await mountPlatform();await clickButton(ui.host,'Agenda');assert(ui.host.textContent.includes('resposta inválida'));globalThis.fetch=native;await clickButton(ui.host,'Tentar novamente');assert(!ui.host.textContent.includes('resposta inválida'));await clickButton(ui.host,'Início');assert(ui.host.querySelector('.orbital-home'));}finally{globalThis.fetch=native;if(ui)await ui.close();}
 });
 test('Pedido de autenticação sem resposta libera a interface e permite verificar novamente',async()=>{
  sessionStorage.clear();const native=globalThis.fetch,nativeTimeout=globalThis.setTimeout;globalThis.setTimeout=(fn,ms,...args)=>nativeTimeout(fn,ms===15000?15:ms,...args);globalThis.fetch=async(path,...args)=>String(path)==='/api/auth/session'?new Promise(()=>{}):native(path,...args);let ui;

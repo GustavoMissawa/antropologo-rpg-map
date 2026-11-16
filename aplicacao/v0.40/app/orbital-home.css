@@ -1,0 +1,561 @@
+/* Both scene treatments share the same composition and selected accents. */
+.orbital-home-mode {
+  --orbit-background: #04171b;
+  --orbit-ambient-base: var(--orbit-primary-choice, var(--orbit-primary-default));
+  --orbit-ambient-light: var(--orbit-secondary-choice, var(--orbit-secondary-default));
+  --orbit-ink: #e5eeeb;
+  --orbit-muted: #a6bcbd;
+  --orbit-control-accent: var(--orbit-primary-default);
+  --orbit-control-bright: #c2f5ce;
+  --orbit-control-glow: #86c59c65;
+  --orbit-panel-fade: #9fefaf35;
+  --orbit-node-accent: var(--orbit-secondary-default);
+  --orbit-line: #8bb6b52f;
+  --orbit-header: 80px;
+  background: var(--orbit-background);
+}
+
+:root[data-orbit-primary] .orbital-home-mode {
+  --orbit-control-accent: color-mix(in srgb, var(--orbit-primary-choice) 42%, #fff);
+  --orbit-control-bright: color-mix(in srgb, var(--orbit-control-accent) 76%, #fff);
+  --orbit-die-light: color-mix(in srgb, var(--orbit-primary-choice) 65%, #dcf8ff);
+  --orbit-die-glow: color-mix(in srgb, var(--orbit-die-light) 52%, transparent);
+  --orbit-background: color-mix(in srgb, #04171b 95%, var(--orbit-primary-choice));
+  --orbit-line: color-mix(in srgb, var(--orbit-control-accent) 26%, transparent);
+  --orbit-surface: color-mix(in srgb, #0a2026 89%, var(--orbit-primary-choice));
+  --orbit-toolbar: color-mix(in srgb, var(--orbit-background) 94%, transparent);
+  --orbit-control: color-mix(in srgb, var(--orbit-surface) 73%, transparent);
+  --orbit-control-hover: color-mix(in srgb, var(--orbit-surface) 75%, var(--orbit-control-accent));
+  --orbit-control-glow: color-mix(in srgb, var(--orbit-control-accent) 50%, transparent);
+  --orbit-panel-fade: color-mix(in srgb, var(--orbit-control-accent) 22%, transparent);
+}
+
+:root[data-orbit-secondary] .orbital-home-mode {
+  --orbit-node-accent: color-mix(in srgb, var(--orbit-secondary-choice) 42%, #fff);
+  --orbit-wire: color-mix(in srgb, var(--orbit-secondary-choice) 68%, #f4f9ff);
+  --orbit-pulse: color-mix(in srgb, var(--orbit-wire) 42%, #fff);
+  --orbit-glow: color-mix(in srgb, var(--orbit-wire) 29%, transparent);
+  --orbit-glow-faint: color-mix(in srgb, var(--orbit-wire) 12%, transparent);
+  --orbit-glow-strong: color-mix(in srgb, var(--orbit-wire) 60%, transparent);
+  --orbit-node-surface: color-mix(in srgb, var(--orbit-background) 81%, var(--orbit-secondary-choice));
+  --orbit-node-active: color-mix(in srgb, var(--orbit-background) 65%, var(--orbit-wire));
+}
+
+:root:has(.orbital-home-mode) { scrollbar-color: #385b5d #081b1f; }
+:root[data-orbit-primary]:has(.orbital-home-mode) {
+  scrollbar-color: color-mix(in srgb, #385b5d 75%, var(--orbit-primary-choice)) #081b1f;
+}
+
+:root[data-mode='light'] .orbital-home-mode {
+  --orbit-background: color-mix(in srgb, #f0f4f6 94%, var(--orbit-ambient-base));
+  --orbit-ink: #172e39;
+  --orbit-muted: #3d5662;
+  --orbit-control-accent: color-mix(in srgb, var(--orbit-ambient-base) 29%, #12333f);
+  --orbit-control-bright: var(--orbit-control-accent);
+  --orbit-die-light: color-mix(in srgb, var(--orbit-ambient-base) 46%, #12313c);
+  --orbit-die-glow: color-mix(in srgb, var(--orbit-ambient-base) 35%, transparent);
+  --orbit-line: color-mix(in srgb, var(--orbit-control-accent) 26%, transparent);
+  --orbit-surface: color-mix(in srgb, #f8fafb 94%, var(--orbit-ambient-base));
+  --orbit-toolbar: color-mix(in srgb, var(--orbit-surface) 92%, transparent);
+  --orbit-control: var(--orbit-surface);
+  --orbit-control-hover: color-mix(in srgb, var(--orbit-surface) 91%, var(--orbit-control-accent));
+  --orbit-control-glow: color-mix(in srgb, var(--orbit-control-accent) 35%, transparent);
+  --orbit-panel-fade: color-mix(in srgb, var(--orbit-control-accent) 13%, transparent);
+  --orbit-node-accent: color-mix(in srgb, var(--orbit-ambient-light) 32%, #253348);
+  --orbit-wire: color-mix(in srgb, var(--orbit-ambient-light) 57%, #302b3c);
+  --orbit-pulse: var(--orbit-node-accent);
+  --orbit-glow: color-mix(in srgb, var(--orbit-wire) 28%, transparent);
+  --orbit-glow-faint: color-mix(in srgb, var(--orbit-wire) 14%, transparent);
+  --orbit-glow-strong: color-mix(in srgb, var(--orbit-node-accent) 71%, transparent);
+  --orbit-node-surface: color-mix(in srgb, var(--orbit-surface) 76%, var(--orbit-ambient-light));
+  --orbit-node-active: color-mix(in srgb, var(--orbit-surface) 52%, var(--orbit-ambient-light));
+}
+
+:root[data-mode='light']:has(.orbital-home-mode) { scrollbar-color: #869da4 #eef3f5; }
+
+.app-shell.orbital-home-mode .main-wrap {
+  position: relative;
+  isolation: isolate;
+  overflow-x: clip;
+}
+
+.app-shell.orbital-home-mode .main-wrap::before,
+:root[data-mode='light'] .app-shell.orbital-home-mode .main-wrap::after {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  inset: 0 0 auto;
+  height: max(640px, 108vh);
+  height: max(640px, 108svh);
+  pointer-events: none;
+  mask-image: linear-gradient(#000 0 68%, transparent);
+}
+
+.app-shell.orbital-home-mode .main-wrap::before {
+  background:
+    radial-gradient(ellipse at 92% 43%, #15787928, transparent 54%),
+    linear-gradient(145deg, #10393d72, transparent 52%),
+    url('/orbital-nebula.webp') center / cover no-repeat;
+  filter: brightness(1.28) saturate(1.12);
+}
+
+:root:is([data-orbit-primary], [data-orbit-secondary]) .app-shell.orbital-home-mode .main-wrap::before {
+  --orbit-nebula-tone: color-mix(in srgb, var(--orbit-ambient-base) 68%, var(--orbit-ambient-light));
+  background:
+    radial-gradient(ellipse at 92% 43%, color-mix(in srgb, var(--orbit-ambient-light) 7%, transparent), transparent 54%),
+    linear-gradient(145deg, color-mix(in srgb, var(--orbit-ambient-base) 10%, transparent), transparent 52%),
+    linear-gradient(var(--orbit-nebula-tone), var(--orbit-nebula-tone)),
+    url('/orbital-nebula.webp') center / cover no-repeat;
+  background-blend-mode: normal, normal, color, normal;
+  filter: brightness(1.04) saturate(.82);
+}
+
+:root[data-mode='light'] .app-shell.orbital-home-mode .main-wrap::before {
+  background:
+    radial-gradient(ellipse at 44% 42%, #ffffffc9, transparent 58%),
+    radial-gradient(ellipse at 2% 13%, color-mix(in srgb, var(--orbit-ambient-base) 29%, transparent), transparent 55%),
+    radial-gradient(ellipse at 91% 63%, color-mix(in srgb, var(--orbit-ambient-light) 32%, transparent), transparent 58%),
+    linear-gradient(142deg, #dceaf1, #f4f8f9 56%, #e5ecf2);
+  background-blend-mode: normal;
+  filter: none;
+}
+
+/* Reuse the authored cloud detail as a subtle texture on the light atmosphere. */
+:root[data-mode='light'] .app-shell.orbital-home-mode .main-wrap::after {
+  background: url('/orbital-nebula.webp') center / cover no-repeat;
+  filter: grayscale(1) invert(1);
+  mix-blend-mode: multiply;
+  opacity: .36;
+}
+
+.app-shell.orbital-home-mode .topbar {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  min-height: var(--orbit-header);
+  gap: 18px;
+  padding: 0 clamp(20px, 3.65vw, 68px);
+  background: var(--orbit-toolbar, #05191be8);
+  border-bottom-color: var(--orbit-line);
+  box-shadow: none;
+  backdrop-filter: blur(12px);
+}
+
+.orbital-home-mode .header-platform-brand {
+  --palette-value: var(--orbit-die-light, #43855a);
+  --primary-dark: var(--orbit-control-bright, #92caa5);
+  min-height: 44px;
+  max-width: 100%;
+}
+
+:root[data-mode='light'] .orbital-home-mode .header-platform-brand {
+  --palette-value: var(--orbit-control-accent);
+}
+
+.orbital-home-mode .header-platform-brand .platform-word {
+  font-size: clamp(23px, 2.52vw, 40px);
+  letter-spacing: -.04em;
+}
+
+.orbital-home-mode .header-platform-brand .platform-rpg { color: var(--orbit-ink); }
+.orbital-home-mode .topbar .header-right { justify-self: end; }
+.orbital-home-mode .topbar .global-top-nav { gap: clamp(4px, 1.4vw, 25px); justify-content: center; }
+.orbital-home-mode .topbar .global-top-nav button {
+  position: relative;
+  min-height: 44px;
+  padding: 8px 6px;
+  background: transparent;
+  border-color: transparent;
+  color: var(--orbit-muted);
+  font: 600 12px/1.3 var(--font);
+  letter-spacing: .115em;
+  text-transform: uppercase;
+  transition: color 160ms ease-out;
+}
+
+.orbital-home-mode .topbar .global-top-nav button:hover,
+.orbital-home-mode .topbar .global-top-nav button[aria-current='page'] { color: var(--orbit-control-accent); }
+.orbital-home-mode .topbar .global-top-nav button[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  inset: auto 7px 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--orbit-control-bright, #ffe6b4) 50%, transparent);
+  box-shadow: 0 0 10px var(--orbit-control-glow, #df9a41a1);
+}
+
+.orbital-home-mode .topbar :is(.contextual-help-trigger, .appearance-trigger, .profile-avatar) {
+  color: var(--orbit-ink);
+  background: var(--orbit-control, #102c2d66);
+  border-color: var(--orbit-control-glow, #89b8b54d);
+  box-shadow: none;
+}
+.orbital-home-mode .topbar :is(.contextual-help-trigger, .appearance-trigger):hover { background: var(--orbit-control-hover, #214440); }
+.orbital-home-mode .topbar :is(.header-language, .profile-trigger) { color: var(--orbit-ink); }
+.orbital-home-mode .topbar .profile-trigger { min-height: 44px; }
+.orbital-home-mode :is(.topbar, .orbital-home) button:focus-visible {
+  outline: 2px solid var(--orbit-control-accent);
+  outline-offset: 3px;
+}
+
+.app-shell.orbital-home-mode .is-home > main {
+  padding: 0 clamp(20px, 3.65vw, 68px) 34px;
+}
+
+.orbital-home {
+  display: grid;
+  grid-template: 'workspace scene' / minmax(198px, 15.5vw) minmax(0, 1fr);
+  position: relative;
+  color: var(--orbit-ink);
+  isolation: isolate;
+}
+
+.orbital-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.orbital-scene {
+  grid-area: scene;
+  min-width: 0;
+  position: relative;
+  min-height: clamp(590px, calc(100vh - var(--orbit-header) - 42px), 890px);
+  min-height: clamp(590px, calc(100svh - var(--orbit-header) - 42px), 890px);
+}
+
+.orbital-art {
+  position: absolute;
+  width: min(89%, 870px);
+  aspect-ratio: 1;
+  overflow: clip;
+  left: 41.8%;
+  top: 51%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.orbital-plane {
+  position: absolute;
+  inset: 0;
+  transform: rotate(37deg) scaleY(.74);
+  visibility: hidden;
+}
+
+.orbital-art[data-painted='true'] .orbital-plane { visibility: visible; }
+.orbital-art[data-painted='true'] .orbital-disk-fallback { display: none; }
+.orbital-disk-fallback {
+  position: absolute;
+  inset: 7%;
+  border-radius: 50%;
+  transform: rotate(37deg) scaleY(.74);
+  background:
+    conic-gradient(from 45deg, var(--orbit-glow, #ffc87838), var(--orbit-glow-faint, #ffe3a21f),
+      var(--orbit-glow-strong, #ffb557b5) 41%, var(--orbit-glow, #ffc87824) 58%,
+      var(--orbit-glow-strong, #fecc6c80) 83%, var(--orbit-glow, #ffc87838));
+  mask-image: radial-gradient(transparent 23%, #0009 33%, transparent 37%, #000 42%, #0005 48%, transparent 58%, #0006 62%, transparent 68%);
+}
+
+.orbital-plane canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.orbital-dust { animation: orbital-rotate 43s -9s linear infinite; }
+.orbital-stream { animation: orbital-rotate 18s -450ms linear infinite, orbital-glow 7s ease-in-out infinite alternate; }
+.orbital-art[data-motion='paused'] canvas { animation-play-state: paused; }
+@keyframes orbital-rotate { to { transform: rotate(360deg); } }
+@keyframes orbital-glow { from { opacity: .91; } to { opacity: 1; } }
+
+.orbital-d20 {
+  position: absolute;
+  width: 22%;
+  height: auto;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  stroke: var(--orbit-die-light, var(--orbit-primary-default));
+  stroke-width: 1.15;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 5px var(--orbit-die-glow, #51db8380));
+}
+.orbital-d20 path { vector-effect: non-scaling-stroke; }
+
+.orbital-rail,
+.orbital-connection {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+.orbital-rail { opacity: .78; }
+.orbital-rail-edge { stop-color: var(--orbit-wire, #f5bc63); }
+.orbital-rail-warm { stop-color: var(--orbit-wire, #e6a756); }
+.orbital-rail-cool { stop-color: var(--orbit-wire, #eac67a); }
+
+.orbital-connection {
+  opacity: 0;
+  fill: none;
+  transition: opacity 210ms ease-out;
+}
+.orbital-connection[data-active='true'] { opacity: 1; }
+.orbital-connection-track { stroke: var(--orbit-wire, #efb95e); stroke-width: 1; opacity: .86; }
+.orbital-connection-pulse {
+  stroke: var(--orbit-pulse, #fff2bd);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: .083 1;
+  stroke-dashoffset: .084;
+  filter: drop-shadow(0 0 4px var(--orbit-wire, #ffc977));
+}
+.orbital-connection[data-active='true'] .orbital-connection-pulse { animation: orbital-pulse 1.46s linear infinite; }
+.orbital-scene:has(.orbital-art[data-motion='paused']) .orbital-connection-pulse { animation-play-state: paused; }
+@keyframes orbital-pulse {
+  0% { stroke-dashoffset: .084; opacity: 0; }
+  10%, 70% { opacity: 1; }
+  89%, 100% { stroke-dashoffset: -.99; opacity: 0; }
+}
+
+.orbital-node {
+  position: absolute;
+  left: var(--node-x);
+  top: var(--node-y);
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: clamp(9px, 1.45vw, 22px);
+  min-height: 52px;
+  padding: 5px 10px 5px 8px;
+  transform: translate(-19px, -50%);
+  border: 0;
+  border-radius: 5px;
+  background: transparent;
+  color: var(--orbit-ink);
+  font: 600 13px/1.4 var(--font);
+  letter-spacing: .17em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  transition: color 180ms ease-out;
+}
+.orbital-node-dot {
+  display: grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border: 1px solid var(--orbit-glow-strong, #f1c073be);
+  border-radius: 50%;
+  background: var(--orbit-node-surface, #19302f);
+  box-shadow: 0 0 17px var(--orbit-glow, #efad5c42), inset 0 0 5px var(--orbit-glow, #edb56735);
+  transition: background-color 180ms ease-out, box-shadow 180ms ease-out;
+}
+.orbital-node-dot::after {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orbit-wire, #ffe0a1);
+  box-shadow: 0 0 5px var(--orbit-pulse, #fff1c1);
+}
+.orbital-node-icon,
+.orbital-node[data-active='true'] { color: var(--orbit-node-accent); }
+.orbital-node[data-active='true'] .orbital-node-dot {
+  background: var(--orbit-node-active, #71552f);
+  box-shadow: 0 0 21px var(--orbit-glow-strong, #f5b46595), inset 0 0 7px var(--orbit-glow-strong, #ffce847d);
+}
+
+.orbital-workspace {
+  grid-area: workspace;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(35px, 6vh, 80px);
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  padding: clamp(65px, 12.5vh, 147px) 14px 46px 17px;
+}
+.orbital-workspace::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11%;
+  bottom: 13%;
+  width: 1px;
+  background: linear-gradient(transparent, var(--orbit-control-glow, #f4c7758a) 19%, var(--orbit-panel-fade, #eab96938) 62%, transparent);
+}
+.orbital-list h2 {
+  position: relative;
+  margin-bottom: 9px;
+  color: var(--orbit-ink);
+  font: 600 12px/1.45 var(--heading);
+  letter-spacing: .17em;
+  text-transform: uppercase;
+}
+.orbital-list h2::before {
+  content: '';
+  position: absolute;
+  left: -19px;
+  top: calc(50% - 2px);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--orbit-control-bright, #ffe0ac);
+  box-shadow: 0 0 9px 2px var(--orbit-control-glow, #e8a64e76);
+}
+.orbital-list ul { margin: 0; padding: 0; list-style: none; }
+.orbital-list li { border-bottom: 1px solid var(--orbit-line); }
+.orbital-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 46px;
+  padding: 8px 3px 8px 1px;
+  border: 0;
+  background: transparent;
+  color: var(--orbit-ink);
+  font: 500 14px/1.4 var(--font);
+  text-align: start;
+  transition: color 160ms ease-out;
+}
+.orbital-shortcut:hover,
+.orbital-shortcut svg { color: var(--orbit-control-accent); }
+.orbital-shortcut > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.orbital-shortcut strong { display: block; overflow: hidden; text-overflow: ellipsis; font-weight: 650; }
+.orbital-shortcut small { display: block; margin-top: 2px; color: var(--orbit-muted); font-size: 12px; }
+.orbital-edition {
+  margin-top: auto;
+  color: var(--orbit-muted);
+  font: 500 12px/1.4 var(--font);
+  letter-spacing: .04em;
+}
+.orbital-edition::before {
+  content: '';
+  display: block;
+  width: 25px;
+  margin-bottom: 10px;
+  border-top: 1px solid var(--orbit-control-glow, #a6bcbd70);
+}
+.orbital-edition > span { padding-inline: 3px; color: var(--orbit-control-accent); }
+
+.orbital-home-mode .test-notice {
+  margin: 21px 0 0;
+  background: var(--orbit-surface, #0b2428);
+  border-color: var(--orbit-line);
+  color: var(--orbit-ink);
+}
+.orbital-home-mode .test-notice p { color: var(--orbit-muted); }
+.orbital-home-mode .test-link-badge { border-color: var(--orbit-control-glow, #7eb4ae62); }
+
+@media (max-width: 1090px) {
+  .orbital-home-mode { --orbit-header: 114px; }
+  .app-shell.orbital-home-mode .topbar { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0; padding-bottom: 4px; }
+  .orbital-home-mode .topbar :is(.topbar-left, .header-right) { min-height: 65px; }
+  .orbital-home-mode .topbar .global-top-nav { grid-area: 2 / 1 / auto / -1; gap: clamp(8px, 3vw, 29px); }
+}
+
+@media (min-width: 1091px) and (max-width: 1200px) {
+  .orbital-home-mode .topbar .global-top-nav { grid-area: 1 / 2; }
+  .orbital-home-mode .topbar .header-right { grid-area: 1 / 3; }
+}
+
+@media (max-width: 900px) {
+  .app-shell.orbital-home-mode .main-wrap::before,
+  :root[data-mode='light'] .app-shell.orbital-home-mode .main-wrap::after { max-height: 760px; }
+  .orbital-home { grid-template: 'scene' 'workspace' / minmax(0, 1fr); }
+  .orbital-scene { min-height: 0; }
+  .orbital-art {
+    position: relative;
+    inset: auto;
+    width: min(100%, 525px);
+    margin: -8px auto -16px;
+    transform: none;
+  }
+  .orbital-rail { display: none; }
+  .orbital-navigation {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    max-width: 620px;
+    margin: 0 auto;
+    padding-bottom: 23px;
+    border-bottom: 1px solid var(--orbit-line);
+  }
+  .orbital-node {
+    position: relative;
+    inset: auto;
+    flex-direction: column;
+    justify-content: center;
+    gap: 7px;
+    min-height: 66px;
+    padding: 5px 3px;
+    transform: none;
+    border: 1px solid var(--orbit-line);
+    background: var(--orbit-control, #0a2428d9);
+    font-size: 11px;
+    letter-spacing: .09em;
+  }
+  .orbital-node-dot {
+    position: absolute;
+    top: -5px;
+    left: calc(50% - 4px);
+    width: 8px;
+    height: 8px;
+  }
+  .orbital-node-dot::after { width: 2px; height: 2px; }
+  .orbital-connection { z-index: 1; }
+  .orbital-workspace {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px clamp(16px, 4vw, 45px);
+    padding: 27px 0 0;
+  }
+  .orbital-workspace::before, .orbital-list h2::before { display: none; }
+  .orbital-edition { grid-column: 1 / -1; }
+  .orbital-home-mode .test-notice { margin-top: 24px; }
+  .orbital-home-mode .test-link-badge { display: none; }
+}
+
+@media (max-width: 570px) {
+  .app-shell.orbital-home-mode .is-home > main { padding-inline: 16px; }
+  .app-shell.orbital-home-mode .topbar { padding-inline: 14px; column-gap: 8px; }
+  .orbital-home-mode .header-platform-brand .platform-word { font-size: clamp(16px, 4.6vw, 25px); }
+  .orbital-home-mode .topbar .global-top-nav { justify-content: space-between; gap: 0; }
+  .orbital-home-mode .topbar .global-top-nav button { font-size: 10px; letter-spacing: .07em; }
+  .orbital-home-mode .topbar .header-right { gap: 5px; }
+  .orbital-home-mode .topbar :is(.appearance-trigger, .contextual-help-trigger, .profile-trigger) {
+    min-width: 44px;
+    min-height: 44px;
+    justify-content: center;
+  }
+  .orbital-home-mode .topbar .contextual-help-trigger { display: inline-flex; }
+  .orbital-home-mode .topbar .profile-trigger-label { display: none; }
+  .orbital-list h2 { letter-spacing: .10em; }
+  .orbital-shortcut { gap: 7px; font-size: 13px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .orbital-art canvas,
+  .orbital-connection[data-active='true'] .orbital-connection-pulse { animation: none; }
+  .orbital-connection-pulse { display: none; }
+  .orbital-home-mode :is(.orbital-connection, .orbital-node, .orbital-node-dot, .orbital-shortcut, .global-top-nav button) { transition: none; }
+}
+
+@media (forced-colors: active) {
+  .app-shell.orbital-home-mode :is(.topbar, .main-wrap, .orbital-node) { background: Canvas; }
+  .orbital-home { color: CanvasText; }
+  .orbital-node { border: 1px solid ButtonText; }
+  .orbital-node[data-active='true'] { outline: 2px solid Highlight; }
+  .orbital-home-mode :is(.topbar, .orbital-home) button:focus-visible { outline-color: Highlight; }
+  .orbital-plane { opacity: .52; }
+  .orbital-d20 { stroke: Highlight; }
+  .orbital-connection-track { stroke: Highlight; }
+}
