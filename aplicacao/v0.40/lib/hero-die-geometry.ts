@@ -9,11 +9,65 @@ export function rotateHeroPoint([x,y,z]:Point3,[rx,ry,rz]:Point3):Point3{
  const x2=x*Math.cos(ry)+z1*Math.sin(ry),z2=-x*Math.sin(ry)+z1*Math.cos(ry);
  return [x2*Math.cos(rz)-y1*Math.sin(rz),x2*Math.sin(rz)+y1*Math.cos(rz),z2];
 }
+function projectHeroPoint([x, y, z]: Point3) {
+  const scale = 77 / (1 - z * .13);
+  return { x: 100 + x * scale, y: 100 + y * scale, z };
+}
+
 export function heroDieFrame(angles:Point3){
  const vertices=HERO_VERTICES.map(p=>rotateHeroPoint(p,angles));
- const projected=vertices.map(([x,y,z])=>({x:100+x*77/(1-z*.13),y:100+y*77/(1-z*.13),z}));
+ const projected=vertices.map(projectHeroPoint);
  const sorted=[...projected].sort((a,b)=>a.x-b.x||a.y-b.y);
  const cross=(a:typeof sorted[number],b:typeof sorted[number],c:typeof sorted[number])=>(b.x-a.x)*(c.y-a.y)-(b.y-a.y)*(c.x-a.x);
  const half=(ps:typeof sorted)=>{const h:typeof sorted=[];for(const p of ps){while(h.length>1&&cross(h[h.length-2],h[h.length-1],p)<=0)h.pop();h.push(p);}return h.slice(0,-1);};
  return {hull:[...half(sorted),...half([...sorted].reverse())].map(p=>`${p.x},${p.y}`).join(' '),edges:HERO_EDGES.map(([i,j])=>({d:`M${projected[i].x} ${projected[i].y}L${projected[j].x} ${projected[j].y}`,opacity:(projected[i].z+projected[j].z)/2<-.12?.2:.85}))};
+}
+
+type Triangle = [number, number, number];
+
+function faceNormal([a, b, c]: Triangle, vertices: Point3[]): Point3 {
+  const [x, y, z] = vertices[a];
+  const [bx, by, bz] = vertices[b];
+  const [cx, cy, cz] = vertices[c];
+  return [
+    (by - y) * (cz - z) - (bz - z) * (cy - y),
+    (bz - z) * (cx - x) - (bx - x) * (cz - z),
+    (bx - x) * (cy - y) - (by - y) * (cx - x),
+  ];
+}
+
+function dot([x, y, z]: Point3, [a, b, c]: Point3) {
+  return x * a + y * b + z * c;
+}
+
+/** Every triple of adjacent vertices forms a face, wound toward the exterior. */
+export const HERO_FACES: Triangle[] = [];
+const edgeKeys = new Set(HERO_EDGES.map(([a, b]) => a * HERO_VERTICES.length + b));
+for (const [a, b] of HERO_EDGES) {
+  for (let c = b + 1; c < HERO_VERTICES.length; c++) {
+    if (!edgeKeys.has(a * HERO_VERTICES.length + c) || !edgeKeys.has(b * HERO_VERTICES.length + c)) continue;
+    const triangle: Triangle = [a, b, c];
+    HERO_FACES.push(dot(faceNormal(triangle, HERO_VERTICES), HERO_VERTICES[a]) > 0 ? triangle : [a, c, b]);
+  }
+}
+
+const orbitalLightDirection: Point3 = [-.48, -.64, .60];
+
+export function orbitalDieFrame(angles: Point3) {
+  const vertices = HERO_VERTICES.map(point => rotateHeroPoint(point, angles));
+  const projected = vertices.map(projectHeroPoint);
+  return HERO_FACES.map(triangle => {
+    const [a, b, c] = triangle.map(index => projected[index]);
+    // The projected winding includes the view's perspective and drops back faces.
+    const area = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+    const visible = area > 1e-6;
+    if (!visible) return { visible, points: '', light: '0%' };
+    const normal = faceNormal(triangle, vertices);
+    const lambert = Math.max(0, dot(normal, orbitalLightDirection) / Math.hypot(...normal));
+    return {
+      visible,
+      points: `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`,
+      light: `${Math.round(9 + lambert * 88)}%`,
+    };
+  });
 }

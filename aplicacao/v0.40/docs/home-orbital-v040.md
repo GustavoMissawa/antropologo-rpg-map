@@ -33,7 +33,7 @@ atalhos têm zonas próprias.
 | --- | --- |
 | `app/page.tsx`, `app/platform-home.tsx` | Seleção do layout orbital na Home global. O contexto por sistema continua usando a Home existente. Marca, controles, conteúdo e ações reutilizam o estado da aplicação. O aviso completo da versão de teste fica abaixo da composição na Home global. |
 | `app/orbital-home.tsx`, `app/orbital-home.css` | Painéis laterais com itens reais da sessão. Quatro botões acionam as áreas existentes. O arco organiza os nós no desktop e uma faixa de botões acomoda celular e tablet. A interação mais recente por mouse ou teclado escolhe o único fio SVG. O toque abre a área no primeiro acionamento. |
-| `app/orbital-art.tsx`, `app/orbital-light.worker.ts`, `lib/orbital-light.ts` | Em telas compactas, o Worker prepara dois planos procedurais de filamentos e partículas. Quando o navegador oferece `bitmaprenderer`, os bitmaps são transferidos diretamente para os canvases de apresentação. Transformações CSS giram as camadas em velocidades distintas. O SVG do D20 usa a projeção da geometria existente, com 12 vértices e 30 arestas, sem renderizações React por quadro. |
+| `app/orbital-art.tsx`, `app/orbital-light.worker.ts`, `lib/orbital-light.ts` | Em telas compactas, o Worker prepara dois planos procedurais de filamentos e partículas. Quando o navegador oferece `bitmaprenderer`, os bitmaps são transferidos diretamente para os canvases de apresentação. Transformações CSS giram as camadas em velocidades distintas. O SVG do D20 usa os 12 vértices originais para projetar 20 faces triangulares opacas. O sentido da projeção oculta as faces traseiras, e o ângulo das superfícies determina a iluminação. A rotação atualiza o SVG diretamente. |
 | `public/orbital-nebula.webp` | Textura estática de aproximadamente 12 KB gerada para o fundo. O prompt original está em `public/orbital-nebula.webp.json`. A espiral, o dado e os controles são elementos renderizados separadamente. |
 
 A cena pausa com a aba oculta ou fora do campo de visão. A preferência por
@@ -164,7 +164,7 @@ A inicialização e a atualização ao vivo usam o mesmo parser.
 
 O CSS varia superfícies, texto, bordas, gradientes e contrastes com o modo.
 A espiral do modo escuro mantém a composição aditiva. No modo claro, o
-Canvas desenha filamentos pigmentados sobre a nebulosa clara. A repintura
+Canvas desenha filamentos contrastantes e reserva os tons mais luminosos para o crescente. A atmosfera clara tem gradientes próprios em cinza-perolado e branco-gelo. O cabeçalho recebe as duas cores por meio de gradientes e bordas em ambos os modos. A repintura
 usa o Worker com alternativa local e ocorre quando o modo, a cor ou o
 tamanho da textura mudam. A rotação CSS e o giro do D20 mantêm seus estados.
 A escolha secundária atua na Home global. As preferências próprias dos

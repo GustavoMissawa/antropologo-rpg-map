@@ -2,7 +2,7 @@ import type { AppearanceMode } from './appearance.ts';
 
 export type OrbitalColors = { primary: string; secondary: string };
 
-// The wireframe stroke and navigation light from the original Orbital Home.
+// The primary accent and navigation light from the original Orbital Home.
 export const originalOrbitalColors: OrbitalColors = { primary: '#9fefaf', secondary: '#f2c780' };
 export function parseHexColor(value: unknown): string | undefined {
   const match = typeof value === 'string' ? /^#([0-9a-f]{6})$/i.exec(value) : null;
@@ -12,7 +12,8 @@ export function parseHexColor(value: unknown): string | undefined {
 type RGB = [number, number, number];
 const white: RGB = [255, 255, 255];
 const black: RGB = [0, 0, 0];
-const daylightInk: RGB = [32, 38, 48];
+const daylightInk: RGB = [35, 44, 54];
+const daylightPearl: RGB = [243, 245, 248];
 
 function rgb(hex: string): RGB {
   return [1, 3, 5].map(start => Number.parseInt(hex.slice(start, start + 2), 16)) as RGB;
@@ -36,8 +37,11 @@ export function orbitalPigment(value: string, original: string, selected: string
   const pigment = lightness(rgb(value));
   const selectedRgb = rgb(selected);
   if (mode === 'light') {
-    // The brightest filaments become the most defined on a light surface.
-    return hex(mix(daylightInk, selectedRgb, .83 - .48 * pigment)) + value.slice(7);
+    // Darken the body of the disk and reserve tinted light for the crescent.
+    const base = mix(daylightInk, selectedRgb, .43);
+    const highlight = mix(selectedRgb, daylightPearl, .22);
+    const energy = Math.pow(Math.max(0, (pigment - .52) / .48), 1.45);
+    return hex(mix(base, highlight, energy)) + value.slice(7);
   }
   const reference = lightness(rgb(original));
   const selectedLightness = lightness(selectedRgb);

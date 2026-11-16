@@ -1,12 +1,12 @@
 'use client';
 
-import {useEffect, useRef} from 'react';
+import {useEffect, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
-import {heroDieFrame, type Point3} from '../lib/hero-die-geometry';
+import {orbitalDieFrame, type Point3} from '../lib/hero-die-geometry';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 const INITIAL_ANGLES: Point3 = [0.51, 0.68, 0.26];
-const initial = heroDieFrame(INITIAL_ANGLES);
+const initial = orbitalDieFrame(INITIAL_ANGLES);
 
 function presentBitmap(canvas: HTMLCanvasElement, bitmap: ImageBitmap) {
   const renderer = canvas.getContext('bitmaprenderer');
@@ -159,7 +159,7 @@ export function OrbitalArt() {
     const dieSvg = die.current;
     if (!element || !dieSvg) return;
 
-    const edges = dieSvg.querySelectorAll('path');
+    const faces = dieSvg.querySelectorAll('polygon');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const compact = matchMedia('(max-width: 740px)');
     let visible = true;
@@ -168,14 +168,20 @@ export function OrbitalArt() {
     let elapsed = 0;
 
     function paintDie(time: number) {
-      const next = heroDieFrame([
+      const next = orbitalDieFrame([
         INITIAL_ANGLES[0] + Math.sin(time * 0.42) * 0.47,
         INITIAL_ANGLES[1] + time * 0.57,
         INITIAL_ANGLES[2] + time * 0.21,
       ]);
-      for (let i = 0; i < edges.length; i++) {
-        edges[i].setAttribute('d', next.edges[i].d);
-        edges[i].setAttribute('opacity', String(next.edges[i].opacity));
+      for (let i = 0; i < faces.length; i++) {
+        const face = faces[i];
+        const {visible, points, light} = next[i];
+        const visibility = visible ? 'visible' : 'hidden';
+        if (visible) {
+          face.setAttribute('points', points);
+          face.style.setProperty('--orbital-face-light', light);
+        }
+        if (face.getAttribute('visibility') !== visibility) face.setAttribute('visibility', visibility);
       }
     }
 
@@ -238,8 +244,15 @@ export function OrbitalArt() {
         <canvas ref={dust} className="orbital-dust" />
         <canvas ref={stream} className="orbital-stream" />
       </div>
-      <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" fill="none" focusable="false">
-        {initial.edges.map((edge, i) => <path key={i} d={edge.d} opacity={edge.opacity} />)}
+      <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" focusable="false">
+        {initial.map(({visible, points, light}, i) => (
+          <polygon
+            key={i}
+            points={points}
+            visibility={visible ? 'visible' : 'hidden'}
+            style={{'--orbital-face-light': light} as CSSProperties}
+          />
+        ))}
       </svg>
     </div>
   );
