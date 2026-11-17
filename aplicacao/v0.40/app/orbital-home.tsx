@@ -4,6 +4,7 @@ import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from '
 import {CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
 import {countRules, type Rulebook, type Sheet} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
+import {orbitalConnection} from '../lib/orbital-connection';
 
 export type OrbitalHomeProps = {
   books: Rulebook[];
@@ -42,30 +43,16 @@ function orbitPoint(angle: number): Point {
   return {x: 418 + 365 * Math.cos(angle), y: 510 + 425 * Math.sin(angle)};
 }
 
-function beamBetween(center: Point, target: Point, diskWidth: number) {
-  const dx = target.x - center.x;
-  const dy = target.y - center.y;
-  const distance = Math.hypot(dx, dy);
-  if (!distance) return '';
-  const ux = dx / distance;
-  const uy = dy / distance;
-  const gap = Math.min(diskWidth * 0.166, distance * 0.48);
-  const bend = Math.min(72, distance * 0.22);
-  const start = {x: center.x + ux * gap, y: center.y + uy * gap};
-  const first = {x: start.x + dx * 0.21 - uy * bend, y: start.y + dy * 0.21 + ux * bend};
-  const second = {x: target.x - dx * 0.20 - uy * bend * 0.34, y: target.y - dy * 0.20 + ux * bend * 0.34};
-  return `M ${start.x} ${start.y} C ${first.x} ${first.y} ${second.x} ${second.y} ${target.x} ${target.y}`;
-}
-
 function OrbitalScene(props: OrbitalHomeProps) {
   const scene = useRef<HTMLDivElement>(null);
-  const [paths, setPaths] = useState<Partial<Record<Destination, string>>>({});
+  const [layout, setLayout] = useState<{center: Point; width: number; targets: Partial<Record<Destination, Point>>}>();
+  const [beam, setBeam] = useState<(ReturnType<typeof orbitalConnection> & {id: Destination; activation: number}) | null>(null);
+  const [beamVisible, setBeamVisible] = useState(false);
+  const activation = useRef<{id: Destination | null; count: number; displayed: Destination | null}>({id: null, count: 0, displayed: null});
   const [interaction, setInteraction] = useState<NodeInteraction>({pointer: null, focus: null, last: null});
   const [selected, setSelected] = useState<Destination | null>(null);
   const pending = useRef<{id: Destination; timer: ReturnType<typeof setTimeout>; navigate: () => void} | null>(null);
   const active = selected ?? activeNode(interaction);
-  const last = active ?? interaction.last;
-  const path = last ? paths[last] : undefined;
 
   function interact(source: 'pointer' | 'focus', id: Destination | null) {
     setInteraction(previous => {
@@ -119,17 +106,17 @@ function OrbitalScene(props: OrbitalHomeProps) {
         x: artRect.left - rootRect.left + artRect.width / 2,
         y: artRect.top - rootRect.top + artRect.height / 2,
       };
-      const next: Partial<Record<Destination, string>> = {};
+      const targets: Partial<Record<Destination, Point>> = {};
       for (const {id} of DESTINATIONS) {
         const anchor = root.querySelector(`[data-orbital-anchor="${id}"]`);
         if (!anchor) continue;
         const target = anchor.getBoundingClientRect();
-        next[id] = beamBetween(center, {
+        targets[id] = {
           x: target.left - rootRect.left + target.width / 2,
           y: target.top - rootRect.top + target.height / 2,
-        }, artRect.width);
+        };
       }
-      setPaths(next);
+      setLayout({center, width: artRect.width, targets});
     };
     updateGeometry();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateGeometry);
@@ -141,6 +128,33 @@ function OrbitalScene(props: OrbitalHomeProps) {
       window.removeEventListener('resize', updateGeometry);
     };
   }, []);
+
+  useLayoutEffect(() => {
+    const state = activation.current;
+    if (!active || !layout?.targets[active]) {
+      state.id = null;
+      setBeamVisible(false);
+      return;
+    }
+    const fresh = state.id !== active;
+    if (fresh) {
+      state.id = active;
+      state.count++;
+    }
+    const next = {...orbitalConnection(layout.center, layout.targets[active], layout.width, state.count), id: active, activation: state.count};
+    const show = () => {
+      state.displayed = active;
+      setBeam(next);
+      setBeamVisible(true);
+    };
+    if ((!fresh && state.displayed === active) || !state.displayed || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      show();
+      return;
+    }
+    setBeamVisible(false);
+    const timer = setTimeout(show, 120);
+    return () => clearTimeout(timer);
+  }, [active, layout]);
 
   const arcStart = orbitPoint(-1.50);
   const arcEnd = orbitPoint(1.52);
@@ -164,12 +178,26 @@ function OrbitalScene(props: OrbitalHomeProps) {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <svg className="orbital-connection" aria-hidden="true" focusable="false" data-active={!!active && !!path} data-selecting={selected !== null}>
-        {path && (
-          <>
-            <path d={path} className="orbital-connection-track" />
-            <path d={path} className="orbital-connection-pulse" pathLength="1" />
-          </>
+      <svg className="orbital-connection" aria-hidden="true" focusable="false" data-active={beamVisible} data-selecting={selected !== null && beam?.id === selected && beamVisible} data-destination={beam?.id}>
+        <defs>
+          <radialGradient id="orbit-source-halo">
+            <stop offset="0" className="orbital-source-light" stopOpacity=".85" />
+            <stop offset=".24" className="orbital-source-light" stopOpacity=".38" />
+            <stop offset="1" className="orbital-source-light" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        {beam && (
+          <g key={beam.activation} className="orbital-connection-shape">
+            <path d={beam.path} className="orbital-connection-track" pathLength="1" />
+            <path d={beam.path} className="orbital-connection-pulse" pathLength="1" />
+            <g className="orbital-source-star" transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
+              <circle r="19" fill="url(#orbit-source-halo)" className="orbital-source-halo" />
+              <g className="orbital-source-flare">
+                <path d="M -8 0 L -1.8 -1.2 L 0 -6 L 1.8 -1.2 L 8 0 L 1.8 1.2 L 0 6 L -1.8 1.2 Z" />
+                <circle r="1.5" />
+              </g>
+            </g>
+          </g>
         )}
       </svg>
       <nav className="orbital-navigation" aria-label="Navegação orbital">

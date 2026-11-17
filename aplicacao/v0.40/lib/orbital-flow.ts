@@ -4,6 +4,17 @@ const firstRadius = .245;
 const bandWidth = .071;
 const feather = .022;
 
+export type OrbitalFlowClock = {seconds: number; speed: number};
+
+/** Integrate an interruptible speed envelope without losing orbital phase. */
+export function advanceOrbitalFlow(clock: OrbitalFlowClock, seconds: number, selected: boolean) {
+  const target = selected ? 0 : 1;
+  const decay = Math.exp(-seconds / .18);
+  clock.seconds += target * seconds + (clock.speed - target) * .18 * (1 - decay);
+  const speed = target + (clock.speed - target) * decay;
+  clock.speed = Math.abs(speed - target) < .004 ? target : speed;
+}
+
 /** Radii use the same unit disk as the procedural filament textures. */
 export function orbitalFlowBand(index: number) {
   const inner = firstRadius + index * bandWidth;
@@ -15,7 +26,7 @@ export function orbitalFlowBand(index: number) {
 export function orbitalFlowPose(index: number, seconds: number) {
   const band = orbitalFlowBand(index);
   return {
-    angle: (seconds * band.velocity) % TAU,
+    angle: ((-seconds * band.velocity) % TAU + TAU) % TAU,
     intensity: .96 + .04 * Math.sin(seconds * .53 + index * 1.71),
   };
 }

@@ -12,7 +12,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.40 — Desenvolvimento | [Publicação 92 e branch de referência](https://github.com/GustavoMissawa/antropologo-rpg-map/tree/dev/v0.40-atmosfera-procedural/aplicacao/v0.40) | `public/data/v0.40/map.json` e `public/data/v0.40/edicoes.json` |
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
-| v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-disco-estrelas` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-origem-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 
 O seletor abre v0.40 por padrão. As duas versões começaram com os mesmos arquivos de aplicação e a mesma referência visual. Cada mapa tem seu próprio rascunho, JSON e destino de sincronização. O rascunho do editor anterior pertence à Alpha e pode ser aberto pelo seletor.
 
@@ -20,7 +20,7 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
-A [galeria da v0.43](docs/home-orbital-v043/README.md) mostra o fluxo diferencial do disco, as estrelas selecionáveis e um vídeo real da interação. A [documentação técnica](aplicacao/v0.40/docs/home-orbital-v043.md) registra a implementação e a cobertura dos testes. As galerias da [v0.42](docs/home-orbital-v042/README.md), [v0.41](docs/home-orbital-v041/README.md) e [v0.40](docs/home-orbital-v040/README.md) registram as revisões anteriores.
+A [revisão atual da v0.43](docs/home-orbital-v043/origem-dinamica/README.md) mostra a parada progressiva do disco, a estrela na origem e as conexões variáveis, com comparações e vídeo real. A [documentação técnica](aplicacao/v0.40/docs/home-orbital-v043-correcao.md) registra a implementação e os testes. A [galeria inicial da v0.43](docs/home-orbital-v043/README.md) e as galerias da [v0.42](docs/home-orbital-v042/README.md), [v0.41](docs/home-orbital-v041/README.md) e [v0.40](docs/home-orbital-v040/README.md) registram as revisões anteriores.
 
 ## Desenvolver a aplicação
 

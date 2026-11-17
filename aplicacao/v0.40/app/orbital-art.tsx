@@ -121,7 +121,7 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
         secondary: parseHexColor(root.dataset.orbitSecondary) ?? originalOrbitalColors.secondary,
       },
     });
-    const clock = {seconds: 0};
+    const clock = {seconds: 0, speed: 1};
     let cancelFlow: (() => void) | undefined;
     const onPaint = (painted: boolean) => {
       cancelFlow?.();
@@ -158,7 +158,7 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
   }, []);
 
   return (
-    <div className="orbital-art" ref={art} data-motion="paused">
+    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie}>
       <div className="orbital-disk-fallback" aria-hidden="true" />
       <div className="orbital-plane" aria-hidden="true">
         <canvas ref={dust} className="orbital-dust" />

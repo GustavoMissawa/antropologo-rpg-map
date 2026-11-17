@@ -358,10 +358,40 @@
 .orbital-connection {
   opacity: 0;
   fill: none;
-  transition: opacity 210ms ease-out;
+  transition: opacity 120ms ease-out;
 }
 .orbital-connection[data-active='true'] { opacity: 1; }
-.orbital-connection-track { stroke: var(--orbit-wire, #efb95e); stroke-width: 1; opacity: .86; }
+.orbital-connection-track {
+  stroke: var(--orbit-wire, #efb95e);
+  stroke-width: 1;
+  opacity: .86;
+  stroke-dasharray: 1;
+  animation: orbital-connection-reveal 240ms cubic-bezier(.23, 1, .32, 1) both;
+}
+@keyframes orbital-connection-reveal { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+.orbital-source-light { stop-color: var(--orbit-wire); }
+.orbital-source-star { pointer-events: none; }
+.orbital-source-halo { animation: orbital-source-shimmer 2.8s ease-in-out infinite alternate; }
+.orbital-source-flare {
+  fill: var(--orbit-pulse);
+  filter: drop-shadow(0 0 3px var(--orbit-wire));
+  animation: orbital-source-birth 220ms cubic-bezier(.23, 1, .32, 1) both;
+}
+.orbital-source-flare circle { fill: color-mix(in srgb, var(--orbit-wire) 18%, #fff); }
+@keyframes orbital-source-birth {
+  0% { opacity: .3; transform: scale(.92); }
+  45% { opacity: 1; transform: scale(1.16); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes orbital-source-shimmer { from { opacity: .65; } to { opacity: .95; } }
+.orbital-connection[data-selecting='true'] .orbital-source-flare { animation: orbital-source-confirm 140ms ease-out both; }
+@keyframes orbital-source-confirm {
+  0% { opacity: 1; transform: scale(1); }
+  40% { opacity: 1; transform: scale(1.25); }
+  100% { opacity: .8; transform: scale(1); }
+}
+.orbital-scene:has(.orbital-art[data-motion='paused']) .orbital-source-halo { animation-play-state: paused; }
+
 .orbital-connection-pulse {
   stroke: var(--orbit-pulse, #fff2bd);
   stroke-width: 2;
@@ -644,6 +674,9 @@
   .orbital-art canvas,
   .orbital-connection[data-active='true'] .orbital-connection-pulse { animation: none; }
   .orbital-connection-pulse { display: none; }
+  .orbital-connection-track, .orbital-source-halo, .orbital-source-flare,
+  .orbital-connection[data-selecting='true'] .orbital-source-flare { animation: none; }
+  .orbital-connection-track { stroke-dashoffset: 0; }
   .orbital-star-ring, .orbital-star-glint { display: none; }
   .orbital-node-dot::before { transition: none; transform: none; }
   .orbital-home-mode :is(.orbital-connection, .orbital-node, .orbital-node-dot, .orbital-shortcut, .global-top-nav button) { transition: none; }
