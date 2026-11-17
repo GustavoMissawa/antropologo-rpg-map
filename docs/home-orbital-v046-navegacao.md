@@ -40,7 +40,9 @@ Os endereços são `#inicio/sistemas`, `#inicio/fichas`, `#inicio/pdfs` e
 Voltar/Avançar, links diretos e abertura dos links em outra aba funcionam.
 O bootstrap de sessão preserva hashes orbitais explícitos e não os substitui
 pela página anterior do cache. Voltar de um sistema para um hash orbital
-restaura o contexto global, sem apagar o sistema.
+restaura o contexto global, sem apagar o sistema. A proteção de tópico
+com edição pendente é verificada antes de qualquer troca de contexto;
+o editor e o rascunho permanecem montados quando a saída é bloqueada.
 
 O botão **Voltar ao mapa orbital** e Escape fazem a sequência inversa.
 A configuração de aparência não é alterada, e voltar à Home não sorteia
@@ -115,7 +117,7 @@ Nenhuma captura ou gravação demonstrativa foi adicionada ao GitHub.
 
 ## Validação anterior à publicação
 
-- **438 testes passaram**, sem falhas ou testes ignorados; TypeScript passou.
+- **439 testes passaram**, sem falhas ou testes ignorados; TypeScript passou.
 - Build de produção passou; mantém os avisos existentes de chunks maiores
   que 500 kB e classificação estática incompleta de rotas do Vinext.
 - Novos testes cobrem reducer, idempotência, reversão e seleção rápida,

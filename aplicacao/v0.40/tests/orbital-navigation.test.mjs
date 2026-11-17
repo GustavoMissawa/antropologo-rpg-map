@@ -1,6 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {orbitalNavigationReducer as reduce, initialOrbitalNavigation, orbitalDestinationFromHash, orbitalHref} from '../lib/orbital-navigation.ts';
+import {openPlatformSession} from '../lib/platform-session.ts';
+import {makeAB10Rulebook, makeRulebook} from '../lib/model.ts';
 import {act, clickButton, mountPlatform, preferences, waitFor} from './helpers/platform-dom.mjs';
 
 test('Máquina orbital aceita reversão, troca e eventos repetidos sem perder o destino', () => {
@@ -144,5 +146,27 @@ test('Manipular o D20 durante a aproximação mantém o controle manual focado',
     await waitFor(()=>ui.host.querySelector('.orbital-home').dataset.phase==='destination');
     assert.equal(document.activeElement,control);
     assert.equal(ui.host.querySelector('.orbital-art').dataset.diskSelected,'true');
+  } finally {await ui.close();window.history.replaceState(null,'','#inicio');}
+});
+
+
+test('Voltar a um destino orbital não limpa o sistema com tópico pendente', async () => {
+  sessionStorage.clear();window.history.replaceState(null,'','#regras');
+  const book=makeRulebook('Contexto preservado');
+  const cache=await openPlatformSession();
+  await cache.save({books:[makeAB10Rulebook(),book],contextId:book.id,page:'rules'});cache.close();
+  for(const key of ['Node','DOMParser'])Object.defineProperty(globalThis,key,{configurable:true,value:window[key]});
+  const ui=await mountPlatform();
+  try {
+    await clickButton(ui.host,'Novo capítulo');
+    const status=ui.host.querySelector('select[aria-label="Estado do conteúdo"]');
+    await act(async()=>{status.value='test';status.dispatchEvent(new Event('change',{bubbles:true}));});
+    const editor=ui.host.querySelector('.rule-topic-editor');
+    await act(async()=>{window.location.hash='#inicio/fichas';});
+    await waitFor(()=>window.location.hash==='#regras');
+    assert.equal(ui.host.querySelector('.app-shell').dataset.systemId,book.id);
+    assert.equal(ui.host.querySelector('.rule-topic-editor'),editor);
+    assert.equal(status.value,'test');
+    assert(ui.host.textContent.includes('Salve ou cancele a edição antes de sair de Sistema.'));
   } finally {await ui.close();window.history.replaceState(null,'','#inicio');}
 });
