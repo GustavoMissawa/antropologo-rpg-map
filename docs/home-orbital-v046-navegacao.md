@@ -153,4 +153,42 @@ node /home/agent/.codex/plugins/cache/openai-curated-remote/sites/1.1.6/scripts/
 
 ## Publicação
 
-A conferência de produção será acrescentada após publicar no projeto original.
+Publicação **100**, concluída em **17/11/2026**, no projeto e endereço originais:
+[ANTROPOLOGO RPG](https://antrobologorpg.guss04.chatgpt.site/).
+
+| Referência | Valor |
+| --- | --- |
+| Aplicação | **0.46 — Desenvolvimento — Home Orbital** |
+| Branch | `dev/v0.46-navegacao-cosmica` |
+| Implementação | `bd2fce94836332857b271e0c1f3ad596bf30b386` |
+| Correção de proteção do editor e código publicado | `11f1491de99d7cc89896e7d954a688cc5587cb70` |
+| Fonte Sites sincronizada | `21545fc5482094cdd8f000128554165ff1898822` |
+| Versão salva | `appgprj_6adb8be679b48191bc7fbcf908d41024~appgver_edb01f491320819197ebaeb4972f1a5d` |
+| Implantação concluída | `appgdep_6afcc676577c819189f74485e0e44ef6` |
+
+Os **422 arquivos** da aplicação foram comparados entre o GitHub e a fonte
+sincronizada, sem diferenças. O pacote final foi reconstruído com o commit
+11f1491d; a checagem de tipos e os 439 testes passaram. Não houve alteração
+de público, armazenamento, bindings ou histórico recuperável. A publicação 99
+permanece disponível para restauração.
+
+No endereço público, Sobre exibiu **0.46** e **11f1491d**. Safira/Escuro foi
+selecionado pela configuração existente. O teclado percorreu Sistemas,
+Fichas, PDFs e Agenda: em cada prévia havia um nó ativo e a câmera continuava
+em exploração, com `expanded=false`. Enter em Agenda abriu
+`#inicio/agenda`, isolou o nó e exibiu sua região contextual e acesso à Agenda.
+
+A conferência seguinte iniciou a abertura das quatro áreas internas pelos
+painéis e o retorno pelo histórico. O transporte do navegador foi desconectado
+durante essa sequência, sem devolver o resultado. A tentativa de recuperação
+não respondeu; por isso **essa última sequência não foi registrada como
+concluída em produção**, nem foi exportada uma captura pública final.
+A publicação nativa retornou `succeeded`. As quatro áreas e o histórico já
+haviam passado nos testes automatizados e na prévia real, conforme a seção
+anterior, mas essa evidência não substitui a etapa pública interrompida.
+
+Pendência de validação: concluir a abertura dos itens dos quatro painéis,
+retorno e captura final no endereço público quando o navegador de teste
+estiver disponível. Os limites de celular físico, leitor de tela e preferência
+de movimento reduzido real continuam declarados acima. Nenhuma mídia foi
+adicionada ao GitHub.
