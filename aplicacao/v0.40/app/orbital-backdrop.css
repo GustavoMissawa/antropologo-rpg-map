@@ -20,19 +20,23 @@
   mask-image: radial-gradient(ellipse 30% 36% at 52% 49%, transparent 48%, #000 100%);
 }
 .cosmic-nebula {
-  --nebula-opacity:.72;
+  --nebula-opacity:calc(.72 * var(--nebula-strength,1));
   position:absolute;
   opacity:var(--nebula-opacity);
-  transform:rotate(var(--nebula-tilt));
+  transform:translate(var(--nebula-x),var(--nebula-y)) rotate(calc(var(--nebula-tilt) + var(--nebula-jitter))) scale(var(--nebula-scale));
+  /* Final alpha envelope is outside the filter and fades BEFORE its rectangle. */
+  mask-image:radial-gradient(ellipse 48% 44% at 49% 48%,#000 16%,#000b 40%,transparent 94%),linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent),linear-gradient(transparent,#000 18%,#000 82%,transparent);
+  mask-composite:intersect;
   animation:nebula-breathe 26s ease-in-out infinite alternate;
 }
-.cosmic-nebula-material {position:absolute;inset:0;filter:url(#orbital-nebula-grain)}
+.cosmic-nebula-material {position:absolute;inset:-8%;filter:url(#orbital-nebula-grain);transform:scaleX(var(--nebula-stretch))}
 .orbital-nebula-filters {position:absolute;pointer-events:none}
 .cosmic-nebula-north {left:-13%;top:-17%;width:49%;height:43%;--nebula-tilt:-19deg}
-.cosmic-nebula-east {right:-17%;top:12%;width:38%;height:57%;--nebula-tilt:32deg;--nebula-opacity:.57;animation-delay:-9s}
-.cosmic-nebula-southwest {left:-12%;bottom:-10%;width:43%;height:37%;--nebula-tilt:12deg;--nebula-opacity:.62;animation-delay:-18s}
-.cosmic-nebula-south {right:4%;bottom:-20%;width:31%;height:40%;--nebula-tilt:-29deg;--nebula-opacity:.48}
+.cosmic-nebula-east {right:-17%;top:12%;width:38%;height:57%;--nebula-tilt:32deg;--nebula-opacity:calc(.57 * var(--nebula-strength,1));animation-delay:-9s}
+.cosmic-nebula-southwest {left:-12%;bottom:-10%;width:43%;height:37%;--nebula-tilt:12deg;--nebula-opacity:calc(.62 * var(--nebula-strength,1));animation-delay:-18s}
+.cosmic-nebula-south {right:4%;bottom:-20%;width:31%;height:40%;--nebula-tilt:-29deg;--nebula-opacity:calc(.48 * var(--nebula-strength,1))}
 .cosmic-nebula-gas, .cosmic-nebula-filaments, .cosmic-nebula-dust {position:absolute;inset:0}
+.cosmic-nebula-northeast {right:-3%;top:-23%;width:38%;height:40%;--nebula-tilt:16deg}
 .cosmic-nebula-gas {
   background:
     radial-gradient(ellipse 14% 18% at 24% 43%, var(--nebula-secondary), transparent 100%),
@@ -43,6 +47,7 @@
     radial-gradient(ellipse 34% 29% at 42% 52%, var(--nebula-primary), transparent 100%),
     radial-gradient(ellipse 15% 38% at 52% 39%, var(--nebula-primary), transparent 100%);
   filter:blur(8px);
+  opacity:calc(.65 + var(--nebula-blend,.5) * .45);
 }
 .cosmic-nebula-filaments {
   background:
@@ -98,18 +103,19 @@
   --nebula-lit:color-mix(in srgb, var(--orbit-ambient-light) 22%, #fff);
   --sky-star-ink:color-mix(in srgb, var(--orbit-node-accent) 60%, transparent);
 }
-:root[data-mode='light'] .cosmic-nebula {--nebula-opacity:.62}
+:root[data-mode='light'] .cosmic-nebula {--nebula-opacity:calc(.62 * var(--nebula-strength,1))}
 :root[data-mode='light'] .cosmic-nebula-filaments {opacity:.52}
 :root[data-mode='light'] .orbital-sky-star[data-tint='primary'] {fill:var(--orbit-control-accent)}
 :root[data-mode='light'] .orbital-sky-star[data-tint='secondary'] {fill:var(--orbit-node-accent)}
 @media(max-width:900px) {
   .cosmic-nebula-material {filter:blur(1px)}
-  .cosmic-nebula {--nebula-opacity:.37}
-  :root[data-mode='light'] .cosmic-nebula {--nebula-opacity:.4}
+  .cosmic-nebula {--nebula-opacity:calc(.37 * var(--nebula-strength,1))}
+  :root[data-mode='light'] .cosmic-nebula {--nebula-opacity:calc(.4 * var(--nebula-strength,1))}
   .cosmic-nebula-north {left:-40%;top:-6%;width:85%;height:31%}
   .cosmic-nebula-east {right:-41%;top:11%;width:74%;height:39%}
   .cosmic-nebula-southwest {left:-40%;bottom:0;width:81%;height:29%}
-  .cosmic-nebula-south {display:none;animation:none}
+  .cosmic-nebula-south {right:-25%;bottom:-9%;width:72%;height:27%}
+  .cosmic-nebula-northeast {right:-32%;top:-8%;width:77%;height:28%}
   .orbital-nebulae {mask-image:radial-gradient(ellipse 39% 30% at 50% 30%,transparent 42%,#000 100%)}
 }
 @media(prefers-reduced-motion:reduce) {

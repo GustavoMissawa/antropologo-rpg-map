@@ -72,7 +72,9 @@ test('O interruptor persiste sem recriar estrelas, dado ou disco e sobrevive a c
   let ui=await mountPlatform();
   try {
     const sky=ui.host.querySelector('.orbital-starfield'), art=ui.host.querySelector('.orbital-art');
-    assert.equal(ui.host.querySelectorAll('.cosmic-nebula').length,4);
+    const composition=()=>[...ui.host.querySelectorAll('.cosmic-nebula')].map(n=>n.dataset.composition);
+    const initialComposition=composition();
+    assert.ok(ui.host.querySelectorAll('.cosmic-nebula').length>=2 && ui.host.querySelectorAll('.cosmic-nebula').length<=5);
     assert.equal(sky.querySelectorAll('circle').length,290);
     assert.equal(ui.host.querySelector('.orbital-backdrop').getAttribute('aria-hidden'),'true');
     await clickButton(ui.host,'Configurações');
@@ -88,7 +90,9 @@ test('O interruptor persiste sem recriar estrelas, dado ou disco e sobrevive a c
     assert.equal(document.documentElement.dataset.nebulae,'false');
     assert.equal(ui.host.querySelector('.orbital-starfield'),sky);
     assert.equal(ui.host.querySelector('.orbital-art'),art);
+    assert.deepEqual(composition(),initialComposition,'cores e interruptor não redistribuem');
     await ui.close();ui=await mountPlatform();
+    assert.deepEqual(composition(),initialComposition,'remontagem conserva a composição deste documento');
     assert.equal(document.documentElement.dataset.nebulae,'false');
     await clickButton(ui.host,'Configurações');dialog=ui.host.querySelector('.appearance-dialog');
     assert.equal(dialog.querySelector('input[role="switch"]').checked,false);
@@ -107,4 +111,19 @@ test('O interruptor persiste sem recriar estrelas, dado ou disco e sobrevive a c
     await preferences({motionReduced:false});
     if(storage)Object.defineProperty(globalThis,'localStorage',storage);else delete globalThis.localStorage;
   }
+});
+
+test('Composições têm 2–5 formações, variam por semente e mantêm corredores limitados', async () => {
+  const {createNebulaComposition, pageNebulaComposition} = await import('../lib/nebula-composition.ts');
+  const signatures = new Set();
+  for (let seed=1; seed<=100; seed++) {
+    const composition = createNebulaComposition(seed*98765431);
+    assert.deepEqual(composition, createNebulaComposition(seed*98765431));
+    assert.ok(composition.length>=2 && composition.length<=5);
+    assert.equal(new Set(composition.map(n=>n.anchor)).size, composition.length);
+    assert.ok(composition.every(n=>n.scale>=.82 && n.scale<=1.12 && Math.abs(n.x)<=4 && Math.abs(n.y)<=5));
+    signatures.add(JSON.stringify(composition));
+  }
+  assert.equal(signatures.size, 100);
+  assert.equal(pageNebulaComposition(), pageNebulaComposition());
 });

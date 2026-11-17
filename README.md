@@ -13,6 +13,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-origem-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.45 — Nebulosas aleatórias · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.45-nebulosas-aleatorias` | Dissipação das bordas e composição por carregamento. |
 | v0.44 — Nebulosas procedurais · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.44-nebulosas` | Controle independente das nuvens em Aparência; mapas históricos preservados. |
 
 O seletor abre v0.40 por padrão. As duas versões começaram com os mesmos arquivos de aplicação e a mesma referência visual. Cada mapa tem seu próprio rascunho, JSON e destino de sincronização. O rascunho do editor anterior pertence à Alpha e pode ser aberto pelo seletor.
@@ -21,7 +22,7 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
-A [documentação da v0.44](docs/home-orbital-v044-nebulosas.md) registra nebulosas procedurais, cores, controle persistente e validação textual. Prints e vídeos demonstrativos deixam de ser obrigatórios no GitHub; o histórico existente foi preservado. A [revisão da v0.43](docs/home-orbital-v043/origem-dinamica/README.md) mostra a parada do disco e as conexões. A [galeria inicial da v0.43](docs/home-orbital-v043/README.md) e as galerias da [v0.42](docs/home-orbital-v042/README.md), [v0.41](docs/home-orbital-v041/README.md) e [v0.40](docs/home-orbital-v040/README.md) registram as revisões anteriores.
+A [correção da v0.45](docs/home-orbital-v045-nebulosas.md) registra bordas dissipadas e aleatoriedade por documento. A [documentação da v0.44](docs/home-orbital-v044-nebulosas.md) registra nebulosas procedurais, cores, controle persistente e validação textual. Prints e vídeos demonstrativos deixam de ser obrigatórios no GitHub; o histórico existente foi preservado. A [revisão da v0.43](docs/home-orbital-v043/origem-dinamica/README.md) mostra a parada do disco e as conexões. A [galeria inicial da v0.43](docs/home-orbital-v043/README.md) e as galerias da [v0.42](docs/home-orbital-v042/README.md), [v0.41](docs/home-orbital-v041/README.md) e [v0.40](docs/home-orbital-v040/README.md) registram as revisões anteriores.
 
 ## Desenvolver a aplicação
 

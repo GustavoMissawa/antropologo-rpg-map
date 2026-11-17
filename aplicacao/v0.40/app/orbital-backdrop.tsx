@@ -1,13 +1,16 @@
 'use client';
 
-import {useEffect, useRef, type CSSProperties} from 'react';
+import {useEffect, useRef, useState, type CSSProperties} from 'react';
 import {createOrbitalStars} from '../lib/orbital-sky';
 
+import {pageNebulaComposition, type NebulaFormation} from '../lib/nebula-composition';
+
 const stars = createOrbitalStars();
-const formations = ['north', 'east', 'southwest', 'south'] as const;
 
 export function OrbitalBackdrop() {
   const backdrop = useRef<HTMLDivElement>(null);
+  const [formations, setFormations] = useState<NebulaFormation[]>([]);
+  useEffect(() => {setFormations(pageNebulaComposition());}, []);
   useEffect(() => {
     const element = backdrop.current;
     if (!element) return;
@@ -30,7 +33,7 @@ export function OrbitalBackdrop() {
     <div className="orbital-nebulae">
       <svg className="orbital-nebula-filters" width="0" height="0" focusable="false">
         <defs>
-          <filter id="orbital-nebula-grain" x="-15%" y="-15%" width="130%" height="130%" colorInterpolationFilters="sRGB">
+          <filter id="orbital-nebula-grain" x="-40%" y="-40%" width="180%" height="180%" colorInterpolationFilters="sRGB">
             <feTurbulence type="fractalNoise" baseFrequency=".018 .028" numOctaves="3" seed="27" stitchTiles="stitch" result="noise" />
             <feColorMatrix in="noise" type="matrix" values="0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 .7 .7 .7 0 -.5" result="density" />
             <feComposite in="SourceGraphic" in2="density" operator="in" result="gas" />
@@ -39,7 +42,7 @@ export function OrbitalBackdrop() {
           </filter>
         </defs>
       </svg>
-      {formations.map(formation => <div key={formation} className={`cosmic-nebula cosmic-nebula-${formation}`}>
+      {formations.map(formation => <div key={formation.anchor} data-composition={JSON.stringify(formation)} className={`cosmic-nebula cosmic-nebula-${formation.anchor}`} style={{'--nebula-jitter': `${formation.tilt}deg`, '--nebula-scale': formation.scale, '--nebula-x': `${formation.x}%`, '--nebula-y': `${formation.y}%`, '--nebula-strength': formation.strength, '--nebula-stretch': formation.stretch, '--nebula-blend': formation.blend, animationDelay:`${formation.phase}s`} as CSSProperties}>
         <div className="cosmic-nebula-material">
           <div className="cosmic-nebula-gas" />
           <div className="cosmic-nebula-filaments" />
