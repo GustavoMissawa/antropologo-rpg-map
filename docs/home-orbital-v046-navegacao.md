@@ -192,3 +192,10 @@ retorno e captura final no endereço público quando o navegador de teste
 estiver disponível. Os limites de celular físico, leitor de tela e preferência
 de movimento reduzido real continuam declarados acima. Nenhuma mídia foi
 adicionada ao GitHub.
+
+
+## Ritmo de câmera ajustado
+
+A pedido do usuário, a aproximação/troca passa a 1100 ms, o retorno a 850 ms
+e a entrada do conteúdo a 420 ms (opacidade 320 ms). Cliques internos e
+movimento reduzido permanecem imediatos. A versão continua 0.46.

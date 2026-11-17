@@ -15,7 +15,7 @@ export function useOrbitalNavigation() {
     if (state.phase === 'exploration' || state.phase === 'destination') return;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const finish = () => dispatch({type: 'settle'});
-    const timer = setTimeout(finish, reduced.matches || document.hidden ? 0 : state.phase === 'returning' ? 480 : 660);
+    const timer = setTimeout(finish, reduced.matches || document.hidden ? 0 : state.phase === 'returning' ? 850 : 1100);
     const finishWhenPaused = () => {if (reduced.matches || document.hidden) finish();};
     reduced.addEventListener('change', finishWhenPaused);
     document.addEventListener('visibilitychange', finishWhenPaused);

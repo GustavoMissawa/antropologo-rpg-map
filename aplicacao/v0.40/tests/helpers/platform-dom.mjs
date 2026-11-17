@@ -21,7 +21,7 @@ globalThis.matchMedia=window.matchMedia=query=>{if(!medias.has(query)){const lis
 export const calls=[];
 globalThis.fetch=async url=>{calls.push(String(url));return {ok:true,json:async()=>String(url)==='/api/auth/session'?{user:{handle:'teste_simulado',expiresAt:Date.now()+7200000}}:[]};};
 const {default:App}=await import(pathToFileURL(compile(join(rootDir,'app/page.tsx'))));
-export async function waitFor(condition){for(let i=0;i<100;i++){if(condition())return;await act(async()=>{await new Promise(r=>setTimeout(r,10));});}throw Error('Estado esperado não apareceu.');}
+export async function waitFor(condition){for(let i=0;i<200;i++){if(condition())return;await act(async()=>{await new Promise(r=>setTimeout(r,10));});}throw Error('Estado esperado não apareceu.');}
 export async function mountPlatform(){const host=document.createElement('div');document.body.append(host);const root=createRoot(host);await act(async()=>root.render(React.createElement(App)));await waitFor(()=>host.querySelector('[data-session-ready="true"]')&&!host.textContent.includes('Aguarde…'));return {host,async close(){await act(async()=>root.unmount());host.remove();}};}
 export async function clickButton(host,label){const el=[...host.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===label||b.textContent.trim()===label);if(!el||el.disabled)throw Error('Botão indisponível: '+label);await act(async()=>el.click());}
 export async function preferences({narrow=mobile,motionReduced=reduced}={}){mobile=narrow;reduced=motionReduced;await act(async()=>{for(const m of medias.values())m.notify();});}
