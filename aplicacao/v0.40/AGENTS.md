@@ -23,11 +23,15 @@
 
 ## Fluxo de desenvolvimento e publicação
 
-Esta regra vale em futuras sessões que trabalharem nesta aplicação. Cada
-solicitação de alteração do site inclui a atualização do GitHub e a publicação
-no projeto original do ChatGPT Sites. A autorização permanente cobre alterações
-solicitadas, implementadas e validadas. Se o pedido atual limitar a entrega a uma
-prévia ou revisão, respeite esse limite.
+Esta regra vale em futuras sessões que trabalharem nesta aplicação. O usuário
+autoriza previamente a publicação, no projeto original do ChatGPT Sites, das
+alterações normais que solicitar, inclusive quando abrirem uma nova versão.
+Após implementar e validar a alteração, conclua o fluxo até a verificação em
+produção sem pedir uma segunda aprovação.
+
+Um pedido de capturas ou de prévia para validação faz parte dos testes e,
+por si só, não limita a publicação. Respeite o limite quando o pedido atual
+solicitar explicitamente apenas uma prévia ou proibir a publicação.
 
 1. Implemente a alteração solicitada na branch de desenvolvimento apropriada de
    [GustavoMissawa/antropologo-rpg-map](https://github.com/GustavoMissawa/antropologo-rpg-map).
@@ -46,9 +50,16 @@ prévia ou revisão, respeite esse limite.
 8. Abra o endereço público, confirme a versão e verifique a alteração solicitada
    em produção. Informe o número da publicação, o commit e o resultado dos testes.
 
-Peça aprovação específica antes de publicar mudanças destrutivas, migrações de
-dados, alterações de segurança ou resoluções de conflitos relevantes. Analise
-alterações conflitantes antes de qualquer sobrescrita.
+A autorização permanente tem estas únicas exceções. Nesses casos, obtenha
+autorização específica antes de publicar:
+
+- Pedido atual que limita explicitamente a entrega a uma prévia ou proíbe a
+  publicação.
+- Alterações destrutivas.
+- Migrações de dados de risco.
+- Mudanças críticas de segurança.
+- Conflitos importantes entre versões. Analise as alterações conflitantes
+  antes de qualquer sobrescrita.
 
 Considere o desenvolvimento concluído quando a alteração estiver disponível e
 verificada no endereço público. Se o ambiente impedir a publicação ou a
