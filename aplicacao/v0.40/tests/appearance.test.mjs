@@ -66,16 +66,17 @@ test('As cores e o modo recolorem os filamentos preservando sua geometria', () =
  function texture() {
   const pigments = new Set();
   const strokes = [];
+  const exposures = [];
   const ctx = {
    canvas:{width:640, height:640},
    clearRect(){}, save(){}, restore(){}, setTransform(){}, beginPath(){}, ellipse(){},
    moveTo(...point){strokes.push(point);}, lineTo(...point){strokes.push(point);},
-   stroke(){}, fillRect(){},
+   stroke(){ exposures.push(this.globalAlpha); }, fillRect(){},
    set strokeStyle(color){pigments.add(color);},
    set fillStyle(color){if (typeof color === 'string') pigments.add(color);},
    createRadialGradient(){return {addColorStop(_stop, color){pigments.add(color);}};},
   };
-  return {getContext:() => ctx, ctx, pigments, strokes};
+  return {getContext:() => ctx, ctx, pigments, strokes, exposures};
  }
  const originalStream = texture(), originalDust = texture();
  const changedStream = texture(), changedDust = texture();
@@ -92,6 +93,10 @@ test('As cores e o modo recolorem os filamentos preservando sua geometria', () =
  paintOrbitalLight(daylight, texture(), {primary:'#29afff', secondary:'#8e4ee8'}, 'light');
  assert.notDeepEqual(daylight.pigments, recolored.pigments);
  assert.deepEqual(daylight.strokes, recolored.strokes);
+ assert.deepEqual(originalStream.exposures, recolored.exposures);
+ assert.equal(daylight.exposures.length, recolored.exposures.length);
+ assert.ok(daylight.exposures.every((alpha, index) => alpha <= 1 && alpha >= recolored.exposures[index]));
+ assert.ok(daylight.exposures.some((alpha, index) => alpha > recolored.exposures[index]));
  assert.equal(daylight.ctx.globalCompositeOperation, 'source-over');
  assert.equal(recolored.ctx.globalCompositeOperation, 'lighter');
 });

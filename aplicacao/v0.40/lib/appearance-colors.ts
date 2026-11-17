@@ -12,8 +12,7 @@ export function parseHexColor(value: unknown): string | undefined {
 type RGB = [number, number, number];
 const white: RGB = [255, 255, 255];
 const black: RGB = [0, 0, 0];
-const daylightInk: RGB = [35, 44, 54];
-const daylightPearl: RGB = [243, 245, 248];
+const daylightInk: RGB = [25, 23, 38];
 
 function rgb(hex: string): RGB {
   return [1, 3, 5].map(start => Number.parseInt(hex.slice(start, start + 2), 16)) as RGB;
@@ -37,10 +36,10 @@ export function orbitalPigment(value: string, original: string, selected: string
   const pigment = lightness(rgb(value));
   const selectedRgb = rgb(selected);
   if (mode === 'light') {
-    // Darken the body of the disk and reserve tinted light for the crescent.
-    const base = mix(daylightInk, selectedRgb, .43);
-    const highlight = mix(selectedRgb, daylightPearl, .22);
-    const energy = Math.pow(Math.max(0, (pigment - .52) / .48), 1.45);
+    // Keep color in the strands and push only the hottest accents toward white.
+    const base = mix(daylightInk, selectedRgb, .63);
+    const highlight = mix(selectedRgb, white, .30);
+    const energy = Math.pow(Math.max(0, (pigment - .58) / .42), 1.8);
     return hex(mix(base, highlight, energy)) + value.slice(7);
   }
   const reference = lightness(rgb(original));

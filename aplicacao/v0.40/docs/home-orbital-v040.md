@@ -206,6 +206,26 @@ orientações distintas do D20 com preenchimento opaco e o centro fixo.
 A checagem de tipos, o build e os 411 testes automatizados passaram. A
 largura de celular foi testada no navegador, em um viewport emulado.
 
+## Refinamento do modo claro
+
+A revisão usa a publicação 91 (`7f6b09d4`) como referência visual. O núcleo
+escuro fica na própria arte orbital e mantém o alinhamento com o D20 nos
+dois modos. No claro, o mesmo gradiente de horizonte une o cabeçalho à
+Home. A cor primária tinge um lado da nebulosidade, e a cor secundária
+tinge o outro e os filamentos. O Canvas usa uma exposição específica para
+os filamentos claros e limita a opacidade de cada traço a 1.
+
+A marca reutiliza a textura metálica com gradientes próprios da Home clara.
+Seus sistemas e Seus personagens exibem o conteúdo diretamente sobre o
+fundo, com seus separadores e estados de foco.
+
+O modo escuro foi comparado com a publicação 91 na mesma paleta. Na
+prévia foram verificadas as combinações Ametista e Rosa, Floresta e Dourado
+e Safira e Ciano, além da troca independente de cor secundária. Também
+foram verificados o fio orbital por teclado, as duas rotações, os
+formulários de criação e a Agenda em 405 × 871. A checagem de tipos, o
+build e os 411 testes automatizados passaram.
+
 ## Executar localmente
 
 Na branch `dev/v0.40-atmosfera-procedural`, acesse a pasta de desenvolvimento.

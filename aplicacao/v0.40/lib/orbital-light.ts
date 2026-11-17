@@ -37,7 +37,7 @@ function traceFilament(ctx: LightContext, strand: Filament, start: number, end: 
   ctx.stroke();
 }
 
-function paintAccretionGlow(ctx: LightContext, random: () => number, tint: Tint) {
+function paintAccretionGlow(ctx: LightContext, random: () => number, tint: Tint, exposure: number) {
   const hot = tint('#ffc66b');
   const whiteHot = tint('#fff5cb');
   // A hotter inner crescent gives the spiral a bright side and a shadowed side.
@@ -51,7 +51,7 @@ function paintAccretionGlow(ctx: LightContext, random: () => number, tint: Tint)
     ctx.ellipse(0, 0, radius, radius * (0.88 + 0.09 * random()), -0.18, angle, angle + length);
     ctx.strokeStyle = i % 4 ? hot : whiteHot;
     ctx.lineWidth = 0.00065 + Math.pow(random(), 3) * 0.004;
-    ctx.globalAlpha = (0.25 + 0.69 * random()) * energy;
+    ctx.globalAlpha = Math.min(1, (0.25 + 0.69 * random()) * energy * exposure);
     ctx.stroke();
   }
 
@@ -61,13 +61,13 @@ function paintAccretionGlow(ctx: LightContext, random: () => number, tint: Tint)
     const y = Math.sin(angle) * radius;
     const flare = ctx.createRadialGradient(x, y, 0, x, y, size);
     [0, 0.14, 0.35, 0.64, 1].forEach((stop, i) => flare.addColorStop(stop, flareColors[i]));
-    ctx.globalAlpha = strength;
+    ctx.globalAlpha = Math.min(1, strength * exposure);
     ctx.fillStyle = flare;
     ctx.fillRect(x - size, y - size, size * 2, size * 2);
   }
 }
 
-function paintStream(ctx: LightContext, random: () => number, tint: Tint) {
+function paintStream(ctx: LightContext, random: () => number, tint: Tint, exposure: number) {
   const arms = [0.26, 2.64, 4.68];
   const filaments = ['#ffac4c', '#ffd078', '#ffe3a5', '#fff2cb'].map(tint);
   const base = tint('#f39238');
@@ -79,7 +79,7 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint) {
   for (const phase of arms) {
     const strand = {phase, drift: 0, ripple: 0.012};
     ctx.strokeStyle = base;
-    ctx.globalAlpha = 0.085;
+    ctx.globalAlpha = 0.085 * exposure;
     ctx.lineWidth = 0.029;
     ctx.shadowColor = shadow;
     ctx.shadowBlur = 28 * ctx.canvas.width / 1024;
@@ -95,7 +95,7 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint) {
     const middleAngle = phase + (start + end) * 4.35;
     const warmth = (0.65 + 0.35 * Math.cos(middleAngle - 2.7)) * (1 - distance * 0.57);
     ctx.strokeStyle = filaments[Math.floor(random() * filaments.length)];
-    ctx.globalAlpha = (0.075 + random() * 0.37) * warmth;
+    ctx.globalAlpha = (0.075 + random() * 0.37) * warmth * exposure;
     ctx.lineWidth = 0.00055 + Math.pow(random(), 2.15) * 0.0021;
     traceFilament(ctx, {
       phase,
@@ -106,7 +106,7 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint) {
   for (let i = 0; i < 64; i++) {
     const start = 0.025 + Math.pow(random(), 1.35) * 0.85;
     ctx.strokeStyle = i % 3 ? bright : peak;
-    ctx.globalAlpha = 0.28 + 0.42 * random();
+    ctx.globalAlpha = Math.min(1, (0.28 + 0.42 * random()) * exposure);
     ctx.lineWidth = 0.0008 + random() * 0.0013;
     traceFilament(ctx, {
       phase: arms[i % arms.length] + (random() - 0.5) * 0.14,
@@ -123,7 +123,7 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint) {
   ctx.globalAlpha = 1;
   ctx.fillStyle = heat;
   ctx.fillRect(-1, -1, 2, 2);
-  paintAccretionGlow(ctx, random, tint);
+  paintAccretionGlow(ctx, random, tint, exposure);
 }
 
 function paintDust(ctx: LightContext, random: () => number, primary: Tint, secondary: Tint) {
@@ -177,7 +177,7 @@ export function paintOrbitalLight(
   }
   const primary = (value: string) => orbitalPigment(value, originalOrbitalColors.primary, colors.primary, mode);
   const secondary = (value: string) => orbitalPigment(value, originalOrbitalColors.secondary, colors.secondary, mode);
-  paintStream(light, random, secondary);
+  paintStream(light, random, secondary, mode === 'light' ? 1.58 : 1);
   paintDust(particles, random, primary, secondary);
   light.restore();
   particles.restore();

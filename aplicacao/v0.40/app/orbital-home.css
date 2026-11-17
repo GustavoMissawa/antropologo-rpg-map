@@ -48,21 +48,20 @@
 }
 
 :root[data-mode='light'] .orbital-home-mode {
-  --orbit-sky-start: color-mix(in srgb, #d8dfe5 86%, var(--orbit-ambient-base));
-  --orbit-background: color-mix(in srgb, #e1e6ea 90%, var(--orbit-sky-pigment));
-  --orbit-sky-end: color-mix(in srgb, #d7dde3 82%, var(--orbit-ambient-light));
-  --orbit-header-light: #f7f9fa57;
+  --orbit-sky-start: color-mix(in srgb, #f7f8fc 58%, var(--orbit-ambient-base));
+  --orbit-background: color-mix(in srgb, #faf9fc 86%, var(--orbit-sky-pigment));
+  --orbit-sky-end: color-mix(in srgb, #faf8fc 54%, var(--orbit-ambient-light));
+  --orbit-header-light: #fff5;
   --orbit-header-line: color-mix(in srgb, var(--orbit-node-accent) 20%, transparent);
-  --orbit-cloud-primary: color-mix(in srgb, var(--orbit-control-accent) 15%, transparent);
-  --orbit-cloud-secondary: color-mix(in srgb, var(--orbit-ambient-light) 33%, transparent);
-  --orbit-cloud-faint: color-mix(in srgb, var(--orbit-node-accent) 14%, transparent);
-  --orbit-core: #f0f3f5;
+  --orbit-cloud-primary: color-mix(in srgb, var(--orbit-ambient-base) 54%, transparent);
+  --orbit-cloud-secondary: color-mix(in srgb, var(--orbit-ambient-light) 61%, transparent);
+  --orbit-cloud-faint: color-mix(in srgb, var(--orbit-ambient-light) 30%, transparent);
   --orbit-star: color-mix(in srgb, var(--orbit-node-accent) 27%, transparent);
   --orbit-ink: #172731;
   --orbit-muted: color-mix(in srgb, #344751 92%, var(--orbit-sky-pigment));
-  --orbit-control-accent: color-mix(in srgb, var(--orbit-ambient-base) 23%, #16303a);
+  --orbit-control-accent: color-mix(in srgb, var(--orbit-ambient-base) 35%, #1c192c);
   --orbit-control-bright: var(--orbit-control-accent);
-  --orbit-line: color-mix(in srgb, var(--orbit-control-accent) 25%, transparent);
+  --orbit-line: color-mix(in srgb, var(--orbit-control-accent) 29%, transparent);
   --orbit-surface: color-mix(in srgb, #eff2f4 88%, var(--orbit-sky-pigment));
   --orbit-control: var(--orbit-surface);
   --orbit-control-hover: color-mix(in srgb, var(--orbit-surface) 91%, var(--orbit-control-accent));
@@ -106,11 +105,18 @@
 
 .app-shell.orbital-home-mode .main-wrap::before {
   background:
-    radial-gradient(ellipse 25% 37% at 51% var(--orbit-cloud-y), var(--orbit-core), transparent 76%),
     radial-gradient(ellipse 52% 35% at 63% calc(var(--orbit-cloud-y) + 44px), var(--orbit-cloud-secondary), transparent 77%),
     radial-gradient(ellipse 50% 52% at 25% 31%, var(--orbit-cloud-primary), transparent 79%),
     radial-gradient(ellipse 51% 36% at 92% 78%, var(--orbit-cloud-faint), transparent 81%),
     radial-gradient(ellipse 48% 42% at 87% 19%, var(--orbit-cloud-faint), transparent 78%);
+}
+
+:root[data-mode='light'] .app-shell.orbital-home-mode .main-wrap::before {
+  background:
+    radial-gradient(ellipse 34% 28% at 47% calc(var(--orbit-cloud-y) - 125px), #fffc, transparent 80%),
+    radial-gradient(ellipse 46% 38% at 61% calc(var(--orbit-cloud-y) + 44px), var(--orbit-cloud-secondary), transparent 83%),
+    radial-gradient(ellipse 48% 48% at 18% 28%, var(--orbit-cloud-primary), transparent 80%),
+    radial-gradient(ellipse 39% 34% at 88% 67%, var(--orbit-cloud-faint), transparent 77%);
 }
 
 .app-shell.orbital-home-mode .main-wrap::after {
@@ -143,6 +149,21 @@
   --primary-dark: var(--orbit-control-bright, #92caa5);
   min-height: 44px;
   max-width: 100%;
+}
+
+:root[data-mode='light'] .orbital-home-mode .header-platform-brand {
+  --orbit-metal-primary: color-mix(in srgb, var(--orbit-ambient-base) 36%, #1c142b);
+  --orbit-metal-secondary: color-mix(in srgb, var(--orbit-ambient-light) 40%, #24121f);
+  --platform-metal-silver: linear-gradient(174deg,
+    var(--orbit-metal-primary) 4%, color-mix(in srgb, var(--orbit-metal-primary) 75%, #100e19) 40%,
+    color-mix(in srgb, var(--orbit-metal-primary) 73%, white) 50%,
+    var(--orbit-metal-primary) 55%, color-mix(in srgb, var(--orbit-metal-primary) 80%, var(--orbit-metal-secondary)) 84%,
+    var(--orbit-metal-primary));
+  --platform-metal-color: linear-gradient(174deg,
+    color-mix(in srgb, var(--orbit-metal-secondary) 72%, var(--orbit-metal-primary)),
+    var(--orbit-metal-secondary) 30%, color-mix(in srgb, var(--orbit-metal-secondary) 78%, #180e1a) 45%,
+    color-mix(in srgb, var(--orbit-metal-secondary) 68%, white) 51%,
+    var(--orbit-metal-secondary) 56%, var(--orbit-metal-secondary) 85%, var(--orbit-metal-primary));
 }
 
 .orbital-home-mode .header-platform-brand .platform-word {
@@ -234,12 +255,24 @@
   pointer-events: none;
 }
 
+/* Keep the shadow centered on the die at every viewport size and in both modes. */
+.orbital-art::before,
 .orbital-plane {
   position: absolute;
   inset: 0;
   transform: rotate(37deg) scaleY(.74);
-  visibility: hidden;
 }
+
+.orbital-art::before {
+  content: '';
+  background: radial-gradient(circle closest-side,
+    var(--orbit-core) 24%,
+    color-mix(in srgb, var(--orbit-core) 82%, transparent) 30%,
+    color-mix(in srgb, var(--orbit-core) 20%, transparent) 50%,
+    transparent 63%);
+}
+
+.orbital-plane { visibility: hidden; }
 
 .orbital-art[data-painted='true'] .orbital-plane { visibility: visible; }
 .orbital-art[data-painted='true'] .orbital-disk-fallback { display: none; }
@@ -391,18 +424,6 @@
   width: 1px;
   background: linear-gradient(transparent, var(--orbit-control-glow, #f4c7758a) 19%, var(--orbit-panel-fade, #eab96938) 62%, transparent);
 }
-:root[data-mode='light'] .orbital-list { position: relative; isolation: isolate; }
-:root[data-mode='light'] .orbital-list::before {
-  content: '';
-  position: absolute;
-  z-index: -1;
-  inset: -10px -9px -8px;
-  pointer-events: none;
-  border-radius: 10px;
-  border: 1px solid var(--orbit-line);
-  background: linear-gradient(155deg, var(--orbit-surface), color-mix(in srgb, var(--orbit-surface) 42%, transparent));
-  box-shadow: 0 6px 18px #3a4b6010;
-}
 .orbital-list h2 {
   position: relative;
   margin-bottom: 9px;
@@ -440,6 +461,12 @@
 }
 .orbital-shortcut:hover,
 .orbital-shortcut svg { color: var(--orbit-control-accent); }
+@media (hover: hover) {
+  :root[data-mode='light'] .orbital-home-mode .orbital-shortcut:hover {
+    border-radius: 5px;
+    background: color-mix(in srgb, var(--orbit-ambient-base) 20%, transparent);
+  }
+}
 .orbital-shortcut > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .orbital-shortcut strong { display: block; overflow: hidden; text-overflow: ellipsis; font-weight: 650; }
 .orbital-shortcut small { display: block; margin-top: 2px; color: var(--orbit-muted); font-size: 12px; }
@@ -565,7 +592,8 @@
 @media (forced-colors: active) {
   .app-shell.orbital-home-mode :is(.topbar, .main-wrap, .orbital-node) { background: Canvas; }
   .app-shell.orbital-home-mode .main-wrap::before,
-  .app-shell.orbital-home-mode .main-wrap::after { display: none; }
+  .app-shell.orbital-home-mode .main-wrap::after,
+  .orbital-art::before { display: none; }
   .orbital-home { color: CanvasText; }
   .orbital-node { border: 1px solid ButtonText; }
   .orbital-node[data-active='true'] { outline: 2px solid Highlight; }
