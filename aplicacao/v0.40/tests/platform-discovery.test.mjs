@@ -46,6 +46,7 @@ test('Os quatro destinos orbitais abrem as áreas existentes e preservam as aç�
     for (const [label, hash] of [['Sistemas', '#regras'], ['Fichas', '#ficha'], ['PDFs', '#pdfs'], ['Agenda', '#agenda']]) {
       const nav = ui.host.querySelector('nav[aria-label="Navegação orbital"]');
       await clickButton(nav, label);
+      await waitFor(() => window.location.hash === hash);
       assert.equal(window.location.hash, hash);
       assert.equal(ui.host.querySelector('.orbital-home'), null);
       if (label === 'Sistemas') assert(ui.host.textContent.includes('Outro universo'));
@@ -113,6 +114,8 @@ test('Hover e foco alternam o traçado único e toque abre o destino no primeiro
     await point(pdfs, 'pointerover', 'touch');
     assert.equal(beam.dataset.active, 'false');
     await act(async () => pdfs.click());
+    assert.equal(pdfs.dataset.selected, 'true');
+    await waitFor(() => window.location.hash === '#pdfs');
     assert.equal(window.location.hash, '#pdfs');
   } finally {
     HTMLElement.prototype.getBoundingClientRect = rect;
@@ -228,5 +231,50 @@ test('O D20 responde a mouse, toque capturado e teclado com movimento reduzido',
   } finally {
     await ui.close();
     await preferences({motionReduced: false, narrow: false});
+  }
+});
+
+test('A confirmação de estrela cancela o destino anterior e não sobrevive à saída da Home', async () => {
+  await seed();
+  await preferences({motionReduced: false});
+  const ui = await mountPlatform();
+  try {
+    const [systems, sheets, pdfs] = ui.host.querySelectorAll('.orbital-node');
+    await act(async () => systems.click());
+    assert.equal(systems.dataset.selected, 'true');
+    assert.equal(ui.host.querySelector('.orbital-connection').dataset.selecting, 'true');
+    await act(async () => sheets.click());
+    assert.equal(systems.dataset.selected, 'false');
+    assert.equal(sheets.dataset.selected, 'true');
+    assert.equal(ui.host.querySelectorAll('.orbital-node[data-active="true"]').length, 1);
+    await waitFor(() => window.location.hash === '#ficha');
+    await act(async () => new Promise(resolve => setTimeout(resolve, 170)));
+    assert.equal(window.location.hash, '#ficha');
+    await clickButton(ui.host, 'Início');
+    await clickButton(ui.host.querySelector('.orbital-navigation'), 'PDFs');
+    await clickButton(ui.host.querySelector('.global-top-nav'), 'Agenda');
+    await act(async () => new Promise(resolve => setTimeout(resolve, 180)));
+    assert.equal(window.location.hash, '#agenda', 'a confirmação antiga foi descartada ao desmontar a Home');
+  } finally {
+    await ui.close();
+  }
+});
+
+test('Movimento reduzido confirma a estrela sem esperar o efeito, inclusive ao trocar a preferência', async () => {
+  await seed();
+  await preferences({motionReduced: true});
+  const ui = await mountPlatform();
+  try {
+    await clickButton(ui.host.querySelector('.orbital-navigation'), 'Sistemas');
+    assert.equal(window.location.hash, '#regras');
+    await clickButton(ui.host, 'Início');
+    await preferences({motionReduced: false});
+    await clickButton(ui.host.querySelector('.orbital-navigation'), 'Agenda');
+    assert.equal(ui.host.querySelector('.orbital-node[data-selected="true"]').textContent, 'Agenda');
+    await preferences({motionReduced: true});
+    assert.equal(window.location.hash, '#agenda');
+  } finally {
+    await ui.close();
+    await preferences({motionReduced: false});
   }
 });

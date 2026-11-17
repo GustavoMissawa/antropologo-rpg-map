@@ -75,7 +75,7 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint, exposu
   const bright = tint('#ffe5a6');
   const peak = tint('#fff8de');
 
-  // The diffuse body and the hot strands are baked into the same rotating plane.
+  // Seed the diffuse body and hot strands for the radial flow compositor.
   for (const phase of arms) {
     const strand = {phase, drift: 0, ripple: 0.012};
     ctx.strokeStyle = base;
@@ -95,7 +95,7 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint, exposu
     const middleAngle = phase + (start + end) * 4.35;
     const warmth = (0.65 + 0.35 * Math.cos(middleAngle - 2.7)) * (1 - distance * 0.57);
     ctx.strokeStyle = filaments[Math.floor(random() * filaments.length)];
-    ctx.globalAlpha = (0.075 + random() * 0.37) * warmth * exposure;
+    ctx.globalAlpha = (0.075 + random() * 0.37) * warmth * exposure * (1 + .18 * Math.sin(start * Math.PI));
     ctx.lineWidth = 0.00055 + Math.pow(random(), 2.15) * 0.0021;
     traceFilament(ctx, {
       phase,
@@ -154,7 +154,7 @@ function paintDust(ctx: LightContext, random: () => number, primary: Tint, secon
   }
 }
 
-/** Render bounded textures once. CSS rotates both planes without repainting their filaments. */
+/** Render bounded sources once for the differential radial flow. */
 export function paintOrbitalLight(
   stream: HTMLCanvasElement | OffscreenCanvas,
   dust: HTMLCanvasElement | OffscreenCanvas,

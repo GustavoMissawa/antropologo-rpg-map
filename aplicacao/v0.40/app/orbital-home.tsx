@@ -1,6 +1,6 @@
 'use client';
 
-import {useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
+import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
 import {CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
 import {countRules, type Rulebook, type Sheet} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
@@ -61,7 +61,9 @@ function OrbitalScene(props: OrbitalHomeProps) {
   const scene = useRef<HTMLDivElement>(null);
   const [paths, setPaths] = useState<Partial<Record<Destination, string>>>({});
   const [interaction, setInteraction] = useState<NodeInteraction>({pointer: null, focus: null, last: null});
-  const active = activeNode(interaction);
+  const [selected, setSelected] = useState<Destination | null>(null);
+  const pending = useRef<{id: Destination; timer: ReturnType<typeof setTimeout>; navigate: () => void} | null>(null);
+  const active = selected ?? activeNode(interaction);
   const last = active ?? interaction.last;
   const path = last ? paths[last] : undefined;
 
@@ -71,6 +73,39 @@ function OrbitalScene(props: OrbitalHomeProps) {
       return {...next, last: id ?? activeNode(next) ?? previous.last};
     });
   }
+
+  function confirm(id: Destination, navigate: () => void) {
+    if (pending.current?.id === id) return;
+    if (pending.current) clearTimeout(pending.current.timer);
+    pending.current = null;
+    setSelected(id);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      navigate();
+      return;
+    }
+    const finish = () => {
+      pending.current = null;
+      setSelected(null);
+      navigate();
+    };
+    pending.current = {id, timer: setTimeout(finish, 140), navigate: finish};
+  }
+
+  useEffect(() => {
+    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const finishWhenPaused = () => {
+      if ((!document.hidden && !reduced.matches) || !pending.current) return;
+      clearTimeout(pending.current.timer);
+      pending.current.navigate();
+    };
+    reduced.addEventListener('change', finishWhenPaused);
+    document.addEventListener('visibilitychange', finishWhenPaused);
+    return () => {
+      if (pending.current) clearTimeout(pending.current.timer);
+      reduced.removeEventListener('change', finishWhenPaused);
+      document.removeEventListener('visibilitychange', finishWhenPaused);
+    };
+  }, []);
 
   useLayoutEffect(() => {
     const root = scene.current;
@@ -129,7 +164,7 @@ function OrbitalScene(props: OrbitalHomeProps) {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <svg className="orbital-connection" aria-hidden="true" focusable="false" data-active={!!active && !!path}>
+      <svg className="orbital-connection" aria-hidden="true" focusable="false" data-active={!!active && !!path} data-selecting={selected !== null}>
         {path && (
           <>
             <path d={path} className="orbital-connection-track" />
@@ -146,6 +181,7 @@ function OrbitalScene(props: OrbitalHomeProps) {
               type="button"
               className="orbital-node"
               data-active={active === id}
+              data-selected={selected === id}
               style={{'--node-x': `${point.x / 10}%`, '--node-y': `${point.y / 10}%`} as CSSProperties}
               onPointerEnter={event => { if (event.pointerType !== 'touch') interact('pointer', id); }}
               onPointerLeave={() => interact('pointer', null)}
@@ -154,9 +190,12 @@ function OrbitalScene(props: OrbitalHomeProps) {
                 if (event.currentTarget.matches(':focus-visible')) interact('focus', id);
               }}
               onBlur={() => interact('focus', null)}
-              onClick={props[action]}
+              onClick={() => confirm(id, props[action])}
             >
-              <span className="orbital-node-dot" data-orbital-anchor={id} aria-hidden="true" />
+              <span className="orbital-node-dot" data-orbital-anchor={id} aria-hidden="true">
+                <span className="orbital-star-ring" />
+                <span className="orbital-star-glint" />
+              </span>
               <Icon className="orbital-node-icon" size={21} strokeWidth={1.6} aria-hidden="true" />
               <span>{label}</span>
             </button>
