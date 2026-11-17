@@ -1,13 +1,10 @@
 'use client';
 
-import {useEffect, useLayoutEffect, useRef, type CSSProperties} from 'react';
+import {useEffect, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
-import {orbitalDieFrame, type Point3} from '../lib/hero-die-geometry';
-import {advanceOrbitalRotation} from '../lib/orbital-rotation';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
-const INITIAL_ANGLES: Point3 = [0.51, 0.68, 0.26];
-const initial = orbitalDieFrame(INITIAL_ANGLES);
+import {initialOrbitalFrame, useOrbitalD20} from './use-orbital-d20';
 
 function presentBitmap(canvas: HTMLCanvasElement, bitmap: ImageBitmap) {
   const renderer = canvas.getContext('bitmaprenderer');
@@ -108,13 +105,7 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
   const art = useRef<HTMLDivElement>(null);
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
-  const die = useRef<SVGSVGElement>(null);
-  const dieEdges = useRef<SVGPathElement>(null);
-  const slow = useRef(slowDie);
-
-  useLayoutEffect(() => {
-    slow.current = slowDie;
-  }, [slowDie]);
+  const {die, control} = useOrbitalD20(art, slowDie);
 
   useEffect(() => {
     const element = art.current;
@@ -161,99 +152,15 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
     };
   }, []);
 
-  useEffect(() => {
-    const element = art.current;
-    const dieSvg = die.current;
-    const edges = dieEdges.current;
-    if (!element || !dieSvg || !edges) return;
-
-    const faces = dieSvg.querySelectorAll('polygon');
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-    const compact = matchMedia('(max-width: 740px)');
-    let visible = true;
-    let frame = 0;
-    let previous = 0;
-    let rotation = {phase: 0, speed: 1};
-
-    function paintDie(time: number) {
-      const next = orbitalDieFrame([
-        INITIAL_ANGLES[0] + Math.sin(time * 0.42) * 0.47,
-        INITIAL_ANGLES[1] + time * 0.57,
-        INITIAL_ANGLES[2] + time * 0.21,
-      ]);
-      for (let i = 0; i < faces.length; i++) {
-        const face = faces[i];
-        const {visible, points, light} = next.faces[i];
-        const visibility = visible ? 'visible' : 'hidden';
-        if (visible) {
-          face.setAttribute('points', points);
-          face.style.setProperty('--orbital-face-light', light);
-        }
-        if (face.getAttribute('visibility') !== visibility) face.setAttribute('visibility', visibility);
-      }
-      edges?.setAttribute('d', next.edges);
-    }
-
-    function stop() {
-      if (frame) cancelAnimationFrame(frame);
-      frame = 0;
-      previous = 0;
-    }
-
-    function allowed() {
-      return visible && !document.hidden && !reduced.matches;
-    }
-
-    function tick(now: number) {
-      frame = 0;
-      if (!allowed()) return;
-      if (!previous) previous = now;
-      const delta = now - previous;
-      if (delta >= (compact.matches ? 32 : 15)) {
-        rotation = advanceOrbitalRotation(rotation, Math.min(delta, 60) / 1000, slow.current);
-        previous = now;
-        paintDie(rotation.phase);
-      }
-      frame = requestAnimationFrame(tick);
-    }
-
-    function updateMotion() {
-      if (!element) return;
-      element.dataset.motion = allowed() ? 'running' : 'paused';
-      if (allowed()) {
-        if (!frame) frame = requestAnimationFrame(tick);
-      } else {
-        stop();
-      }
-    }
-
-    const observer = typeof IntersectionObserver === 'undefined' ? null
-      : new IntersectionObserver(([entry]) => {
-        visible = entry.isIntersecting;
-        updateMotion();
-      });
-    observer?.observe(element);
-    document.addEventListener('visibilitychange', updateMotion);
-    reduced.addEventListener('change', updateMotion);
-    updateMotion();
-
-    return () => {
-      stop();
-      observer?.disconnect();
-      document.removeEventListener('visibilitychange', updateMotion);
-      reduced.removeEventListener('change', updateMotion);
-    };
-  }, []);
-
   return (
-    <div className="orbital-art" ref={art} aria-hidden="true" data-motion="paused">
-      <div className="orbital-disk-fallback" />
-      <div className="orbital-plane">
+    <div className="orbital-art" ref={art} data-motion="paused">
+      <div className="orbital-disk-fallback" aria-hidden="true" />
+      <div className="orbital-plane" aria-hidden="true">
         <canvas ref={dust} className="orbital-dust" />
         <canvas ref={stream} className="orbital-stream" />
       </div>
-      <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" focusable="false">
-        {initial.faces.map(({visible, points, light}, i) => (
+      <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+        {initialOrbitalFrame.faces.map(({visible, points, light}, i) => (
           <polygon
             key={i}
             points={points}
@@ -261,8 +168,9 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
             style={{'--orbital-face-light': light} as CSSProperties}
           />
         ))}
-        <path ref={dieEdges} className="orbital-d20-edges" d={initial.edges} />
+        <path className="orbital-d20-edges" d={initialOrbitalFrame.edges} />
       </svg>
+      <div ref={control} className="orbital-d20-control" role="group" tabIndex={0} aria-label="Girar o dado D20 com as setas do teclado" />
     </div>
   );
 }

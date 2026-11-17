@@ -11,6 +11,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.38 — Alpha | `aplicacao/v0.38/`, arquivada na tag `v0.38-alpha` | `public/data/map.json` e `public/data/edicoes.json` |
 | v0.40 — Desenvolvimento | [Publicação 92 e branch de referência](https://github.com/GustavoMissawa/antropologo-rpg-map/tree/dev/v0.40-atmosfera-procedural/aplicacao/v0.40) | `public/data/v0.40/map.json` e `public/data/v0.40/edicoes.json` |
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
 
 O seletor abre v0.40 por padrão. As duas versões começaram com os mesmos arquivos de aplicação e a mesma referência visual. Cada mapa tem seu próprio rascunho, JSON e destino de sincronização. O rascunho do editor anterior pertence à Alpha e pode ser aberto pelo seletor.
 
@@ -18,7 +19,7 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
-Veja a [galeria da v0.41](docs/home-orbital-v041/README.md), com os dois modos e a gravação da desaceleração do D20. A [galeria da v0.40](docs/home-orbital-v040/README.md) registra as revisões anteriores.
+A [galeria da v0.42](docs/home-orbital-v042/README.md) mostra a rotação livre do D20 e a Home sem o selo de versão. As galerias da [v0.41](docs/home-orbital-v041/README.md) e da [v0.40](docs/home-orbital-v040/README.md) registram as revisões anteriores.
 
 ## Desenvolver a aplicação
 

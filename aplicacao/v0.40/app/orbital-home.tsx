@@ -3,7 +3,6 @@
 import {useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
 import {CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
 import {countRules, type Rulebook, type Sheet} from '../lib/model';
-import {SITE_VERSION} from '../lib/site-version';
 import {OrbitalArt} from './orbital-art';
 
 export type OrbitalHomeProps = {
@@ -214,7 +213,6 @@ export function OrbitalHome(props: OrbitalHomeProps) {
             <li><button type="button" className="orbital-shortcut" onClick={onCreateCharacter}><CirclePlus size={20} strokeWidth={1.5} aria-hidden="true" /><span>Criar personagem</span></button></li>
           </ul>
         </section>
-        <p className="orbital-edition">v{SITE_VERSION} <span aria-hidden="true">·</span> Versão de teste</p>
       </div>
     </div>
   );

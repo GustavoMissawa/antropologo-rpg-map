@@ -57,7 +57,11 @@ const orbitalEdgeFaces = HERO_EDGES.map(([a, b]) =>
 );
 
 export function orbitalDieFrame(angles: Point3) {
-  const vertices = HERO_VERTICES.map(point => rotateHeroPoint(point, angles));
+  return projectOrbitalDie(point => rotateHeroPoint(point, angles));
+}
+
+export function projectOrbitalDie(rotate: (point: Point3) => Point3) {
+  const vertices = HERO_VERTICES.map(rotate);
   const projected = vertices.map(projectHeroPoint);
   const faces = HERO_FACES.map(triangle => {
     const [a, b, c] = triangle.map(index => projected[index]);

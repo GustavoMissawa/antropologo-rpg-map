@@ -177,3 +177,56 @@ test('D20 orbital pausa no estado oculto, fora da área visível e em movimento 
     await preferences({motionReduced: false});
   }
 });
+
+test('O D20 responde a mouse, toque capturado e teclado com movimento reduzido', async () => {
+  await seed();
+  await preferences({motionReduced: true, narrow: true});
+  const ui = await mountPlatform();
+  try {
+    const art = ui.host.querySelector('.orbital-art');
+    const control = art.querySelector('.orbital-d20-control');
+    const path = () => art.querySelector('.orbital-d20-edges').getAttribute('d');
+    const start = path();
+    let capture = null;
+    control.setPointerCapture = id => {capture = id;};
+    control.hasPointerCapture = id => capture === id;
+    control.releasePointerCapture = () => {capture = null;};
+    const pointer = async (type, id, pointerType, x, y, isPrimary = true) => {
+      const event = new MouseEvent(type, {clientX: x, clientY: y, button: 0});
+      for (const [key, value] of Object.entries({pointerId: id, pointerType, isPrimary})) {
+        Object.defineProperty(event, key, {value});
+      }
+      await act(async () => control.dispatchEvent(event));
+    };
+
+    assert.equal(ui.host.querySelector('.orbital-edition'), null);
+    await pointer('pointerenter', 1, 'mouse', 12, 17);
+    await pointer('pointermove', 1, 'mouse', 46, 17);
+    await waitFor(() => path() !== start);
+    const horizontal = path();
+
+    await pointer('pointerdown', 2, 'touch', 46, 17);
+    assert.equal(capture, 2, 'toque assume mesmo se o mouse ficou parado no dado');
+    await pointer('pointerdown', 3, 'touch', 1, 1, false);
+    await pointer('pointermove', 3, 'touch', 66, 66, false);
+    assert.equal(path(), horizontal);
+    await pointer('pointermove', 2, 'touch', 46, 96);
+    await waitFor(() => path() !== horizontal);
+    const vertical = path();
+    capture = null;
+    await pointer('lostpointercapture', 2, 'touch', 46, 96);
+    await pointer('pointermove', 2, 'touch', 77, 133);
+    assert.equal(path(), vertical);
+    const key = new KeyboardEvent('keydown', {key: 'ArrowRight', cancelable: true});
+    await act(async () => control.dispatchEvent(key));
+    assert.ok(key.defaultPrevented);
+    await waitFor(() => path() !== vertical);
+    const keyboard = path();
+    await act(async () => new Promise(r => setTimeout(r, 70)));
+    assert.equal(path(), keyboard, 'sem inércia após o comando direto em movimento reduzido');
+    assert.equal(art.dataset.motion, 'paused');
+  } finally {
+    await ui.close();
+    await preferences({motionReduced: false, narrow: false});
+  }
+});
