@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
-import {ArrowLeft, ArrowUpRight, CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
+import {ArrowUpRight, CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
 import {countRules, type Rulebook, type Sheet, type PDF} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
 import {OrbitalBackdrop} from './orbital-backdrop';
@@ -262,7 +262,7 @@ export function OrbitalHome(props: OrbitalHomeProps) {
       <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
       <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} onSelect={navigation.select} />
-      {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={navigation.select} onReturn={() => navigation.select(null)} />}
+      {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={navigation.select} />}
       <div className="orbital-workspace" inert={navigation.phase !== 'exploration'} aria-hidden={navigation.phase !== 'exploration' || undefined}>
         <section className="orbital-list" aria-labelledby="orbital-systems-heading">
           <h2 id="orbital-systems-heading">Seus sistemas</h2>
@@ -309,12 +309,11 @@ export function OrbitalHome(props: OrbitalHomeProps) {
 }
 
 
-function OrbitalDestinationPanel(props: OrbitalHomeProps & {destination: Destination; ready: boolean; returning: boolean; onSelect: (id: Destination) => void; onReturn: () => void}) {
+function OrbitalDestinationPanel(props: OrbitalHomeProps & {destination: Destination; ready: boolean; returning: boolean; onSelect: (id: Destination) => void}) {
   const {destination, ready, books, sheets, pdfs = []} = props;
   const current = DESTINATIONS.find(item => item.id === destination)!;
   const Icon = current.icon;
   return <section className="orbital-destination-panel" id="orbital-destination-panel" inert={props.returning} aria-hidden={props.returning || undefined} aria-label={`Destino ${current.label}`}>
-    <button type="button" className="orbital-map-return" onClick={props.onReturn}><ArrowLeft size={16} aria-hidden="true" /> Voltar ao mapa orbital</button>
     <nav className="orbital-destination-switcher" aria-label="Trocar destino">
       {DESTINATIONS.map(item => <a key={item.id} href={orbitalHref(item.id)} aria-current={item.id === destination ? 'location' : undefined} onClick={event => {
         if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {event.preventDefault(); props.onSelect(item.id);}

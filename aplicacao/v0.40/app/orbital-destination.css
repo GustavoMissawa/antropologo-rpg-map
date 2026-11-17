@@ -42,15 +42,10 @@
   right:clamp(0px,2vw,32px);
   color:var(--orbit-ink);
 }
-.orbital-map-return {
-  display:inline-flex;align-items:center;gap:9px;
-  padding:8px 0;border:0;background:transparent;color:var(--orbit-ink);
-  font:500 13px/1.5 var(--font);cursor:pointer;
-}
 .orbital-destination-switcher {display:flex;flex-wrap:wrap;gap:8px 22px;margin:20px 0 34px;border-bottom:1px solid var(--orbit-line)}
 .orbital-destination-switcher a {padding:10px 0;color:var(--orbit-muted);text-decoration:none;font:500 13px/1.5 var(--font);border-bottom:1px solid transparent}
 .orbital-destination-switcher a[aria-current] {color:var(--orbit-node-accent);border-color:var(--orbit-wire)}
-.orbital-destination-content {opacity:0;transform:translateX(16px);transition:opacity 320ms cubic-bezier(.23,1,.32,1),transform 420ms cubic-bezier(.23,1,.32,1);pointer-events:none}
+.orbital-destination-content {opacity:0;transform:translateX(16px);transition:opacity 140ms cubic-bezier(.23,1,.32,1),transform 180ms cubic-bezier(.23,1,.32,1);pointer-events:none}
 .orbital-destination-content[data-ready='true'] {opacity:1;transform:none;pointer-events:auto}
 .orbital-home[data-phase='returning'] .orbital-destination-panel {opacity:0;transition:opacity 140ms ease-out;pointer-events:none}
 .orbital-destination-content h2 {display:flex;align-items:center;gap:15px;margin:0 0 14px;font:500 clamp(27px,2.8vw,43px)/1.15 var(--font);letter-spacing:-.025em;color:var(--orbit-ink)}
@@ -92,3 +87,5 @@
   .orbital-destination-panel {background:Canvas;color:CanvasText}
   .orbital-destination-switcher a[aria-current] {color:Highlight;border-color:Highlight}
 }
+
+.orbital-home[data-phase='switching'] :is(.orbital-scene,.orbital-starfield,.orbital-nebulae) {transition-duration:350ms}

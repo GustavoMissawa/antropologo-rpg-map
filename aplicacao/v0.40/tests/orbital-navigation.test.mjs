@@ -184,6 +184,7 @@ test('Toque fora retorna ao mapa, sem fechar ao usar painel, D20 ou arrastar', a
     await clickButton(ui.host.querySelector('.orbital-navigation'),'Sistemas');
     const home=ui.host.querySelector('.orbital-home');
     await waitFor(()=>home.dataset.phase==='destination');
+    assert.equal(home.querySelector('.orbital-map-return'),null);
     await gesture(home.querySelector('.orbital-destination-content'));
     await gesture(home.querySelector('.orbital-d20-control'));
     await gesture(home,30);

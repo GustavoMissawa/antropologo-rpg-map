@@ -207,3 +207,11 @@ Um clique ou toque no espaço vazio fora do painel retorna ao mapa.
 Interações no painel, header, controles e D20 são preservadas. Arrastes
 e gestos cancelados não fecham o destino. O botão de retorno e Escape
 continuam disponíveis como alternativas acessíveis. Versão mantida em 0.46.
+
+
+## Painel sem botão de retorno e troca rápida
+
+O botão Voltar ao mapa orbital foi removido por solicitação do usuário.
+O clique fora, Escape e Início do header permanecem disponíveis. Trocar
+destinos usa 350 ms; o conteúdo aparece em 180 ms, com opacidade de 140 ms.
+A aproximação inicial de 1100 ms e o retorno de 850 ms foram preservados.
