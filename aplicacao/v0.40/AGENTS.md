@@ -38,8 +38,10 @@ solicitar explicitamente apenas uma prévia ou proibir a publicação.
 2. Execute os testes automatizados aplicáveis, o build e a checagem de tipos.
 3. Valide no navegador as mudanças visuais e as interações relevantes.
 4. Crie um commit com descrição clara e envie a alteração ao GitHub.
-5. Atualize as capturas e a documentação visual quando mudar a interface.
-   Confirme no GitHub o commit final a ser sincronizado.
+5. Atualize a documentação técnica em Markdown e o relatório textual de validação.
+   Capturas e vídeos usados apenas para demonstrar uma atualização podem ser
+   temporários e não precisam ser enviados ao GitHub. Confirme no GitHub o
+   commit final a ser sincronizado.
 6. Confira a publicação atual e compare o código aprovado com a fonte do
    projeto original, identificado em `.openai/hosting.json`. Verifique
    alterações posteriores e preserve o histórico Git, a v0.38 Alpha, as
@@ -64,6 +66,18 @@ autorização específica antes de publicar:
 Considere o desenvolvimento concluído quando a alteração estiver disponível e
 verificada no endereço público. Se o ambiente impedir a publicação ou a
 validação, registre o bloqueio e indique a etapa que falta.
+
+## Documentação e mídia no GitHub
+
+- Priorize código-fonte, testes, Markdown, histórico de versões, informações
+  de implementação e relatórios textuais de validação.
+- A partir da atualização das nebulosas procedurais, não é obrigatório adicionar
+  prints e vídeos demonstrativos a cada alteração. Use capturas temporárias para
+  avaliar a interface quando necessário.
+- Preserve as capturas e gravações históricas existentes; não as apague
+  automaticamente.
+- Imagens que são recursos reais da aplicação ou têm valor técnico indispensável
+  podem continuar no repositório.
 
 ## Direção de arte e movimento
 

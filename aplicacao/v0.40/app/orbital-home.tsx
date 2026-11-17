@@ -4,6 +4,7 @@ import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from '
 import {CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
 import {countRules, type Rulebook, type Sheet} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
+import {OrbitalBackdrop} from './orbital-backdrop';
 import {orbitalConnection} from '../lib/orbital-connection';
 
 export type OrbitalHomeProps = {
@@ -238,6 +239,7 @@ export function OrbitalHome(props: OrbitalHomeProps) {
   const {books, sheets, onSystem, onAllSystems, onCreateSystem, onCreateCharacter, onOpenCharacter, onAllCharacters} = props;
   return (
     <div className="orbital-home">
+      <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
       <OrbitalScene {...props} />
       <div className="orbital-workspace">

@@ -38,6 +38,7 @@ function PaletteChoices<Id extends string>({name, options, value, onSelect}: {
 
 function AppearancePreferences({value,onChange,saveError}: AppearancePreferencesProps) {
   const hintId = useId();
+  const nebulaHintId = useId();
   const recommended = recommendedSecondary[value.palette];
   const secondary = value.secondaryPalette ?? recommended;
   const recommendation = secondaryPalettes.find(option => option.id === recommended)?.name;
@@ -56,13 +57,20 @@ function AppearancePreferences({value,onChange,saveError}: AppearancePreferences
     </fieldset>
     <fieldset className="appearance-fieldset">
       <legend>Paleta primária</legend>
-      <PaletteChoices name="appearance-palette" options={palettes} value={value.palette} onSelect={palette => onChange({mode: value.mode, palette})}/>
+      <PaletteChoices name="appearance-palette" options={palettes} value={value.palette} onSelect={palette => onChange({...value, palette, secondaryPalette: undefined})}/>
     </fieldset>
     <fieldset className="appearance-fieldset appearance-secondaries" aria-describedby={hintId}>
       <legend>Paleta secundária</legend>
       <PaletteChoices name="appearance-secondary" options={secondaryPalettes} value={secondary} onSelect={secondaryPalette => onChange({...value, secondaryPalette})}/>
       <p className="appearance-hint" id={hintId}>{recommendation} é a combinação recomendada para a primária atual. Trocar a primária redefine a secundária.</p>
     </fieldset>
+    <label className="appearance-effect">
+      <span>
+        <strong>Nebulosas cósmicas</strong>
+        <small id={nebulaHintId}>Exibe formações de gás e poeira estelar ao redor da Home Orbital.</small>
+      </span>
+      <input className="appearance-effect-toggle" type="checkbox" role="switch" aria-label="Nebulosas cósmicas" aria-describedby={nebulaHintId} checked={value.nebulae} onChange={event => onChange({...value, nebulae: event.currentTarget.checked})}/>
+    </label>
     <p className={'appearance-save '+(saveError?'failed':'')} role="status">{saveError?'A aparência foi aplicada, mas este navegador não permitiu salvar a preferência.':'Sua preferência fica salva neste navegador.'}</p>
   </>;
 }
@@ -169,6 +177,7 @@ export function AppearanceControls() {
     const safe=parseAppearance(next);
     document.documentElement.dataset.mode=safe.mode;
     document.documentElement.dataset.palette=safe.palette;
+    document.documentElement.dataset.nebulae=String(safe.nebulae);
     applyOrbitalColors(document.documentElement, safe);
     const icon=document.getElementById('platform-favicon');
     if(icon)icon.setAttribute('href',paletteFaviconURL(safe.palette));

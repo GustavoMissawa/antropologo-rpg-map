@@ -152,6 +152,16 @@
 .appearance-hint {font-size:13px;line-height:1.5;color:var(--muted);margin:9px 0 0}
 .appearance-save {color:var(--muted);font-size:13px;line-height:1.7;margin-top:14px;min-height:16px}
 .appearance-save.failed {color:var(--error-text)}
+.appearance-effect {display:flex;align-items:center;gap:20px;min-height:64px;padding:17px 0 0;margin-top:18px;border-top:1px solid var(--line);cursor:pointer}
+.appearance-effect>span {flex:1;min-width:0}
+.appearance-effect strong {display:block;font-size:15px;font-weight:600;line-height:1.5}
+.appearance-effect small {display:block;margin-top:4px;font-size:13px;line-height:1.6;color:var(--muted)}
+.appearance-effect-toggle {appearance:none;flex:none;position:relative;width:38px;height:22px;margin:0;border:1px solid var(--muted);border-radius:20px;background:var(--surface-soft);cursor:pointer}
+.appearance-effect-toggle::before {content:'';position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--muted);transition:transform 160ms cubic-bezier(.23,1,.32,1)}
+.appearance-effect-toggle:checked {background:var(--accent-ink);border-color:var(--accent-ink)}
+.appearance-effect-toggle:checked::before {background:var(--paper);transform:translateX(16px)}
+.appearance-effect-toggle:focus-visible {outline:2px solid var(--focus);outline-offset:4px}
+@media(prefers-reduced-motion:reduce){.appearance-effect-toggle::before{transition:none}}
 .appearance-footer {flex-wrap:wrap;margin-top:15px;padding-top:17px}
 .appearance-footer .button {font-size:14px;min-height:44px}
 .appearance-footer .ghost {margin-inline-end:auto}
