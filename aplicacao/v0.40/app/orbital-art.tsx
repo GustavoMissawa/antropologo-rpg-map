@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useRef, type CSSProperties} from 'react';
+import {useEffect, useId, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
 import {orbitalDieFrame, type Point3} from '../lib/hero-die-geometry';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
@@ -108,6 +108,8 @@ export function OrbitalArt() {
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const die = useRef<SVGSVGElement>(null);
+  const vertexId = useId();
+  const vertex = `url(#${vertexId})`;
 
   useEffect(() => {
     const element = art.current;
@@ -245,11 +247,18 @@ export function OrbitalArt() {
         <canvas ref={stream} className="orbital-stream" />
       </div>
       <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" focusable="false">
+        <defs>
+          <marker id={vertexId} markerUnits="userSpaceOnUse" markerWidth="4" markerHeight="4" refX="2" refY="2">
+            <circle className="orbital-d20-vertex" cx="2" cy="2" r="1.65" />
+          </marker>
+        </defs>
         {initial.map(({visible, points, light}, i) => (
           <polygon
             key={i}
             points={points}
             visibility={visible ? 'visible' : 'hidden'}
+            markerStart={vertex}
+            markerMid={vertex}
             style={{'--orbital-face-light': light} as CSSProperties}
           />
         ))}

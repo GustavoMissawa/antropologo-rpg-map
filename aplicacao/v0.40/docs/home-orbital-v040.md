@@ -34,11 +34,10 @@ atalhos têm zonas próprias.
 | `app/page.tsx`, `app/platform-home.tsx` | Seleção do layout orbital na Home global. O contexto por sistema continua usando a Home existente. Marca, controles, conteúdo e ações reutilizam o estado da aplicação. O aviso completo da versão de teste fica abaixo da composição na Home global. |
 | `app/orbital-home.tsx`, `app/orbital-home.css` | Painéis laterais com itens reais da sessão. Quatro botões acionam as áreas existentes. O arco organiza os nós no desktop e uma faixa de botões acomoda celular e tablet. A interação mais recente por mouse ou teclado escolhe o único fio SVG. O toque abre a área no primeiro acionamento. |
 | `app/orbital-art.tsx`, `app/orbital-light.worker.ts`, `lib/orbital-light.ts` | Em telas compactas, o Worker prepara dois planos procedurais de filamentos e partículas. Quando o navegador oferece `bitmaprenderer`, os bitmaps são transferidos diretamente para os canvases de apresentação. Transformações CSS giram as camadas em velocidades distintas. O SVG do D20 usa os 12 vértices originais para projetar 20 faces triangulares opacas. O sentido da projeção oculta as faces traseiras, e o ângulo das superfícies determina a iluminação. A rotação atualiza o SVG diretamente. |
-| `public/orbital-nebula.webp` | Textura estática de aproximadamente 12 KB gerada para o fundo. O prompt original está em `public/orbital-nebula.webp.json`. A espiral, o dado e os controles são elementos renderizados separadamente. |
+| `app/orbital-home.css` | Gradientes CSS de horizonte, nebulosidade e iluminação. O cabeçalho usa o mesmo horizonte em ambas as aparências. Pontos discretos completam o fundo. |
 
 A cena pausa com a aba oculta ou fora do campo de visão. A preferência por
-movimento reduzido apresenta o D20, o disco e o traçado estáticos. A Home
-global mantém a composição azul-petróleo nos dois modos. A preferência de
+movimento reduzido apresenta o D20, o disco e o traçado estáticos. A preferência de
 aparência continua governando o restante da interface, inclusive os diálogos.
 Não há dependências novas em tempo de execução.
 
@@ -181,9 +180,35 @@ Para executar a suíte completa, use
 A opção `--test-force-exit` encerra o processo após as asserções mesmo
 quando o ambiente de DOM mantém recursos abertos.
 
+## Atmosfera procedural e D20 escuro
+
+A revisão em `dev/v0.40-atmosfera-procedural` usa como base a publicação 90
+do ChatGPT Sites, de commit `d7cab883`. O arquivo `app/orbital-home.css`
+compõe o horizonte com as duas cores escolhidas em Aparência e compartilha
+o mesmo gradiente horizontal entre cabeçalho e fundo. Camadas radiais e uma
+máscara suave criam profundidade. A iluminação secundária e os pontos de
+luz mudam com a paleta. O modo claro usa uma base perolada. A textura WebP
+antiga e seu metadado foram removidos da árvore de desenvolvimento.
+
+O disco animado usa o Canvas e o Worker existentes. Em `app/orbital-art.tsx`,
+as faces visíveis do D20 recebem preenchimento opaco quase preto, com variação
+sutil conforme o ângulo. A cor primária aparece nas arestas e nos marcadores
+SVG dos vértices. Os 12 vértices, as 20 faces e a projeção continuam sendo
+calculados em `lib/hero-die-geometry.ts`; as faces voltadas para trás ficam
+ocultas.
+
+Na prévia em Chromium, a comparação com o visual da publicação 90 cobriu
+as referências Ametista e Rosa, Ouro e Cobre, Âmbar e Menta, além de Safira
+e Violeta em 390 × 844. Também foram testados Floresta e Dourado nos dois
+modos, a troca secundária independente, a recarga, os quatro destinos
+orbitais e um único fio ao navegar com teclado. Quatro quadros registram
+orientações distintas do D20 com preenchimento opaco e o centro fixo.
+A checagem de tipos, o build e os 411 testes automatizados passaram. A
+largura de celular foi testada no navegador, em um viewport emulado.
+
 ## Executar localmente
 
-Na branch `dev/v0.40-paletas-orbitais`, acesse a pasta de desenvolvimento.
+Na branch `dev/v0.40-atmosfera-procedural`, acesse a pasta de desenvolvimento.
 
 ```sh
 cd aplicacao/v0.40
