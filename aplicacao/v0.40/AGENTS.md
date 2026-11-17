@@ -21,6 +21,39 @@
 - O aviso grande de teste fica exclusivamente na Visão geral. Não o
   recoloque nas páginas internas.
 
+## Fluxo de desenvolvimento e publicação
+
+Esta regra vale em futuras sessões que trabalharem nesta aplicação. Cada
+solicitação de alteração do site inclui a atualização do GitHub e a publicação
+no projeto original do ChatGPT Sites. A autorização permanente cobre alterações
+solicitadas, implementadas e validadas. Se o pedido atual limitar a entrega a uma
+prévia ou revisão, respeite esse limite.
+
+1. Implemente a alteração solicitada na branch de desenvolvimento apropriada de
+   [GustavoMissawa/antropologo-rpg-map](https://github.com/GustavoMissawa/antropologo-rpg-map).
+2. Execute os testes automatizados aplicáveis, o build e a checagem de tipos.
+3. Valide no navegador as mudanças visuais e as interações relevantes.
+4. Crie um commit com descrição clara e envie a alteração ao GitHub.
+5. Atualize as capturas e a documentação visual quando mudar a interface.
+   Confirme no GitHub o commit final a ser sincronizado.
+6. Confira a publicação atual e compare o código aprovado com a fonte do
+   projeto original, identificado em `.openai/hosting.json`. Verifique
+   alterações posteriores e preserve o histórico Git, a v0.38 Alpha, as
+   versões recuperáveis e os vínculos D1/R2.
+7. Sincronize o código verificado e publique no projeto original,
+   [antrobologorpg.guss04.chatgpt.site](https://antrobologorpg.guss04.chatgpt.site/).
+   Mantenha o mesmo projeto e o mesmo endereço.
+8. Abra o endereço público, confirme a versão e verifique a alteração solicitada
+   em produção. Informe o número da publicação, o commit e o resultado dos testes.
+
+Peça aprovação específica antes de publicar mudanças destrutivas, migrações de
+dados, alterações de segurança ou resoluções de conflitos relevantes. Analise
+alterações conflitantes antes de qualquer sobrescrita.
+
+Considere o desenvolvimento concluído quando a alteração estiver disponível e
+verificada no endereço público. Se o ambiente impedir a publicação ou a
+validação, registre o bloqueio e indique a etapa que falta.
+
 ## Direção de arte e movimento
 
 - Para análise visual da interface, leia `.agents/skills/impeccable/SKILL.md`.
