@@ -133,3 +133,41 @@ node node_modules/typescript/bin/tsc --noEmit
 node scripts/site-version.mjs --check
 node /home/agent/.codex/plugins/cache/openai-curated-remote/sites/1.1.6/scripts/build-site.mjs
 ```
+
+## Publicação e conferência em produção
+
+Publicação **97**, concluída em **17/11/2026**, no endereço original:
+[ANTROPOLOGO RPG](https://antrobologorpg.guss04.chatgpt.site/).
+
+| Referência | Identificador |
+| --- | --- |
+| Versão da aplicação | **0.44 — Desenvolvimento — Home Orbital** |
+| Branch | `dev/v0.44-nebulosas` |
+| Commit da implementação | `5ffc102aacdb2c866df806ee1cf5c44988034ddd` |
+| Fonte sincronizada do Sites | `9018c3496fa8f4a28a11a504dd4c0b230d99b065` |
+| Versão salva | `appgprj_6adb8be679b48191bc7fbcf908d41024~appgver_2d29df0b9624819198de49ec1625a8d5` |
+| Implantação concluída | `appgdep_6afc98f3a4a481918f2031690f629536` |
+
+Os 417 arquivos da aplicação foram comparados entre o commit do GitHub e
+a cópia sincronizada, sem diferenças. O pacote foi construído com a
+identificação desse commit e enviado com o histórico original do Sites.
+
+No endereço público, o painel Sobre exibiu `0.44` e commit `5ffc102a`.
+Preferências antigas ativaram o novo efeito por padrão. A desativação
+permaneceu após trocar o modo para claro, selecionar Ametista e recarregar.
+Nesse estado, foram observados `display:none` no grupo de nuvens,
+`animation:none` nas formações e as mesmas 290 estrelas, com o disco ativo.
+
+Após reativar, o modo escuro Floresta/Dourado exibiu quatro nebulosas,
+as estrelas, a origem luminosa e o fio de seleção. Durante o foco em Fichas,
+o disco apresentou `diskMotion=stopped`, enquanto o D20 manteve
+`motion=running` e seu traçado mudou entre observações.
+
+Os quatro destinos foram ativados na navegação orbital publicada:
+Sistemas abriu `#regras`, Fichas `#ficha`, PDFs `#pdfs` e Agenda `#agenda`.
+O retorno à Home preservou o efeito habilitado. Não foram criados ou
+alterados sistemas, fichas, PDFs ou eventos durante essa verificação.
+
+A captura de conferência foi temporária e não integra o repositório.
+A publicação 96 permanece disponível para restauração. Persistem os
+limites declarados acima para celular físico e medições de GPU.
