@@ -19,25 +19,52 @@ Fichas, PDFs e Agenda, troca rápida de destino, rotação direta do D20
 pelo teclado e confirmação de Fichas com navegação. A exportação usa
 20 quadros por segundo com repetição de quadros capturados.
 
-## Modo escuro
+## Publicação verificada
+
+Publicação **95** no projeto original do ChatGPT Sites, com v0.43 confirmada
+em Configurações → Sobre. O código no GitHub está no commit
+`6895bec99d869b11485ee520b3b497735f48977d`. A fonte sincronizada no Sites está
+no commit `2a0204fdccd69c37e939c5692f7c57fb6bc4686c`.
+
+[Abrir o ANTROPOLOGO RPG](https://antrobologorpg.guss04.chatgpt.site/#inicio)
+
+![Modo escuro no endereço público](publicado-escuro.jpg)
+
+![Modo claro no endereço público](publicado-claro.jpg)
+
+![Versão e build confirmados no endereço público](publicado-sobre.jpg)
+
+Os quatro destinos foram abertos pelo caminho orbital no site publicado.
+Hover/foco manteve uma conexão ativa por vez. Paletas e modo persistiram após
+recarga. O Canvas diferencial apresentou movimento, e o D20 conservou seu
+centro durante a manipulação por mouse e teclado. As 20 faces mantêm
+preenchimento opaco, com as traseiras ocultas.
+
+As publicações 94 da v0.42 e 87 da Alpha permanecem arquivadas no mesmo
+projeto para restauração. Configuração D1/R2, APIs, migrações e lockfile
+foram comparados com a origem e preservados.
+
+## Capturas da prévia
+
+### Modo escuro
 
 ![Ametista e Rosa](escuro-ametista-rosa.jpg)
 
 ![Floresta e Dourado](escuro-floresta-dourado.jpg)
 
-## Modo claro
+### Modo claro
 
 ![Ametista e Rosa](claro-ametista-rosa.jpg)
 
 ![Safira e Ciano](claro-safira-ciano.jpg)
 
-## Estrelas
+### Estrelas
 
 ![Sistemas em interação com uma conexão](estrela-sistemas-hover.jpg)
 
 ![Quadro da confirmação de Fichas antes da navegação](estrela-fichas-confirmacao.jpg)
 
-As capturas são da aplicação executada em prévia. A validação incluiu os
+As capturas desta seção são da prévia. A validação incluiu os
 quatro destinos reais, foco por teclado, rotação manual do D20 por mouse
 e teclado, temas e paletas. TypeScript, build e 423 testes passaram.
 
