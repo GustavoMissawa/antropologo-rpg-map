@@ -1,7 +1,8 @@
 # Home Orbital v0.43
 
 A [revisão da origem e das conexões](origem-dinamica/README.md) documenta a
-correção seguinte. Esta galeria conserva o registro da publicação 95.
+correção disponível na **publicação 96**, mantendo a versão 0.43. Esta galeria
+conserva o registro da publicação 95.
 
 O disco reutiliza os filamentos procedurais e a poeira da Home em onze faixas
 radiais com velocidades próprias. A região interna circula mais rapidamente,

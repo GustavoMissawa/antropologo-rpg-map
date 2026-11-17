@@ -65,6 +65,37 @@ de referência mencionadas no pedido não estavam anexadas à mensagem recebida.
 A direção foi comparada com a animação publicada e com o enrolamento dos
 filamentos no código existente.
 
+## Publicação 96 verificada
+
+Publicada em **17/11/2026**, no mesmo projeto e endereço:
+[ANTROPOLOGO RPG](https://antrobologorpg.guss04.chatgpt.site/).
+A versão da aplicação permanece **0.43**.
+
+| Referência | Identificador |
+| --- | --- |
+| Branch do GitHub | `dev/v0.43-origem-orbital` |
+| Commit da implementação | `914013582c6a78cf807777c27c207dee5ec71abc` |
+| Fonte sincronizada do Sites | `fca85fbbdb40bda86292d79fe294a529f12f91e8` |
+| Publicação | **96** |
+| Versão salva | `appgprj_6adb8be679b48191bc7fbcf908d41024~appgver_4469930be75881918b1bf1083941a294` |
+| Implantação concluída | `appgdep_6afc8d7761488191a00628a73b8095be` |
+
+O painel Sobre no endereço público exibiu `0.43`, `Desenvolvimento`,
+`Home Orbital` e commit `91401358`. Os quatro botões orbitais foram ativados:
+Sistemas abriu `#regras`, Fichas `#ficha`, PDFs `#pdfs` e Agenda `#agenda`.
+
+A seleção em produção apresentou uma única conexão SVG e os estados
+`diskSelected=true`, `diskMotion=stopped` e `motion=running`. Duas capturas
+da região amostrada do disco ficaram idênticas enquanto o traçado do D20
+mudou. A estrela e o fio foram conferidos nos modos claro e escuro.
+
+| Produção: modo claro | Produção: modo escuro |
+| --- | --- |
+| ![Publicação 96 clara](publicacao-96-claro-fichas.jpg) | ![Publicação 96 escura](publicacao-96-escuro-fichas.jpg) |
+
+Nenhum binding D1/R2, API, migração, dependência ou arquivo de controle do
+D20 foi alterado. A publicação 95 continua disponível para restauração.
+
 ### Conferência da revisão
 
 Os 427 testes foram executados novamente, sem falhas ou cancelamentos,
