@@ -5,6 +5,7 @@ import {openPlatformSession} from '../lib/platform-session.ts';
 import {makeAB10Rulebook, makeRulebook} from '../lib/model.ts';
 
 async function seed() {
+  window.history.replaceState(null, '', '#inicio');
   sessionStorage.clear();
   const cache = await openPlatformSession();
   await cache.save({books: [makeAB10Rulebook(), makeRulebook('Outro universo')], contextId: null, page: 'home'});
@@ -43,9 +44,12 @@ test('Os quatro destinos orbitais abrem as áreas existentes e preservam as aç�
   await seed();
   const ui = await mountPlatform();
   try {
-    for (const [label, hash] of [['Sistemas', '#regras'], ['Fichas', '#ficha'], ['PDFs', '#pdfs'], ['Agenda', '#agenda']]) {
+    for (const [label, hash, action] of [['Sistemas', '#regras', 'Ver todos os sistemas'], ['Fichas', '#ficha', 'Ver todas as fichas'], ['PDFs', '#pdfs', 'Abrir biblioteca de PDFs'], ['Agenda', '#agenda', 'Abrir Agenda']]) {
       const nav = ui.host.querySelector('nav[aria-label="Navegação orbital"]');
       await clickButton(nav, label);
+      await waitFor(() => ui.host.querySelector('.orbital-home').dataset.phase === 'destination');
+      assert(ui.host.querySelector('.orbital-workspace').hasAttribute('inert'));
+      await clickButton(ui.host.querySelector('.orbital-destination-panel'), action);
       await waitFor(() => window.location.hash === hash);
       assert.equal(window.location.hash, hash);
       assert.equal(ui.host.querySelector('.orbital-home'), null);
@@ -133,8 +137,9 @@ test('Hover e foco alternam o traçado único e toque abre o destino no primeiro
     assert.equal(beam.dataset.active, 'false');
     await act(async () => pdfs.click());
     assert.equal(pdfs.dataset.selected, 'true');
-    await waitFor(() => window.location.hash === '#pdfs');
-    assert.equal(window.location.hash, '#pdfs');
+    await waitFor(() => ui.host.querySelector('.orbital-home').dataset.phase === 'destination');
+    assert.equal(window.location.hash, '#inicio/pdfs');
+    assert(ui.host.querySelector('.orbital-destination-panel').textContent.includes('Abrir biblioteca de PDFs'));
   } finally {
     HTMLElement.prototype.getBoundingClientRect = rect;
     await ui?.close();
@@ -189,7 +194,7 @@ test('D20 orbital pausa no estado oculto, fora da área visível e em movimento 
     await pause(70);
     assert.equal(surface(), background);
     await clickButton(ui.host.querySelector('.orbital-home'), 'Agenda');
-    assert.equal(window.location.hash, '#agenda');
+    assert.equal(window.location.hash, '#inicio/agenda');
   } finally {
     if (hidden) Object.defineProperty(document, 'hidden', hidden);
     else delete document.hidden;
@@ -265,9 +270,9 @@ test('A confirmação de estrela cancela o destino anterior e não sobrevive à 
     assert.equal(systems.dataset.selected, 'false');
     assert.equal(sheets.dataset.selected, 'true');
     assert.equal(ui.host.querySelectorAll('.orbital-node[data-active="true"]').length, 1);
-    await waitFor(() => window.location.hash === '#ficha');
+    await waitFor(() => window.location.hash === '#inicio/fichas');
     await act(async () => new Promise(resolve => setTimeout(resolve, 170)));
-    assert.equal(window.location.hash, '#ficha');
+    assert.equal(window.location.hash, '#inicio/fichas');
     await clickButton(ui.host, 'Início');
     await clickButton(ui.host.querySelector('.orbital-navigation'), 'PDFs');
     await clickButton(ui.host.querySelector('.global-top-nav'), 'Agenda');
@@ -284,13 +289,14 @@ test('Movimento reduzido confirma a estrela sem esperar o efeito, inclusive ao t
   const ui = await mountPlatform();
   try {
     await clickButton(ui.host.querySelector('.orbital-navigation'), 'Sistemas');
-    assert.equal(window.location.hash, '#regras');
+    assert.equal(window.location.hash, '#inicio/sistemas');
+    await waitFor(() => ui.host.querySelector('.orbital-home').dataset.phase === 'destination');
     await clickButton(ui.host, 'Início');
     await preferences({motionReduced: false});
     await clickButton(ui.host.querySelector('.orbital-navigation'), 'Agenda');
     assert.equal(ui.host.querySelector('.orbital-node[data-selected="true"]').textContent, 'Agenda');
     await preferences({motionReduced: true});
-    assert.equal(window.location.hash, '#agenda');
+    assert.equal(window.location.hash, '#inicio/agenda');
   } finally {
     await ui.close();
     await preferences({motionReduced: false});

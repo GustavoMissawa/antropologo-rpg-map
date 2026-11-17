@@ -1,11 +1,13 @@
 'use client';
 
 import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
-import {CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
-import {countRules, type Rulebook, type Sheet} from '../lib/model';
+import {ArrowLeft, ArrowUpRight, CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
+import {countRules, type Rulebook, type Sheet, type PDF} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
 import {OrbitalBackdrop} from './orbital-backdrop';
 import {orbitalConnection} from '../lib/orbital-connection';
+import {orbitalHref, type OrbitalDestination} from '../lib/orbital-navigation';
+import {useOrbitalNavigation} from './use-orbital-navigation';
 
 export type OrbitalHomeProps = {
   books: Rulebook[];
@@ -18,6 +20,10 @@ export type OrbitalHomeProps = {
   onAllCharacters: () => void;
   onPdfs: () => void;
   onAgenda: () => void;
+  pdfs?: PDF[];
+  pdfLoading?: boolean;
+  pdfError?: string;
+  onAddPdf?: () => void;
 };
 
 const DESTINATIONS = [
@@ -27,7 +33,7 @@ const DESTINATIONS = [
   {id: 'agenda', label: 'Agenda', icon: CalendarDays, angle: 0.92, action: 'onAgenda'},
 ] as const;
 
-type Destination = typeof DESTINATIONS[number]['id'];
+type Destination = OrbitalDestination;
 type Point = {x: number; y: number};
 type NodeInteraction = {
   pointer: Destination | null;
@@ -44,15 +50,14 @@ function orbitPoint(angle: number): Point {
   return {x: 418 + 365 * Math.cos(angle), y: 510 + 425 * Math.sin(angle)};
 }
 
-function OrbitalScene(props: OrbitalHomeProps) {
+function OrbitalScene({destination, phase, onSelect}: {destination: Destination | null; phase: string; onSelect: (id: Destination) => void}) {
   const scene = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<{center: Point; width: number; targets: Partial<Record<Destination, Point>>}>();
   const [beam, setBeam] = useState<(ReturnType<typeof orbitalConnection> & {id: Destination; activation: number}) | null>(null);
   const [beamVisible, setBeamVisible] = useState(false);
   const activation = useRef<{id: Destination | null; count: number; displayed: Destination | null}>({id: null, count: 0, displayed: null});
   const [interaction, setInteraction] = useState<NodeInteraction>({pointer: null, focus: null, last: null});
-  const [selected, setSelected] = useState<Destination | null>(null);
-  const pending = useRef<{id: Destination; timer: ReturnType<typeof setTimeout>; navigate: () => void} | null>(null);
+  const selected = destination;
   const active = selected ?? activeNode(interaction);
 
   function interact(source: 'pointer' | 'focus', id: Destination | null) {
@@ -62,39 +67,6 @@ function OrbitalScene(props: OrbitalHomeProps) {
     });
   }
 
-  function confirm(id: Destination, navigate: () => void) {
-    if (pending.current?.id === id) return;
-    if (pending.current) clearTimeout(pending.current.timer);
-    pending.current = null;
-    setSelected(id);
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      navigate();
-      return;
-    }
-    const finish = () => {
-      pending.current = null;
-      setSelected(null);
-      navigate();
-    };
-    pending.current = {id, timer: setTimeout(finish, 140), navigate: finish};
-  }
-
-  useEffect(() => {
-    const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-    const finishWhenPaused = () => {
-      if ((!document.hidden && !reduced.matches) || !pending.current) return;
-      clearTimeout(pending.current.timer);
-      pending.current.navigate();
-    };
-    reduced.addEventListener('change', finishWhenPaused);
-    document.addEventListener('visibilitychange', finishWhenPaused);
-    return () => {
-      if (pending.current) clearTimeout(pending.current.timer);
-      reduced.removeEventListener('change', finishWhenPaused);
-      document.removeEventListener('visibilitychange', finishWhenPaused);
-    };
-  }, []);
-
   useLayoutEffect(() => {
     const root = scene.current;
     const art = root?.querySelector('.orbital-art');
@@ -103,9 +75,11 @@ function OrbitalScene(props: OrbitalHomeProps) {
     const updateGeometry = () => {
       const rootRect = root.getBoundingClientRect();
       const artRect = art.getBoundingClientRect();
+      // A camera transform affects both rects; convert back to scene coordinates.
+      const scale = root.offsetWidth ? rootRect.width / root.offsetWidth : 1;
       const center = {
-        x: artRect.left - rootRect.left + artRect.width / 2,
-        y: artRect.top - rootRect.top + artRect.height / 2,
+        x: (artRect.left - rootRect.left + artRect.width / 2) / scale,
+        y: (artRect.top - rootRect.top + artRect.height / 2) / scale,
       };
       const targets: Partial<Record<Destination, Point>> = {};
       for (const {id} of DESTINATIONS) {
@@ -113,11 +87,11 @@ function OrbitalScene(props: OrbitalHomeProps) {
         if (!anchor) continue;
         const target = anchor.getBoundingClientRect();
         targets[id] = {
-          x: target.left - rootRect.left + target.width / 2,
-          y: target.top - rootRect.top + target.height / 2,
+          x: (target.left - rootRect.left + target.width / 2) / scale,
+          y: (target.top - rootRect.top + target.height / 2) / scale,
         };
       }
-      setLayout({center, width: artRect.width, targets});
+      setLayout({center, width: artRect.width / scale, targets});
     };
     updateGeometry();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateGeometry);
@@ -161,7 +135,7 @@ function OrbitalScene(props: OrbitalHomeProps) {
   const arcEnd = orbitPoint(1.52);
 
   return (
-    <div ref={scene} className="orbital-scene">
+    <div ref={scene} className="orbital-scene" data-observing={active !== null}>
       <OrbitalArt slowDie={active !== null} />
       <svg className="orbital-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
@@ -179,7 +153,7 @@ function OrbitalScene(props: OrbitalHomeProps) {
           vectorEffect="non-scaling-stroke"
         />
       </svg>
-      <svg className="orbital-connection" aria-hidden="true" focusable="false" data-active={beamVisible} data-selecting={selected !== null && beam?.id === selected && beamVisible} data-destination={beam?.id}>
+      <svg className="orbital-connection" aria-hidden="true" focusable="false" data-active={beamVisible} data-selecting={(phase === 'entering' || phase === 'switching') && beam?.id === selected && beamVisible} data-destination={beam?.id}>
         <defs>
           <radialGradient id="orbit-source-halo">
             <stop offset="0" className="orbital-source-light" stopOpacity=".85" />
@@ -211,6 +185,10 @@ function OrbitalScene(props: OrbitalHomeProps) {
               className="orbital-node"
               data-active={active === id}
               data-selected={selected === id}
+              aria-expanded={selected === id}
+              aria-controls="orbital-destination-panel"
+              aria-hidden={!!selected && selected !== id || undefined}
+              tabIndex={selected && selected !== id ? -1 : undefined}
               style={{'--node-x': `${point.x / 10}%`, '--node-y': `${point.y / 10}%`} as CSSProperties}
               onPointerEnter={event => { if (event.pointerType !== 'touch') interact('pointer', id); }}
               onPointerLeave={() => interact('pointer', null)}
@@ -219,7 +197,7 @@ function OrbitalScene(props: OrbitalHomeProps) {
                 if (event.currentTarget.matches(':focus-visible')) interact('focus', id);
               }}
               onBlur={() => interact('focus', null)}
-              onClick={() => confirm(id, props[action])}
+              onClick={() => onSelect(id)}
             >
               <span className="orbital-node-dot" data-orbital-anchor={id} aria-hidden="true">
                 <span className="orbital-star-ring" />
@@ -237,12 +215,29 @@ function OrbitalScene(props: OrbitalHomeProps) {
 
 export function OrbitalHome(props: OrbitalHomeProps) {
   const {books, sheets, onSystem, onAllSystems, onCreateSystem, onCreateCharacter, onOpenCharacter, onAllCharacters} = props;
+  const navigation = useOrbitalNavigation();
+  const root = useRef<HTMLDivElement>(null);
+  const lastDestination = useRef<Destination | null>(null);
+  const expanded = navigation.destination !== null && navigation.phase !== 'returning';
+  useEffect(() => {
+    if (navigation.destination) lastDestination.current = navigation.destination;
+    if (navigation.phase === 'destination' && !document.querySelector('dialog[open]') && !document.activeElement?.matches('.orbital-d20-control')) root.current?.querySelector<HTMLElement>('#orbital-destination-title')?.focus({preventScroll: true});
+    if (navigation.phase === 'exploration' && lastDestination.current) {
+      if (!document.querySelector('dialog[open]')) root.current?.querySelector<HTMLElement>(`[data-orbital-anchor="${lastDestination.current}"]`)?.closest('button')?.focus({preventScroll: true});
+      lastDestination.current = null;
+    }
+  }, [navigation.phase, navigation.destination]);
   return (
-    <div className="orbital-home">
+    <div ref={root} className="orbital-home" data-phase={navigation.phase} data-destination={navigation.destination ?? undefined} data-expanded={expanded} onKeyDown={event => {
+      if (event.key === 'Escape' && navigation.destination && !event.defaultPrevented && !document.querySelector('dialog[open]')) {
+        event.preventDefault(); navigation.select(null);
+      }
+    }}>
       <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
-      <OrbitalScene {...props} />
-      <div className="orbital-workspace">
+      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} onSelect={navigation.select} />
+      {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={navigation.select} onReturn={() => navigation.select(null)} />}
+      <div className="orbital-workspace" inert={navigation.phase !== 'exploration'} aria-hidden={navigation.phase !== 'exploration' || undefined}>
         <section className="orbital-list" aria-labelledby="orbital-systems-heading">
           <h2 id="orbital-systems-heading">Seus sistemas</h2>
           <ul>
@@ -285,4 +280,48 @@ export function OrbitalHome(props: OrbitalHomeProps) {
       </div>
     </div>
   );
+}
+
+
+function OrbitalDestinationPanel(props: OrbitalHomeProps & {destination: Destination; ready: boolean; returning: boolean; onSelect: (id: Destination) => void; onReturn: () => void}) {
+  const {destination, ready, books, sheets, pdfs = []} = props;
+  const current = DESTINATIONS.find(item => item.id === destination)!;
+  const Icon = current.icon;
+  return <section className="orbital-destination-panel" id="orbital-destination-panel" inert={props.returning} aria-hidden={props.returning || undefined} aria-label={`Destino ${current.label}`}>
+    <button type="button" className="orbital-map-return" onClick={props.onReturn}><ArrowLeft size={16} aria-hidden="true" /> Voltar ao mapa orbital</button>
+    <nav className="orbital-destination-switcher" aria-label="Trocar destino">
+      {DESTINATIONS.map(item => <a key={item.id} href={orbitalHref(item.id)} aria-current={item.id === destination ? 'location' : undefined} onClick={event => {
+        if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {event.preventDefault(); props.onSelect(item.id);}
+      }}>{item.label}</a>)}
+    </nav>
+    <div className="orbital-destination-content" data-ready={ready} inert={!ready} aria-hidden={!ready || undefined}>
+      <h2 tabIndex={-1} id="orbital-destination-title"><Icon size={26} strokeWidth={1.4} aria-hidden="true" />{current.label}</h2>
+      {destination === 'systems' && <>
+        <p>Escolha o universo da sua próxima história.</p>
+        <ul>{books.map(book => <li key={book.id}><button className="orbital-context-item" onClick={() => props.onSystem(book.id)}><Layers3 size={19} aria-hidden="true" /><span><strong>{book.name}</strong><small>{countRules(book.chapters)} tópicos</small></span><ArrowUpRight size={17} aria-hidden="true" /></button></li>)}</ul>
+        <button className="orbital-context-action" onClick={props.onCreateSystem}><CirclePlus size={18} aria-hidden="true" />Criar sistema</button>
+        <button className="orbital-context-action" onClick={props.onAllSystems}>Ver todos os sistemas<ArrowUpRight size={16} aria-hidden="true" /></button>
+      </>}
+      {destination === 'sheets' && <>
+        <p>{sheets.length ? 'Personagens disponíveis nesta sessão.' : 'Sua próxima história começa com um personagem.'}</p>
+        <ul>{sheets.map(sheet => <li key={sheet.id}><button className="orbital-context-item" onClick={() => props.onOpenCharacter(sheet)}><UserRound size={19} aria-hidden="true" /><span><strong>{sheet.name || 'Sem nome'}</strong><small>{sheet.system?.name || 'Sem sistema vinculado'}</small></span><ArrowUpRight size={17} aria-hidden="true" /></button></li>)}</ul>
+        {!sheets.length && <p className="orbital-context-empty">Nenhuma ficha aberta nesta página.</p>}
+        <button className="orbital-context-action" onClick={props.onCreateCharacter}><CirclePlus size={18} aria-hidden="true" />Criar personagem</button>
+        <button className="orbital-context-action" onClick={props.onAllCharacters}>Ver todas as fichas<ArrowUpRight size={16} aria-hidden="true" /></button>
+      </>}
+      {destination === 'pdfs' && <>
+        <p>Seus manuais, aventuras e referências.</p>
+        {props.pdfLoading && !pdfs.length ? <p role="status">Carregando biblioteca…</p> : props.pdfError ? <p role="status">{props.pdfError}</p> : !pdfs.length ? <p className="orbital-context-empty">Nenhum PDF disponível nesta página.</p> : null}
+        <ul>{pdfs.map(pdf => <li key={pdf.id}><a className="orbital-context-item" href={pdf.url} target="_blank" rel="noreferrer"><FileText size={19} aria-hidden="true" /><span><strong>{pdf.title}</strong><small>{pdf.category}</small></span><ArrowUpRight size={17} aria-hidden="true" /></a></li>)}</ul>
+        {props.onAddPdf && <button className="orbital-context-action" onClick={props.onAddPdf}><CirclePlus size={18} aria-hidden="true" />Adicionar PDF</button>}
+        <button className="orbital-context-action" onClick={props.onPdfs}>Abrir biblioteca de PDFs<ArrowUpRight size={16} aria-hidden="true" /></button>
+      </>}
+      {destination === 'agenda' && <>
+        <p>Um lugar para a sua mesa se encontrar.</p>
+        <ul className="orbital-agenda-summary"><li><CalendarDays size={19} aria-hidden="true" /><span>Sessões únicas e recorrentes</span></li><li><UserRound size={19} aria-hidden="true" /><span>Sua agenda vinculada à conta de teste</span></li></ul>
+        <p className="orbital-context-empty">Consulte as sessões e organize os próximos encontros na Agenda.</p>
+        <button className="orbital-context-action" onClick={props.onAgenda}>Abrir Agenda<ArrowUpRight size={16} aria-hidden="true" /></button>
+      </>}
+    </div>
+  </section>;
 }

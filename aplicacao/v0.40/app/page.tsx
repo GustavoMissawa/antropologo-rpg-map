@@ -7,6 +7,7 @@ import {ContextHelp} from './context-help';
 import { ContentExportDialog } from './content-export';
 import { ContentImportReceipt,contentDragOver,contentDrop } from './content-import';
 import { readContentFile,importReceipt,SHEET_FILE_ACCEPT,type ImportedContent } from '../lib/content-file';
+import {orbitalDestinationFromHash} from '../lib/orbital-navigation';
 import { SITE_VERSION } from '../lib/site-version';
 import {requestJson} from '../lib/browser-request';
 import {pdfsResponse,mergePdfCatalog} from '../lib/api-responses';
@@ -61,14 +62,14 @@ export default function App(){
    (async()=>{let cache:Awaited<ReturnType<typeof openPlatformSession>>|undefined;try{
     cache=await openPlatformSession();if(!alive){cache.close();return;}
     const restored=await cache.load();if(!alive){cache.close();return;}
-    sessionCache.current=cache;setRulebooks(restored.books);setContextId(restored.contextId);setActiveRulebookId(restored.contextId);setPage(restored.page);
-    window.history.replaceState(null,'',window.location.pathname+window.location.search+'#'+({home:'inicio',rules:'regras',pdfs:'pdfs',sheet:'ficha',agenda:'agenda'})[restored.page]);
+    const orbital=orbitalDestinationFromHash(window.location.hash);sessionCache.current=cache;setRulebooks(restored.books);setContextId(orbital?null:restored.contextId);setActiveRulebookId(orbital?null:restored.contextId);setPage(orbital?'home':restored.page);
+    if(!orbital)window.history.replaceState(null,'',window.location.pathname+window.location.search+'#'+({home:'inicio',rules:'regras',pdfs:'pdfs',sheet:'ficha',agenda:'agenda'})[restored.page]);
    }catch{cache?.close();if(alive)setSessionError('O navegador não permitiu recuperar o contexto da sessão. O cache existente foi preservado. Exporte novas alterações antes de recarregar.');}finally{if(alive)setSessionReady(true);}})();
    return()=>{alive=false;sessionCache.current?.close();sessionCache.current=null;};
   },[]);
   useEffect(()=>{if(!sessionReady||!sessionCache.current)return;sessionCache.current.save({books:rulebooks,contextId,page}).then(()=>setSessionError('')).catch(()=>setSessionError('O contexto está ativo, mas não pôde ser guardado para recarregar esta aba. Exporte seus sistemas.'));},[sessionReady,rulebooks,contextId,page]);
   useEffect(()=>{if(!sessionReady||!contextId||rulebooks.some(b=>b.id===contextId))return;setContextId(null);setActiveRulebookId(null);setPage('home');window.location.hash='inicio';},[sessionReady,rulebooks,contextId]);
-  useEffect(()=>{const navigate=()=>{const hash=window.location.hash;if(ruleEditorDirty.current&&hash!=='#regras'){window.history.replaceState(null,'',window.location.pathname+window.location.search+'#regras');notify('Salve ou cancele a edição antes de sair de Sistema.');return;}setPage(hash==='#regras'?'rules':hash==='#pdfs'?'pdfs':hash==='#ficha'?'sheet':hash==='#agenda'?'agenda':'home');};window.addEventListener('hashchange',navigate);return()=>window.removeEventListener('hashchange',navigate);},[]);
+  useEffect(()=>{const navigate=()=>{const hash=window.location.hash;if(orbitalDestinationFromHash(hash)){setContextId(null);setActiveRulebookId(null);}if(ruleEditorDirty.current&&hash!=='#regras'){window.history.replaceState(null,'',window.location.pathname+window.location.search+'#regras');notify('Salve ou cancele a edição antes de sair de Sistema.');return;}setPage(hash==='#regras'?'rules':hash==='#pdfs'?'pdfs':hash==='#ficha'?'sheet':hash==='#agenda'?'agenda':'home');};window.addEventListener('hashchange',navigate);return()=>window.removeEventListener('hashchange',navigate);},[]);
   function selectSystem(id:string|null){setActiveRulebookId(id);if(id)setContextId(id);}
   function browseSystems(create=false){if(ruleEditorDirty.current){notify('Salve ou cancele a edição do tópico antes de trocar de sistema.');return;}go('rules');setActiveRulebookId(null);if(create)setCreateSystemRequested(true);}
   function enterSystem(id:string){if(ruleEditorDirty.current){notify('Salve ou cancele a edição do tópico antes de trocar de sistema.');return;}go('rules');selectSystem(id);}
@@ -123,7 +124,7 @@ export default function App(){
       </header>
       <main ref={mainRef} id="main" tabIndex={-1} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>{page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
 
-      {page==='home'&&<PlatformHome books={rulebooks} sheets={recent} context={selectedContext} onSystem={enterSystem} onAllSystems={()=>browseSystems()} onCreateSystem={()=>browseSystems(true)} onCreateCharacter={()=>newCharacter(selectedContext)} onOpenCharacter={openCharacter} onAllCharacters={()=>replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(true);go('sheet');})} onPdfs={()=>go('pdfs')} onAgenda={()=>go('agenda')}/>}
+      {page==='home'&&<PlatformHome books={rulebooks} sheets={recent} context={selectedContext} pdfs={pdfs} pdfLoading={pdfLoading} pdfError={pdfError} onAddPdf={()=>openModal('pdf')} onSystem={enterSystem} onAllSystems={()=>browseSystems()} onCreateSystem={()=>browseSystems(true)} onCreateCharacter={()=>newCharacter(selectedContext)} onOpenCharacter={openCharacter} onAllCharacters={()=>replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(true);go('sheet');})} onPdfs={()=>go('pdfs')} onAgenda={()=>go('agenda')}/>}
       {orbitalHome&&<TestNotice/>}
 
       {page==='rules'&&<RulesLibrary createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
