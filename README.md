@@ -17,7 +17,7 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
-Veja as [capturas da prévia da v0.40](docs/home-orbital-v040/README.md), com os modos claro e escuro, as paletas primária e secundária e a aba Sobre.
+Veja as [capturas da prévia da v0.40](docs/home-orbital-v040/README.md), com o comparativo da publicação 90, as combinações de cores, os dois modos e o D20 em rotação.
 
 ## Desenvolver a aplicação
 
