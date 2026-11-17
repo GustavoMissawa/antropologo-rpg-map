@@ -85,4 +85,35 @@ node /home/agent/.codex/plugins/cache/openai-curated-remote/sites/1.1.6/scripts/
 
 ## Publicação
 
-A conferência em produção será registrada após publicar no projeto original.
+Publicação **98**, concluída em 17/11/2026, no projeto original:
+[ANTROPOLOGO RPG](https://antrobologorpg.guss04.chatgpt.site/).
+
+| Referência | Valor |
+| --- | --- |
+| Aplicação | **0.45 — Desenvolvimento — Home Orbital** |
+| Branch | `dev/v0.45-nebulosas-aleatorias` |
+| Implementação GitHub | `c2cc897c57412928ee8193eae2bfd96f1d38d475` |
+| Fonte Sites sincronizada | `bc149aa92a683507b3f911ab2131ad6177f2fc62` |
+| Versão salva | `appgprj_6adb8be679b48191bc7fbcf908d41024~appgver_efd715b1f3ec8191973cc74bf6330a44` |
+| Implantação concluída | `appgdep_6afca4a96b9481919977a1bc48d4f6b6` |
+
+Todos os **418 arquivos** rastreados da aplicação coincidem entre GitHub e
+a fonte sincronizada. O build do pacote passou e conserva o aviso existente
+de chunks maiores que 500 kB. Não houve alteração de vínculos D1/R2,
+permissões ou público. A publicação 97 permanece recuperável.
+
+Em produção, Sobre mostrou **0.45** e **c2cc897c**. Outras dez recargas
+completas produziram **10 assinaturas diferentes**, com quantidades
+**2, 3, 2, 3, 2, 3, 5, 5, 5, 5**. Safira/Violeta escuro exibiu bordas
+dissipadas, estrelas predominantes e centro preservado.
+
+O controle desligou somente as nuvens (`display:none`, `animation:none`),
+mantendo 290 estrelas. Religar e alterar a paleta/modo conservaram a assinatura.
+Sistemas abriu `#regras`, Fichas `#ficha`, PDFs `#pdfs` e Agenda `#agenda`;
+retornar à Home preservou a composição em todos os casos. Na seleção por
+teclado, o disco chegou a `stopped`, o D20 permaneceu `running` e havia uma
+única conexão ativa. Nenhum dado de sistemas, fichas, PDFs ou eventos foi
+criado ou modificado nessa conferência.
+
+A captura final é temporária, fora do repositório. As limitações de emulação
+de movimento reduzido e de celular físico estão registradas acima.
