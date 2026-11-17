@@ -166,10 +166,9 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
             <path d={beam.path} className="orbital-connection-track" pathLength="1" />
             <path d={beam.path} className="orbital-connection-pulse" pathLength="1" />
             <g className="orbital-source-star" transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
-              <circle r="19" fill="url(#orbit-source-halo)" className="orbital-source-halo" />
+              <circle r="12" fill="url(#orbit-source-halo)" className="orbital-source-halo" />
               <g className="orbital-source-flare">
-                <path d="M -8 0 L -1.8 -1.2 L 0 -6 L 1.8 -1.2 L 8 0 L 1.8 1.2 L 0 6 L -1.8 1.2 Z" />
-                <circle r="1.5" />
+                <circle r="3" />
               </g>
             </g>
           </g>

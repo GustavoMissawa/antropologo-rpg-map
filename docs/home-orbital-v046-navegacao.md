@@ -215,3 +215,10 @@ O botão Voltar ao mapa orbital foi removido por solicitação do usuário.
 O clique fora, Escape e Início do header permanecem disponíveis. Trocar
 destinos usa 350 ms; o conteúdo aparece em 180 ms, com opacidade de 140 ms.
 A aproximação inicial de 1100 ms e o retorno de 850 ms foram preservados.
+
+
+## Origem circular da conexão
+
+A estrela de pontas na origem do fio foi substituída por um círculo de
+raio 3 px. O halo foi reduzido para 12 px, mantendo a cor secundária,
+o pulso e a continuidade com o fio. Versão 0.46 preservada.
