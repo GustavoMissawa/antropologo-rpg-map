@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useReducer} from 'react';
+import {useCallback, useEffect, useReducer} from 'react';
 import {initialOrbitalNavigation, orbitalDestinationFromHash, orbitalHref, orbitalNavigationReducer, type OrbitalDestination} from '../lib/orbital-navigation';
 
 export function useOrbitalNavigation() {
@@ -25,10 +25,10 @@ export function useOrbitalNavigation() {
       document.removeEventListener('visibilitychange', finishWhenPaused);
     };
   }, [state]);
-  const select = (destination: OrbitalDestination | null) => {
+  const select = useCallback((destination: OrbitalDestination | null) => {
     dispatch({type: 'select', destination});
     const hash = destination ? orbitalHref(destination) : '#inicio';
     if (window.location.hash !== hash) window.location.hash = hash;
-  };
+  }, []);
   return {...state, select};
 }

@@ -199,3 +199,11 @@ adicionada ao GitHub.
 A pedido do usuário, a aproximação/troca passa a 1100 ms, o retorno a 850 ms
 e a entrada do conteúdo a 420 ms (opacidade 320 ms). Cliques internos e
 movimento reduzido permanecem imediatos. A versão continua 0.46.
+
+
+## Retorno pelo cenário
+
+Um clique ou toque no espaço vazio fora do painel retorna ao mapa.
+Interações no painel, header, controles e D20 são preservadas. Arrastes
+e gestos cancelados não fecham o destino. O botão de retorno e Escape
+continuam disponíveis como alternativas acessíveis. Versão mantida em 0.46.

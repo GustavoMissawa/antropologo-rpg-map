@@ -227,6 +227,32 @@ export function OrbitalHome(props: OrbitalHomeProps) {
       lastDestination.current = null;
     }
   }, [navigation.phase, navigation.destination]);
+  useEffect(() => {
+    if (!expanded) return;
+    let press: {id: number; x: number; y: number} | null = null;
+    const outside = (target: EventTarget | null) => target instanceof Element && !target.closest(
+      '.orbital-destination-panel, .orbital-d20-control, .topbar, dialog, button, a, input, select, textarea, [role="button"], [contenteditable="true"]'
+    );
+    const down = (event: PointerEvent) => {
+      press = event.button === 0 && event.isPrimary !== false && outside(event.target)
+        ? {id: event.pointerId, x: event.clientX, y: event.clientY} : null;
+    };
+    const cancel = () => {press = null;};
+    const up = (event: PointerEvent) => {
+      const start = press; press = null;
+      if (start && start.id === event.pointerId && !event.defaultPrevented && outside(event.target)
+        && Math.hypot(event.clientX - start.x, event.clientY - start.y) <= 8
+        && !document.querySelector('dialog[open]')) navigation.select(null);
+    };
+    document.addEventListener('pointerdown', down);
+    document.addEventListener('pointerup', up);
+    document.addEventListener('pointercancel', cancel);
+    return () => {
+      document.removeEventListener('pointerdown', down);
+      document.removeEventListener('pointerup', up);
+      document.removeEventListener('pointercancel', cancel);
+    };
+  }, [expanded, navigation.select]);
   return (
     <div ref={root} className="orbital-home" data-phase={navigation.phase} data-destination={navigation.destination ?? undefined} data-expanded={expanded} onKeyDown={event => {
       if (event.key === 'Escape' && navigation.destination && !event.defaultPrevented && !document.querySelector('dialog[open]')) {

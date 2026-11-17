@@ -170,3 +170,26 @@ test('Voltar a um destino orbital não limpa o sistema com tópico pendente', as
     assert(ui.host.textContent.includes('Salve ou cancele a edição antes de sair de Sistema.'));
   } finally {await ui.close();window.history.replaceState(null,'','#inicio');}
 });
+
+
+test('Toque fora retorna ao mapa, sem fechar ao usar painel, D20 ou arrastar', async () => {
+  await preferences({motionReduced:true});const ui=await start();
+  const gesture=async(target,dx=0)=>act(async()=>{
+    for(const [type,x] of [['pointerdown',10],['pointerup',10+dx]]){
+      const event=new MouseEvent(type,{bubbles:true,button:0,clientX:x,clientY:10});
+      Object.defineProperty(event,'pointerId',{value:1});target.dispatchEvent(event);
+    }
+  });
+  try {
+    await clickButton(ui.host.querySelector('.orbital-navigation'),'Sistemas');
+    const home=ui.host.querySelector('.orbital-home');
+    await waitFor(()=>home.dataset.phase==='destination');
+    await gesture(home.querySelector('.orbital-destination-content'));
+    await gesture(home.querySelector('.orbital-d20-control'));
+    await gesture(home,30);
+    assert.equal(home.dataset.phase,'destination');
+    await gesture(home);
+    await waitFor(()=>home.dataset.phase==='exploration');
+    assert.equal(window.location.hash,'#inicio');
+  } finally {await ui.close();await preferences({motionReduced:false});}
+});
