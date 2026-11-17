@@ -52,11 +52,14 @@ for (const [a, b] of HERO_EDGES) {
 }
 
 const orbitalLightDirection: Point3 = [-.48, -.64, .60];
+const orbitalEdgeFaces = HERO_EDGES.map(([a, b]) =>
+  HERO_FACES.flatMap((face, index) => face.includes(a) && face.includes(b) ? [index] : []),
+);
 
 export function orbitalDieFrame(angles: Point3) {
   const vertices = HERO_VERTICES.map(point => rotateHeroPoint(point, angles));
   const projected = vertices.map(projectHeroPoint);
-  return HERO_FACES.map(triangle => {
+  const faces = HERO_FACES.map(triangle => {
     const [a, b, c] = triangle.map(index => projected[index]);
     // The projected winding includes the view's perspective and drops back faces.
     const area = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
@@ -70,4 +73,14 @@ export function orbitalDieFrame(angles: Point3) {
       light: `${Math.round(9 + lambert * 88)}%`,
     };
   });
+
+  // Stroke shared edges once, using the same projected vertices as the opaque fills.
+  let edges = '';
+  for (const [index, [first, second]] of HERO_EDGES.entries()) {
+    if (!orbitalEdgeFaces[index].some(face => faces[face].visible)) continue;
+    const a = projected[first];
+    const b = projected[second];
+    edges += `M${a.x},${a.y}L${b.x},${b.y}`;
+  }
+  return {faces, edges};
 }

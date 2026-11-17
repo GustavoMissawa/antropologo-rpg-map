@@ -28,7 +28,8 @@ test('Ao girar, só as faces voltadas à câmera cobrem a silhueta projetada', (
   for (let i = 0; i < 96; i++) {
     const angles = [i * .129, i * .217, i * .071];
     const vertices = HERO_VERTICES.map(p => rotateHeroPoint(p, angles));
-    const faces = orbitalDieFrame(angles);
+    const {faces, edges} = orbitalDieFrame(angles);
+    const expectedEdges = new Set();
     let filledArea = 0;
     for (const [index, [a, b, c]] of HERO_FACES.entries()) {
       const [x, y, z] = vertices[a];
@@ -39,6 +40,10 @@ test('Ao girar, só as faces voltadas à câmera cobrem a silhueta projetada', (
       assert.equal(face.visible, facesCamera, `Face ${index}, quadro ${i}`);
       if (face.visible) {
         const points = parsePoints(face.points);
+        const [first, second, third] = face.points.split(' ');
+        for (const [from, to] of [[first, second], [second, third], [third, first]]) {
+          expectedEdges.add([from, to].sort().join('|'));
+        }
         assert.equal(points.length, 3);
         assert.ok(points.flat().every(value => Number.isFinite(value) && value >= 0 && value <= 200));
         assert.match(face.light, /^(?:[0-9]|[1-9][0-9])%$/);
@@ -47,6 +52,9 @@ test('Ao girar, só as faces voltadas à câmera cobrem a silhueta projetada', (
         assert.equal(face.points, '');
       }
     }
+    const drawnEdges = edges.slice(1).split('M').map(segment => segment.split('L').sort().join('|'));
+    assert.equal(new Set(drawnEdges).size, drawnEdges.length, `Arestas únicas no quadro ${i}`);
+    assert.deepEqual(new Set(drawnEdges), expectedEdges, `Arestas visíveis no quadro ${i}`);
     const outlineArea = polygonArea(parsePoints(heroDieFrame(angles).hull));
     assert.ok(Math.abs(outlineArea - filledArea) < 1e-5, `Cobertura da silhueta no quadro ${i}`);
   }

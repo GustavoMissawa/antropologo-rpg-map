@@ -1,8 +1,9 @@
 'use client';
 
-import {useEffect, useId, useRef, type CSSProperties} from 'react';
+import {useEffect, useLayoutEffect, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
 import {orbitalDieFrame, type Point3} from '../lib/hero-die-geometry';
+import {advanceOrbitalRotation} from '../lib/orbital-rotation';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 const INITIAL_ANGLES: Point3 = [0.51, 0.68, 0.26];
@@ -103,13 +104,17 @@ function renderTextures(
   };
 }
 
-export function OrbitalArt() {
+export function OrbitalArt({slowDie}: {slowDie: boolean}) {
   const art = useRef<HTMLDivElement>(null);
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const die = useRef<SVGSVGElement>(null);
-  const vertexId = useId();
-  const vertex = `url(#${vertexId})`;
+  const dieEdges = useRef<SVGPathElement>(null);
+  const slow = useRef(slowDie);
+
+  useLayoutEffect(() => {
+    slow.current = slowDie;
+  }, [slowDie]);
 
   useEffect(() => {
     const element = art.current;
@@ -159,7 +164,8 @@ export function OrbitalArt() {
   useEffect(() => {
     const element = art.current;
     const dieSvg = die.current;
-    if (!element || !dieSvg) return;
+    const edges = dieEdges.current;
+    if (!element || !dieSvg || !edges) return;
 
     const faces = dieSvg.querySelectorAll('polygon');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -167,7 +173,7 @@ export function OrbitalArt() {
     let visible = true;
     let frame = 0;
     let previous = 0;
-    let elapsed = 0;
+    let rotation = {phase: 0, speed: 1};
 
     function paintDie(time: number) {
       const next = orbitalDieFrame([
@@ -177,7 +183,7 @@ export function OrbitalArt() {
       ]);
       for (let i = 0; i < faces.length; i++) {
         const face = faces[i];
-        const {visible, points, light} = next[i];
+        const {visible, points, light} = next.faces[i];
         const visibility = visible ? 'visible' : 'hidden';
         if (visible) {
           face.setAttribute('points', points);
@@ -185,6 +191,7 @@ export function OrbitalArt() {
         }
         if (face.getAttribute('visibility') !== visibility) face.setAttribute('visibility', visibility);
       }
+      edges?.setAttribute('d', next.edges);
     }
 
     function stop() {
@@ -203,9 +210,9 @@ export function OrbitalArt() {
       if (!previous) previous = now;
       const delta = now - previous;
       if (delta >= (compact.matches ? 32 : 15)) {
-        elapsed += Math.min(delta, 60) / 1000;
+        rotation = advanceOrbitalRotation(rotation, Math.min(delta, 60) / 1000, slow.current);
         previous = now;
-        paintDie(elapsed);
+        paintDie(rotation.phase);
       }
       frame = requestAnimationFrame(tick);
     }
@@ -217,7 +224,6 @@ export function OrbitalArt() {
         if (!frame) frame = requestAnimationFrame(tick);
       } else {
         stop();
-        if (reduced.matches) paintDie(0);
       }
     }
 
@@ -247,21 +253,15 @@ export function OrbitalArt() {
         <canvas ref={stream} className="orbital-stream" />
       </div>
       <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" focusable="false">
-        <defs>
-          <marker id={vertexId} markerUnits="userSpaceOnUse" markerWidth="4" markerHeight="4" refX="2" refY="2">
-            <circle className="orbital-d20-vertex" cx="2" cy="2" r="1.65" />
-          </marker>
-        </defs>
-        {initial.map(({visible, points, light}, i) => (
+        {initial.faces.map(({visible, points, light}, i) => (
           <polygon
             key={i}
             points={points}
             visibility={visible ? 'visible' : 'hidden'}
-            markerStart={vertex}
-            markerMid={vertex}
             style={{'--orbital-face-light': light} as CSSProperties}
           />
         ))}
+        <path ref={dieEdges} className="orbital-d20-edges" d={initial.edges} />
       </svg>
     </div>
   );

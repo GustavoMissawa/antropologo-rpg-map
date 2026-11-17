@@ -113,7 +113,7 @@ function OrbitalScene(props: OrbitalHomeProps) {
 
   return (
     <div ref={scene} className="orbital-scene">
-      <OrbitalArt />
+      <OrbitalArt slowDie={active !== null} />
       <svg className="orbital-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id="orbit-rail-light" x1="0" x2="0" y1="0" y2="1">

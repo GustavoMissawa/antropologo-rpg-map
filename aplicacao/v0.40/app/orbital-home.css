@@ -313,12 +313,14 @@
 }
 .orbital-d20 polygon {
   fill: color-mix(in srgb, var(--orbit-die-face-shadow), var(--orbit-die-face-lit) var(--orbital-face-light));
+}
+.orbital-d20-edges {
+  fill: none;
   stroke: var(--orbit-die-edge);
   stroke-width: 1.15;
-  stroke-linejoin: round;
+  stroke-linecap: butt;
   vector-effect: non-scaling-stroke;
 }
-.orbital-d20-vertex { fill: color-mix(in srgb, var(--orbit-die-edge) 78%, #fff); }
 
 .orbital-rail,
 .orbital-connection {
@@ -599,7 +601,7 @@
   .orbital-node[data-active='true'] { outline: 2px solid Highlight; }
   .orbital-home-mode :is(.topbar, .orbital-home) button:focus-visible { outline-color: Highlight; }
   .orbital-plane { opacity: .52; }
-  .orbital-d20 polygon { fill: Canvas; stroke: Highlight; }
-  .orbital-d20-vertex { fill: Highlight; }
+  .orbital-d20 polygon { fill: Canvas; }
+  .orbital-d20-edges { stroke: Highlight; }
   .orbital-connection-track { stroke: Highlight; }
 }
