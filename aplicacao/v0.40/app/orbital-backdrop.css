@@ -7,12 +7,18 @@
   --sky-star-ink: color-mix(in srgb, #edf2ff 76%, var(--orbit-ambient-base));
   position: absolute;
   z-index: -1;
-  inset: 0 calc(-1 * clamp(20px, 3.65vw, 68px));
+  /* The content column is capped on wide monitors. Extend the sky to the
+     viewport instead of compensating only for the main element padding. */
+  inset: 0 auto 0 50%;
+  width: 100vw;
+  transform: translateX(-50%);
   overflow: clip;
   pointer-events: none;
   user-select: none;
   contain: paint;
-  mask-image: linear-gradient(transparent, #000 5%, #000 93%, transparent);
+  mask-image: linear-gradient(transparent, #000 5%, #000 93%, transparent),
+    linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
+  mask-composite: intersect;
 }
 .orbital-nebulae, .orbital-starfield {position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .orbital-nebulae {

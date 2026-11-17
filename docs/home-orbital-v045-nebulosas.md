@@ -117,3 +117,14 @@ criado ou modificado nessa conferência.
 
 A captura final é temporária, fora do repositório. As limitações de emulação
 de movimento reduzido e de celular físico estão registradas acima.
+
+
+## Correção complementar sem mudança de versão
+
+A captura posterior revelou um limite adicional: o main tem largura máxima
+de 1720 px, mas o fundo compensava apenas seu padding. Em janelas maiores,
+`overflow:clip` do cenário deixava cortes verticais dentro da viewport.
+Agora o cenário usa largura 100vw centralizada e dissipação horizontal final.
+As máscaras das formações, composição aleatória e preferências permanecem.
+Reprodução visual em iframe 1794 × 1159 confirmou fundo de x=0 a x=1794,
+sem os cortes laterais da captura. A versão permanece 0.45 por pedido do usuário.
