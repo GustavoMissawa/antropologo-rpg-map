@@ -50,11 +50,12 @@ function orbitPoint(angle: number): Point {
   return {x: 418 + 365 * Math.cos(angle), y: 510 + 425 * Math.sin(angle)};
 }
 
-function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSelect}: {
+function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHover, onSelect}: {
   destination: Destination | null;
   phase: OrbitalNavigation['phase'];
   dieActivation: number;
   restoringFocus: RefObject<boolean>;
+  onHover: () => void;
   onSelect: (id: Destination) => void;
 }) {
   const scene = useRef<HTMLDivElement>(null);
@@ -248,7 +249,10 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
               aria-hidden={!!selected && selected !== id || undefined}
               tabIndex={selected && selected !== id ? -1 : undefined}
               style={{'--node-x': `${point.x / 10}%`, '--node-y': `${point.y / 10}%`} as CSSProperties}
-              onPointerEnter={event => { if (event.pointerType !== 'touch') interact('pointer', id); }}
+              onPointerEnter={event => {
+                if (event.pointerType !== 'touch') interact('pointer', id);
+                if (event.pointerType === 'mouse' && phase === 'exploration') onHover();
+              }}
               onPointerLeave={() => interact('pointer', null)}
               onPointerCancel={() => interact('pointer', null)}
               onFocus={event => {
@@ -275,9 +279,10 @@ export function OrbitalHome(props: OrbitalHomeProps) {
   const {books, sheets, onSystem, onAllSystems, onCreateSystem, onCreateCharacter, onOpenCharacter, onAllCharacters} = props;
   const navigation = useOrbitalNavigation();
   const [dieActivation, setDieActivation] = useState(0);
+  const transformDie = () => setDieActivation(count => count + 1);
   const selectDestination = (id: Destination) => {
     if (navigation.destination !== id || navigation.phase === 'returning') {
-      setDieActivation(count => count + 1);
+      transformDie();
       navigation.select(id);
     }
   };
@@ -331,7 +336,7 @@ export function OrbitalHome(props: OrbitalHomeProps) {
     }}>
       <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
-      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={dieActivation} restoringFocus={restoringFocus} onSelect={selectDestination} />
+      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={dieActivation} restoringFocus={restoringFocus} onHover={transformDie} onSelect={selectDestination} />
       {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={selectDestination} />}
       <div className="orbital-workspace" inert={navigation.phase !== 'exploration'} aria-hidden={navigation.phase !== 'exploration' || undefined}>
         <section className="orbital-list" aria-labelledby="orbital-systems-heading">

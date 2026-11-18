@@ -24,6 +24,8 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
+A [v0.48](docs/home-orbital-v048-hover.md) também transforma o dado ao passar o mouse sobre um nó orbital.
+
 A [documentação da v0.47](docs/home-orbital-v047-orbita-e-dados.md) descreve o relógio compartilhado da órbita, o fio dinâmico e a transformação entre as seis geometrias do dado central.
 
 A [documentação da v0.46](docs/home-orbital-v046-navegacao.md) registra destinos expandidos, transições, listas reais e zoom do mesmo cenário. A [correção da v0.45](docs/home-orbital-v045-nebulosas.md) registra bordas dissipadas e aleatoriedade por documento. A [documentação da v0.44](docs/home-orbital-v044-nebulosas.md) registra nebulosas procedurais, cores, controle persistente e validação textual. Prints e vídeos demonstrativos deixam de ser obrigatórios no GitHub; o histórico existente foi preservado. A [revisão da v0.43](docs/home-orbital-v043/origem-dinamica/README.md) mostra a parada do disco e as conexões. A [galeria inicial da v0.43](docs/home-orbital-v043/README.md) e as galerias da [v0.42](docs/home-orbital-v042/README.md), [v0.41](docs/home-orbital-v041/README.md) e [v0.40](docs/home-orbital-v040/README.md) registram as revisões anteriores.
