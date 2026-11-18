@@ -110,7 +110,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const flow = useRef<HTMLCanvasElement>(null);
-  const {die, control} = useOrbitalDie(art, slowDie, activation);
+  const {die, control, result, announcement} = useOrbitalDie(art, slowDie, activation);
 
   useEffect(() => {
     const element = art.current;
@@ -173,7 +173,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
         <canvas ref={stream} className="orbital-stream" />
         <canvas ref={flow} className="orbital-flow" />
       </div>
-      <svg ref={die} className="orbital-d20" data-die="20" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+      <svg ref={die} className="orbital-d20" data-die="20" data-roll-phase="idle" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
         {initialOrbitalFrame.faces.map(({visible, points, light}, i) => (
           <polygon
             key={i}
@@ -183,8 +183,10 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
           />
         ))}
         <path className="orbital-d20-edges" d={initialOrbitalFrame.edges} />
+        <text ref={result} className="orbital-die-result" textAnchor="middle" dominantBaseline="central" />
       </svg>
-      <div ref={control} className="orbital-d20-control" role="group" tabIndex={0} aria-label="Girar o dado D20 com as setas do teclado" />
+      <div ref={control} className="orbital-d20-control" role="group" tabIndex={0} aria-label="Girar o dado D20 com as setas do teclado" aria-description="Mova o dado por pelo menos 2 segundos e pare para rolar." />
+      <div ref={announcement} className="orbital-visually-hidden" role="status" />
     </div>
   );
 }

@@ -9,7 +9,7 @@ export function rotateHeroPoint([x,y,z]:Point3,[rx,ry,rz]:Point3):Point3{
  const x2=x*Math.cos(ry)+z1*Math.sin(ry),z2=-x*Math.sin(ry)+z1*Math.cos(ry);
  return [x2*Math.cos(rz)-y1*Math.sin(rz),x2*Math.sin(rz)+y1*Math.cos(rz),z2];
 }
-function projectHeroPoint([x, y, z]: Point3) {
+export function projectHeroPoint([x, y, z]: Point3) {
   const scale = 77 / (1 - z * .13);
   return { x: 100 + x * scale, y: 100 + y * scale, z };
 }
@@ -25,7 +25,7 @@ export function heroDieFrame(angles:Point3){
 
 type Triangle = [number, number, number];
 
-function faceNormal([a, b, c]: readonly number[], vertices: Point3[]): Point3 {
+export function faceNormal([a, b, c]: readonly number[], vertices: Point3[]): Point3 {
   const [x, y, z] = vertices[a];
   const [bx, by, bz] = vertices[b];
   const [cx, cy, cz] = vertices[c];

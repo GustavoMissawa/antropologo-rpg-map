@@ -1,12 +1,17 @@
 'use client';
 
 import {useEffect, useLayoutEffect, useRef, type RefObject} from 'react';
+import {advanceAmbientMotion, AMBIENT_MOTION_IDLE_MS, emptyAmbientMotion} from '../lib/ambient-interaction';
 import {projectOrbitalDie} from '../lib/hero-die-geometry';
 import {orbitalDieMeshes, type OrbitalDieKind} from '../lib/orbital-die-geometry';
+import {
+  createOrbitalRoll, ORBITAL_RESULT_AUTO_FADE_MS, ORBITAL_RESULT_DISPLAY_MS, ORBITAL_RESULT_INPUT_FADE_MS,
+  ORBITAL_ROLL_ALIGN_SECONDS,
+} from '../lib/orbital-die-roll';
 import {advanceOrbitalDieShift, beginOrbitalDieShift, type OrbitalDieShift} from '../lib/orbital-die-shift';
 import {
   addOrbitalInput, advanceOrbitalDie, beginOrbitalInput, clearOrbitalInput,
-  createOrbitalDie, endOrbitalInput, rotateOrbitalPoint, turnOrbitalDie,
+  createOrbitalDie, endOrbitalInput, interpolateOrbitalOrientation, rotateOrbitalPoint, turnOrbitalDie, type Quaternion,
 } from '../lib/orbital-rotation';
 
 const initial = createOrbitalDie();
@@ -19,9 +24,19 @@ const keyTurn: Partial<Record<string, [pitch: number, yaw: number]>> = {
   ArrowRight: [0, .17],
 };
 
+type SettlingRoll = {
+  phase: 'settling';
+  start: Quaternion;
+  elapsed: number;
+  result: ReturnType<typeof createOrbitalRoll>;
+};
+type Roll = SettlingRoll | {phase: 'visible' | 'fading'};
+
 export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: boolean, activation: number) {
   const die = useRef<SVGSVGElement>(null);
   const control = useRef<HTMLDivElement>(null);
+  const result = useRef<SVGTextElement>(null);
+  const announcement = useRef<HTMLDivElement>(null);
   const slow = useRef(slowDie);
   const requestShift = useRef<(() => void) | null>(null);
   const handled = useRef(0);
@@ -41,12 +56,16 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     const surface = control.current;
     const svg = die.current;
     const edges = svg?.querySelector('path');
-    if (!element || !surface || !svg || !edges) return;
+    const numberLabel = result.current;
+    const liveResult = announcement.current;
+    if (!element || !surface || !svg || !edges || !numberLabel || !liveResult) return;
 
     const hitArea = surface;
     const backdrop = element;
     const outline = edges;
     const model = svg;
+    const number = numberLabel;
+    const status = liveResult;
     const faces = svg.querySelectorAll('polygon');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const compact = matchMedia('(max-width: 740px)');
@@ -57,6 +76,14 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     let frame = 0;
     let previous = 0;
     let pointer: {id: number; type: string; x: number; y: number; sensitivity: number} | null = null;
+    let activity = emptyAmbientMotion();
+    let qualified = false;
+    let lastMovement = 0;
+    let idleTimer = 0;
+    let resultTimer = 0;
+    let roll: Roll | null = null;
+    let fade: Animation | null = null;
+    let ignoreKeyRepeat = false;
 
     function paint() {
       const next = projectOrbitalDie(point => rotateOrbitalPoint(point, motion.orientation), orbitalDieMeshes[kind]);
@@ -87,6 +114,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     }
 
     function startShift() {
+      clearRoll();
       resetInput();
       shift = beginOrbitalDieShift(kind, shift);
       if (reduced.matches || !shown()) {
@@ -108,7 +136,104 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       frame = previous = 0;
     }
 
+    function clearActivity() {
+      window.clearTimeout(idleTimer);
+      idleTimer = 0;
+      activity = emptyAmbientMotion();
+      qualified = false;
+    }
+
+    function waitForStop() {
+      idleTimer = 0;
+      if (!qualified) return;
+      const remaining = lastMovement + AMBIENT_MOTION_IDLE_MS - performance.now();
+      if (remaining > 0) {
+        idleTimer = window.setTimeout(waitForStop, remaining);
+        return;
+      }
+
+      clearActivity();
+      if (!shown() || shift || roll) return;
+      clearOrbitalInput(motion);
+      motion.automatic.speed = 0;
+      roll = {phase: 'settling', elapsed: 0, start: motion.orientation, result: createOrbitalRoll(kind, motion.orientation)};
+      model.dataset.rollPhase = roll.phase;
+      if (reduced.matches) revealResult(roll);
+      else schedule();
+    }
+
+    function trackMovement(now: number) {
+      if (qualified && now - lastMovement >= AMBIENT_MOTION_IDLE_MS) {
+        window.clearTimeout(idleTimer);
+        waitForStop();
+        return;
+      }
+      if (!qualified) {
+        const observed = advanceAmbientMotion(activity, now, true);
+        activity = observed.state;
+        qualified = observed.triggered;
+      }
+      lastMovement = now;
+      if (qualified && !idleTimer) idleTimer = window.setTimeout(waitForStop, AMBIENT_MOTION_IDLE_MS);
+    }
+
+    function clearRoll() {
+      window.clearTimeout(resultTimer);
+      resultTimer = 0;
+      roll = null;
+      model.dataset.rollPhase = 'idle';
+      number.textContent = '';
+      status.textContent = '';
+      if (fade) {
+        fade.onfinish = null;
+        fade.cancel();
+        fade = null;
+      }
+    }
+
+    function revealResult({result}: SettlingRoll) {
+      motion.orientation = result.target;
+      paint();
+      stop();
+      number.setAttribute('x', String(result.x));
+      number.setAttribute('y', String(result.y));
+      number.setAttribute('font-size', String(result.fontSize));
+      number.textContent = String(result.value);
+      status.textContent = `Resultado do D${kind}: ${result.value}`;
+      const visibleRoll = roll = {phase: 'visible'};
+      model.dataset.rollPhase = visibleRoll.phase;
+      resultTimer = window.setTimeout(() => {
+        if (roll === visibleRoll) dismissResult(ORBITAL_RESULT_AUTO_FADE_MS);
+      }, ORBITAL_RESULT_DISPLAY_MS);
+    }
+
+    function resumeControl() {
+      clearRoll();
+      if (pointer) beginOrbitalInput(motion, performance.now() / 1000);
+      schedule();
+    }
+
+    function dismissResult(duration: number) {
+      if (roll?.phase !== 'visible') return;
+      window.clearTimeout(resultTimer);
+      resultTimer = 0;
+      roll = {phase: 'fading'};
+      model.dataset.rollPhase = roll.phase;
+      if (!shown() || !number.animate) {
+        resumeControl();
+        return;
+      }
+      const animation = number.animate([{opacity: 1}, {opacity: 0}], {
+        duration, fill: 'forwards', easing: 'cubic-bezier(.23, 1, .32, 1)',
+      });
+      fade = animation;
+      animation.onfinish = () => {
+        if (fade === animation) resumeControl();
+      };
+    }
+
     function schedule() {
+      if (roll && roll.phase !== 'settling') return;
       if (!frame && shown() && (!reduced.matches || motion.pending.pitch || motion.pending.yaw)) {
         frame = requestAnimationFrame(tick);
       }
@@ -116,12 +241,22 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
 
     function tick(now: number) {
       frame = 0;
-      if (!shown()) return;
+      if (!shown() || (roll && roll.phase !== 'settling')) return;
       if (!previous) previous = now;
       const delta = now - previous;
       if (reduced.matches || delta >= (compact.matches && !pointer ? 32 : 15)) {
         const seconds = Math.min(delta, 60) / 1000;
-        advanceOrbitalDie(motion, seconds, slow.current, reduced.matches);
+        if (roll?.phase === 'settling') {
+          roll.elapsed += seconds;
+          const progress = Math.min(1, roll.elapsed / ORBITAL_ROLL_ALIGN_SECONDS);
+          if (progress === 1) {
+            revealResult(roll);
+            return;
+          }
+          motion.orientation = interpolateOrbitalOrientation(roll.start, roll.result.target, 1 - (1 - progress) ** 3);
+        } else {
+          advanceOrbitalDie(motion, seconds, slow.current, reduced.matches);
+        }
         if (shift) {
           const impulse = advanceOrbitalDieShift(shift, seconds);
           turnOrbitalDie(motion, impulse.turn);
@@ -144,7 +279,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
         id: event.pointerId, type: event.pointerType, x: event.clientX, y: event.clientY,
         sensitivity: 2.8 / Math.max(84, hitArea.getBoundingClientRect().width),
       };
-      beginOrbitalInput(motion, performance.now() / 1000);
+      if (!roll) beginOrbitalInput(motion, performance.now() / 1000);
     }
 
     function mouseEnter(event: PointerEvent) {
@@ -162,16 +297,26 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       if (!pointer && event.pointerType === 'mouse') start(event);
       if (pointer?.id !== event.pointerId) return;
       const {x, y, sensitivity} = pointer;
+      const dx = event.clientX - x, dy = y - event.clientY;
       pointer.x = event.clientX;
       pointer.y = event.clientY;
-      addOrbitalInput(motion, (y - event.clientY) * sensitivity, (event.clientX - x) * sensitivity, performance.now() / 1000);
+      if (!dx && !dy) return;
+      if (roll) {
+        dismissResult(ORBITAL_RESULT_INPUT_FADE_MS);
+        return;
+      }
+      const now = performance.now();
+      trackMovement(now);
+      if (roll) return;
+      addOrbitalInput(motion, dy * sensitivity, dx * sensitivity, now / 1000);
       schedule();
     }
 
     function finish(event: PointerEvent, fling: boolean) {
       if (pointer?.id !== event.pointerId) return;
       pointer = null;
-      endOrbitalInput(motion, performance.now() / 1000, fling && !reduced.matches);
+      if (!fling || !qualified) clearActivity();
+      if (!roll) endOrbitalInput(motion, performance.now() / 1000, fling && !reduced.matches);
     }
 
     function leave(event: PointerEvent) {
@@ -192,6 +337,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     function resetInput() {
       const id = pointer?.id;
       pointer = null;
+      clearActivity();
       clearOrbitalInput(motion);
       if (id !== undefined && hitArea.hasPointerCapture?.(id)) hitArea.releasePointerCapture(id);
     }
@@ -200,7 +346,17 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       const turn = keyTurn[event.key];
       if (shift || !turn || event.altKey || event.ctrlKey || event.metaKey || !shown()) return;
       event.preventDefault();
-      addOrbitalInput(motion, ...turn, performance.now() / 1000);
+      if (roll) {
+        ignoreKeyRepeat = true;
+        dismissResult(ORBITAL_RESULT_INPUT_FADE_MS);
+        return;
+      }
+      if (event.repeat && ignoreKeyRepeat) return;
+      ignoreKeyRepeat = false;
+      const now = performance.now();
+      trackMovement(now);
+      if (roll) return;
+      addOrbitalInput(motion, ...turn, now / 1000);
       schedule();
     }
 
@@ -214,7 +370,8 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
           clearShift();
           paint();
         }
-        if (shown() && pointer) {
+        if (shown() && roll?.phase === 'settling') revealResult(roll);
+        if (shown() && pointer && !roll) {
           clearOrbitalInput(motion);
           beginOrbitalInput(motion, performance.now() / 1000);
         } else {
@@ -252,6 +409,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     return () => {
       requestShift.current = null;
       abort.abort();
+      clearRoll();
       resetInput();
       stop();
       observer?.disconnect();
@@ -261,5 +419,5 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     };
   }, [art]);
 
-  return {die, control};
+  return {die, control, result, announcement};
 }

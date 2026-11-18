@@ -343,6 +343,19 @@
   vector-effect: non-scaling-stroke;
 }
 
+.orbital-die-result {
+  opacity: 0;
+  fill: color-mix(in srgb, #fff 80%, var(--orbit-die-edge));
+  stroke: var(--orbit-die-face-shadow);
+  stroke-width: 1.2;
+  stroke-linejoin: round;
+  paint-order: stroke;
+  font-family: var(--font);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+.orbital-d20:is([data-roll-phase='visible'], [data-roll-phase='fading']) .orbital-die-result { opacity: 1; }
+
 .orbital-rail,
 .orbital-connection {
   position: absolute;
@@ -696,5 +709,6 @@
   .orbital-plane { opacity: .52; }
   .orbital-d20 polygon { fill: Canvas; }
   .orbital-d20-edges { stroke: Highlight; }
+  .orbital-die-result { fill: CanvasText; stroke: Canvas; }
   .orbital-connection-track { stroke: Highlight; }
 }

@@ -15,7 +15,7 @@ export function advanceOrbitalRotation(rotation: OrbitalRotation, seconds: numbe
   };
 }
 
-type Quaternion = [x: number, y: number, z: number, w: number];
+export type Quaternion = [x: number, y: number, z: number, w: number];
 type Angles = {pitch: number; yaw: number};
 type DieMotion = {
   orientation: Quaternion;
@@ -37,6 +37,29 @@ function multiply([x, y, z, w]: Quaternion, [a, b, c, d]: Quaternion): Quaternio
     w * c + x * b - y * a + z * d,
     w * d - x * a - y * b - z * c,
   ];
+}
+
+function normalizeQuaternion([x, y, z, w]: Quaternion): Quaternion {
+  const length = Math.hypot(x, y, z, w);
+  return [x / length, y / length, z / length, w / length];
+}
+
+export function alignOrbitalFace(orientation: Quaternion, normal: Point3): Quaternion {
+  const [x, y, z] = rotateOrbitalPoint(normal, orientation);
+  const correction: Quaternion = [y, -x, 0, Math.hypot(x, y, z) + z];
+  const turn: Quaternion = Math.hypot(...correction) < 1e-10 ? [1, 0, 0, 0] : normalizeQuaternion(correction);
+  return normalizeQuaternion(multiply(turn, orientation));
+}
+
+export function interpolateOrbitalOrientation(start: Quaternion, target: Quaternion, progress: number): Quaternion {
+  if (progress >= 1) return target;
+  const dot = start.reduce((sum, component, i) => sum + component * target[i], 0);
+  const angle = Math.acos(Math.min(1, Math.abs(dot)));
+  const sign = dot < 0 ? -1 : 1;
+  const sine = Math.sin(angle);
+  const from = sine < 1e-6 ? 1 - progress : Math.sin((1 - progress) * angle) / sine;
+  const to = sine < 1e-6 ? progress : Math.sin(progress * angle) / sine;
+  return normalizeQuaternion(start.map((component, i) => component * from + target[i] * to * sign) as Quaternion);
 }
 
 function automaticPose(phase: number): Quaternion {
@@ -123,8 +146,7 @@ export function advanceOrbitalDie(die: DieMotion, seconds: number, slow: boolean
     const scale = Math.sin(angle / 2) / angle;
     pose = multiply([pitch * scale, yaw * scale, 0, Math.cos(angle / 2)], pose);
   }
-  const length = Math.hypot(...pose);
-  die.orientation = [pose[0] / length, pose[1] / length, pose[2] / length, pose[3] / length];
+  die.orientation = normalizeQuaternion(pose);
 }
 
 const surgeAxisLength = Math.hypot(.42, .8, .43);
