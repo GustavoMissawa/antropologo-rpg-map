@@ -162,3 +162,10 @@ A publicação 114 do projeto original exibe 0.49 e o commit ce495579
 em Sobre. O navegador mostrou os seis máximos em amostras com dois pares
 de cores e confirmou o resultado 20 em produção. Resultados comuns
 conservaram a saída antecipada. Os 457 testes, TypeScript e build passaram.
+
+### Ajuste da duração e das arestas
+
+Na v0.49, o crítico acompanha todo o tempo visível do resultado. A corrente
+se encerra no início da saída automática ou antecipada. As arestas críticas
+passam de 1,8 para 2,8 unidades SVG. O traço dos algarismos mantém a medida
+anterior.

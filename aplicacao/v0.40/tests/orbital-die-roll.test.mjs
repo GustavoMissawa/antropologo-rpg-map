@@ -328,6 +328,14 @@ test('O máximo ativa o crítico e a saída antecipada limpa o efeito', async t 
   assert.equal(ui.model.dataset.critical, undefined);
   assert.equal(ui.phase(), 'fading');
   ui.animations[0].finish();
+  ui.surface.click();
+  ui.advance(4999);
+  assert.equal(ui.model.dataset.critical, 'true');
+  assert.equal(ui.phase(), 'visible');
+  ui.advance(1);
+  assert.equal(ui.model.dataset.critical, undefined);
+  assert.equal(ui.phase(), 'fading');
+  ui.animations[1].finish();
   random.mock.mockImplementation(() => .2);
   ui.surface.click();
   assert.equal(ui.number.textContent, '5');

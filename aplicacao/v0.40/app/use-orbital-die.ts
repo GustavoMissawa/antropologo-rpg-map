@@ -479,9 +479,6 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       lostpointercapture: cancel, keydown: keyboard, click,
     };
     const abort = new window.AbortController();
-    model.addEventListener('animationend', event => {
-      if (event.animationName === 'orbital-critical-fade') delete model.dataset.critical;
-    }, {signal: abort.signal});
     for (const [name, callback] of Object.entries(listeners)) {
       hitArea.addEventListener(name, callback as EventListener, {signal: abort.signal});
     }

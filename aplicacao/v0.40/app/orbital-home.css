@@ -734,7 +734,7 @@
 
 .orbital-d20[data-critical='true'] .orbital-critical {
   display: inline;
-  animation: orbital-critical-fade 1.35s both;
+  opacity: .92;
 }
 
 .orbital-critical-primary { color: var(--orbit-ambient-base); }
@@ -753,7 +753,7 @@
 }
 
 .orbital-critical-edge {
-  stroke-width: 1.8;
+  stroke-width: 2.8;
   stroke-dasharray: 12.5 12.5;
   stroke-dashoffset: var(--critical-edge-offset, 0);
   animation: orbital-critical-edges .54s linear infinite;
@@ -769,11 +769,6 @@
   animation: orbital-critical-digits .54s linear infinite;
 }
 
-@keyframes orbital-critical-fade {
-  0%, 100% { opacity: 0; }
-  14%, 67% { opacity: .92; }
-  100% { visibility: hidden; }
-}
 @keyframes orbital-critical-edges {
   to { stroke-dashoffset: calc(var(--critical-edge-offset, 0) - 25); }
 }
