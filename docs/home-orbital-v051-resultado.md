@@ -169,3 +169,7 @@ Na v0.49, o crítico acompanha todo o tempo visível do resultado. A corrente
 se encerra no início da saída automática ou antecipada. As arestas críticas
 passam de 1,8 para 2,8 unidades SVG. O traço dos algarismos mantém a medida
 anterior.
+
+As arestas críticas usam faixas longas. O contorno externo é um percurso
+SVG fechado, compartilhado pelas duas cores, para a animação passar pelos
+vértices. As arestas internas também receberam segmentos mais longos.

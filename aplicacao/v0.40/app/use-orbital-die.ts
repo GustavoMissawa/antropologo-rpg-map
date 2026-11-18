@@ -147,6 +147,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       }
       outline.setAttribute('d', next.edges);
       paintVertexPulse(next, now, reveal);
+      return next;
     }
 
     function showKind(next: OrbitalDieKind) {
@@ -251,18 +252,46 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
 
     function revealResult({result}: SettlingRoll) {
       motion.orientation = result.target;
-      paint(performance.now(), true);
+      const view = paint(performance.now(), true);
       stop();
       number.setAttribute('x', String(result.x));
       number.setAttribute('y', String(result.y));
       number.setAttribute('font-size', String(result.fontSize));
       number.textContent = String(result.value);
       if (result.value === kind) {
-        const segments = outline.getAttribute('d')?.match(/M[^M]+/g) ?? [];
+        const pairs = new Map<string, [string, string]>();
+        const borders = new Set<string>();
+        for (const face of view.faces) {
+          if (!face.visible) continue;
+          const points = face.points.split(' ');
+          points.forEach((start, i) => {
+            const end = points[(i + 1) % points.length];
+            const key = [start, end].sort().join('|');
+            if (pairs.has(key)) pairs.delete(key);
+            else pairs.set(key, [start, end]);
+          });
+        }
+        const boundary = new Map(pairs.values());
+        const first = boundary.keys().next().value;
+        const perimeter: string[] = [];
+        let point = first;
+        while (point !== undefined && boundary.has(point)) {
+          const next = boundary.get(point)!;
+          boundary.delete(point);
+          borders.add([point, next].sort().join('|'));
+          perimeter.push(point);
+          point = next;
+        }
+        const segments = (view.edges.match(/M[^M]+/g) ?? [])
+          .filter(segment => !borders.has(segment.slice(1).split('L').sort().join('|')));
+        const paths = perimeter.length && point === first
+          ? [`M${perimeter.join('L')}Z`, ...segments]
+          : view.edges.match(/M[^M]+/g) ?? [];
         for (const layer of criticalEdges) {
-          layer.replaceChildren(...segments.map(segment => {
+          layer.replaceChildren(...paths.map((segment, i) => {
             const edge = document.createElementNS('http://www.w3.org/2000/svg', 'path');
             edge.setAttribute('class', 'orbital-critical-edge');
+            if (i === 0 && segment.endsWith('Z')) edge.classList.add('orbital-critical-perimeter');
             edge.setAttribute('pathLength', '100');
             edge.setAttribute('d', segment);
             return edge;
