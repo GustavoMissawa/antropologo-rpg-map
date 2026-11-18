@@ -137,3 +137,11 @@ tema escuro e Rubi no claro. Os testes conferiram a oclusão em 48
 orientações por modelo, os pulsos automáticos, manuais e de revelação,
 a ausência de brilho entre pulsos, o movimento reduzido e as regras de
 rolagem. Os 456 testes, a checagem de tipos e o build passaram.
+
+A prévia também manteve a face imóvel na saída antecipada e mediu cerca
+de 5,05 s de exibição antes da saída automática. A v0.54 foi publicada
+no projeto original do ChatGPT Sites na publicação **113**.
+A fonte Sites foi `e377895c956ea6e3232b784f1bd36716226c5ff5` e o código aprovado no GitHub
+foi `9e8d4b5b34ef342ea380bec8c66b84dde989ee0d`. Em produção, Sobre exibiu **0.54** e **9e8d4b5b**.
+Uma rolagem do D20 confirmou o número claro, o halo na cor primária
+e o pulso de revelação restrito a um vértice da face visível.
