@@ -8,3 +8,6 @@ posição do ponto. Ao tirar o mouse, a espiral retoma o giro normal.
 O Chromium confirmou a troca de velocidade, o ponto em movimento,
 a ponta fixa e a retomada ao sair do nó. Os 438 testes automatizados
 passaram, incluindo o traçado móvel da prévia.
+
+A transformação do dado é acionada pela seleção do destino. Passar
+o mouse mantém a prévia da espiral, do ponto e do fio.
