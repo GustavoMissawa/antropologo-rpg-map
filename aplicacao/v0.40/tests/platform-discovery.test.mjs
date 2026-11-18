@@ -114,9 +114,12 @@ test('Hover e foco alternam o traçado único e toque abre o destino no primeiro
     assert.notEqual(path(), firstPath);
     assert.equal(beam.querySelectorAll('.orbital-source-star').length, 1);
     assert.equal(ui.host.querySelector('.orbital-art').dataset.diskSelected, 'true');
-    const stable = path();
-    await act(async () => new Promise(r => setTimeout(r, 70)));
-    assert.equal(path(), stable, 'a curva fica estável durante a seleção');
+    const initialPath = path();
+    const marker = beam.querySelector('.orbital-source-star');
+    const initialPosition = marker.getAttribute('transform');
+    await waitFor(() => marker.getAttribute('transform') !== initialPosition);
+    assert.notEqual(path(), initialPath, 'o fio acompanha a origem móvel');
+    assert.equal(path().split(' ').slice(-2).join(' '), initialPath.split(' ').slice(-2).join(' '), 'o fio continua preso ao destino');
     assert.equal(new Set([...beam.querySelectorAll('.orbital-connection-track, .orbital-connection-pulse')].map(p => p.getAttribute('d'))).size, 1);
     await point(sheets, 'pointerout', 'mouse');
     assert.equal(beam.dataset.active, 'false');

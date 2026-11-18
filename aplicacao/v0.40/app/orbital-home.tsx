@@ -72,6 +72,8 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHove
   const [interaction, setInteraction] = useState<NodeInteraction>({pointer: null, focus: null, last: null});
   const selected = destination;
   const active = selected ?? (phase === 'exploration' ? activeNode(interaction) : null);
+  const pointerPreview = active !== null && selected === null && interaction.pointer === active;
+  const movingMarker = pointerPreview || selected !== null;
 
   useLayoutEffect(() => {
     if (phase === 'returning') setInteraction({pointer: null, focus: null, last: null});
@@ -139,7 +141,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHove
 
   useLayoutEffect(() => {
     const state = activation.current;
-    if (!selected) orbit.current = null;
+    if (!movingMarker) orbit.current = null;
     const target = active && layout?.targets[active];
     if (!active || !layout || !target) {
       state.id = null;
@@ -151,7 +153,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHove
       state.id = active;
       state.count++;
     }
-    if (selected && !orbit.current) {
+    if (movingMarker && !orbit.current) {
       orbit.current = {angle: orbitalMarkerStart(layout.center, target, state.count), seconds: diskSeconds.current};
     }
     const show = () => {
@@ -170,7 +172,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHove
     setBeamVisible(false);
     const timer = setTimeout(show, 120);
     return () => clearTimeout(timer);
-  }, [active, layout, selected]);
+  }, [active, layout, movingMarker]);
 
   useLayoutEffect(() => {
     const target = beam && layout?.targets[beam.id];
@@ -183,7 +185,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHove
 
   return (
     <div ref={scene} className="orbital-scene" data-observing={active !== null}>
-      <OrbitalArt slowDie={active !== null} cruising={selected !== null && phase === 'destination'} activation={dieActivation} onDiskFrame={drawOrbit} />
+      <OrbitalArt slowDie={active !== null} cruising={pointerPreview || phase === 'destination'} activation={dieActivation} onDiskFrame={drawOrbit} />
       <svg className="orbital-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id="orbit-rail-light" x1="0" x2="0" y1="0" y2="1">
@@ -224,7 +226,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onHove
               <path ref={track} d={beam.path} className="orbital-connection-track" pathLength="1" />
               <path ref={pulse} d={beam.path} className="orbital-connection-pulse" pathLength="1" />
             </g>
-            <g ref={marker} className="orbital-source-star" opacity={selected ? .77 + .23 * beam.depth : 1} transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
+            <g ref={marker} className="orbital-source-star" opacity={movingMarker ? .77 + .23 * beam.depth : 1} transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
               <circle r="12" fill="url(#orbit-source-halo)" className="orbital-source-halo" />
               <g className="orbital-source-flare">
                 <circle r="3" />

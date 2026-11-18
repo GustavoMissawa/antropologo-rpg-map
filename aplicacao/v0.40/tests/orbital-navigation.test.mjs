@@ -169,14 +169,18 @@ test('Selecionar transforma o dado; foco, retorno e movimento reduzido preservam
     };
     await act(async () => enter('touch'));
     assert.equal(art.dataset.transforming, 'false');
+    assert.equal(art.dataset.diskCruising, 'false');
     await act(async () => enter('mouse'));
     assert.equal(art.dataset.transforming, 'true');
     assert.equal(home.dataset.phase, 'exploration');
+    assert.equal(art.dataset.diskCruising, 'true');
     await waitFor(() => art.dataset.transforming === 'false');
     const hoverDie = die.dataset.die;
     assert.notEqual(hoverDie, '20');
     await act(async () => systems.dispatchEvent(new MouseEvent('pointermove', {bubbles: true})));
     assert.equal(art.dataset.transforming, 'false');
+    await act(async () => systems.dispatchEvent(new MouseEvent('pointerout', {bubbles: true})));
+    assert.equal(art.dataset.diskCruising, 'false');
     await act(async () => systems.click());
     assert.equal(art.dataset.transforming, 'true');
     await waitFor(() => home.dataset.phase === 'destination' && art.dataset.transforming === 'false');
