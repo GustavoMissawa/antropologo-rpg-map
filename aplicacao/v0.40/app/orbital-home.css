@@ -734,7 +734,7 @@
 
 .orbital-d20[data-critical='true'] .orbital-critical {
   display: inline;
-  opacity: .92;
+  opacity: .76;
 }
 
 .orbital-critical-primary { color: var(--orbit-ambient-base); }
@@ -748,7 +748,7 @@
   fill: none;
   stroke: currentColor;
   stroke-linejoin: round;
-  filter: drop-shadow(0 0 1.7px currentColor);
+  filter: drop-shadow(0 0 1.25px currentColor);
 }
 
 .orbital-critical-edge {

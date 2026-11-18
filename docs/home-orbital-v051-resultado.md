@@ -187,3 +187,6 @@ D6, com a posição das cores mudando e o dado imóvel.
 O contorno dos algarismos usa o mesmo ciclo das arestas durante o crítico,
 com faixas de 26 unidades (antes, 10) e uma defasagem de meio ciclo entre
 as cores. O preenchimento claro permanece na camada superior.
+
+O neon do crítico nas arestas e nos algarismos usa opacidade de 76% e um
+halo de 1,25 px. As faixas mantêm seu comprimento e ritmo.
