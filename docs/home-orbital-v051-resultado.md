@@ -173,3 +173,13 @@ anterior.
 As arestas críticas usam faixas longas. O contorno externo é um percurso
 SVG fechado, compartilhado pelas duas cores, para a animação passar pelos
 vértices. As arestas internas também receberam segmentos mais longos.
+
+### Movimento das faixas críticas (v0.49)
+
+A animação do `stroke-dashoffset` usa deslocamentos em unidades SVG
+explícitas. Cada ciclo avança exatamente um par de faixas, e a segunda cor
+começa com meio ciclo de antecedência. Em movimento reduzido, a segunda
+cor mantém um deslocamento estático de uma faixa.
+
+A prévia foi conferida no navegador em dois quadros de um mesmo crítico no
+D6, com a posição das cores mudando e o dado imóvel.
