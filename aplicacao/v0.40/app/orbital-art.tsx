@@ -197,6 +197,12 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
         <g clipPath={`url(#${vertexEffectId}-silhouette)`}>
           <circle className="orbital-vertex-glow" r="7" visibility="hidden" fill={`url(#${vertexEffectId}-glow)`} />
         </g>
+        <g className="orbital-critical">
+          <g className="orbital-critical-primary" />
+          <g className="orbital-critical-secondary" />
+          <text className="orbital-critical-number orbital-critical-primary" textAnchor="middle" dominantBaseline="central" />
+          <text className="orbital-critical-number orbital-critical-secondary" textAnchor="middle" dominantBaseline="central" />
+        </g>
         <text ref={result} className="orbital-die-result" textAnchor="middle" dominantBaseline="central" />
       </svg>
       <button ref={control} className="orbital-d20-control" type="button" aria-label="Rolar dado D20" aria-description="Clique, pressione Enter ou arraste por 1 segundo com o dedo para rolar. As setas giram o dado." />

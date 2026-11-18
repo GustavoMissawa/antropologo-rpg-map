@@ -316,3 +316,20 @@ test('A revelação pulsa um vértice frontal, recorta o brilho e respeita movim
   assert.equal(ui.phase(), 'visible');
   assert.equal(glow.getAttribute('visibility'), 'hidden');
 });
+
+test('O máximo ativa o crítico e a saída antecipada limpa o efeito', async t => {
+  const ui = await setup(t);
+  const random = t.mock.method(Math, 'random', () => .999);
+  ui.surface.click();
+  assert.equal(ui.number.textContent, '20');
+  assert.equal(ui.model.dataset.critical, 'true');
+  assert.equal(ui.timers.size, 1);
+  ui.surface.click();
+  assert.equal(ui.model.dataset.critical, undefined);
+  assert.equal(ui.phase(), 'fading');
+  ui.animations[0].finish();
+  random.mock.mockImplementation(() => .2);
+  ui.surface.click();
+  assert.equal(ui.number.textContent, '5');
+  assert.equal(ui.model.dataset.critical, undefined);
+});

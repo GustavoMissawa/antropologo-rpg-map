@@ -145,3 +145,15 @@ A fonte Sites foi `e377895c956ea6e3232b784f1bd36716226c5ff5` e o código aprovad
 foi `9e8d4b5b34ef342ea380bec8c66b84dde989ee0d`. Em produção, Sobre exibiu **0.54** e **9e8d4b5b**.
 Uma rolagem do D20 confirmou o número claro, o halo na cor primária
 e o pulso de revelação restrito a um vértice da face visível.
+
+## Refinamento crítico na v0.49
+
+A identificação pública retorna a 0.49 por decisão do proprietário. A base
+desta revisão é a publicação 113 e inclui as funcionalidades entregues até
+esse ponto. A publicação histórica 108 continua no histórico.
+
+O máximo de cada dado ativa dois traços sobre as arestas projetadas e sobre
+os algarismos. Os padrões alternados usam proporções iguais de cada cor e
+deslocam-se com o mesmo período. O número original fica sobre os traços
+para preservar o núcleo branco. A saída antecipada limpa o crítico. O
+destaque dura 1,35 s dentro dos 5 s de exibição.

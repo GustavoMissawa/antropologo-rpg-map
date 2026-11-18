@@ -72,6 +72,8 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     const glow = vertexGlow;
     const clip = vertexClip;
     const faces = svg.querySelectorAll('polygon');
+    const criticalEdges = svg.querySelectorAll('.orbital-critical > g');
+    const criticalNumbers = svg.querySelectorAll('.orbital-critical-number');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const compact = matchMedia('(max-width: 740px)');
     const motion = createOrbitalDie();
@@ -233,6 +235,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     }
 
     function clearRoll() {
+      delete model.dataset.critical;
       window.clearTimeout(resultTimer);
       resultTimer = 0;
       roll = null;
@@ -254,6 +257,25 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       number.setAttribute('y', String(result.y));
       number.setAttribute('font-size', String(result.fontSize));
       number.textContent = String(result.value);
+      if (result.value === kind) {
+        const segments = outline.getAttribute('d')?.match(/M[^M]+/g) ?? [];
+        for (const layer of criticalEdges) {
+          layer.replaceChildren(...segments.map(segment => {
+            const edge = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            edge.setAttribute('class', 'orbital-critical-edge');
+            edge.setAttribute('pathLength', '100');
+            edge.setAttribute('d', segment);
+            return edge;
+          }));
+        }
+        for (const digit of criticalNumbers) {
+          digit.setAttribute('x', String(result.x));
+          digit.setAttribute('y', String(result.y));
+          digit.setAttribute('font-size', String(result.fontSize));
+          digit.textContent = number.textContent;
+        }
+        model.dataset.critical = 'true';
+      }
       status.textContent = `Resultado do D${kind}: ${result.value}`;
       const visibleRoll = roll = {phase: 'visible'};
       model.dataset.rollPhase = visibleRoll.phase;
@@ -272,6 +294,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       if (roll?.phase !== 'visible') return;
       window.clearTimeout(resultTimer);
       resultTimer = 0;
+      delete model.dataset.critical;
       roll = {phase: 'fading'};
       model.dataset.rollPhase = roll.phase;
       if (!shown() || !number.animate) {
@@ -456,6 +479,9 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       lostpointercapture: cancel, keydown: keyboard, click,
     };
     const abort = new window.AbortController();
+    model.addEventListener('animationend', event => {
+      if (event.animationName === 'orbital-critical-fade') delete model.dataset.critical;
+    }, {signal: abort.signal});
     for (const [name, callback] of Object.entries(listeners)) {
       hitArea.addEventListener(name, callback as EventListener, {signal: abort.signal});
     }

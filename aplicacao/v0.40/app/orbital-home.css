@@ -726,3 +726,63 @@
   .orbital-d20:is([data-roll-phase='visible'], [data-roll-phase='fading']) .orbital-die-result { text-shadow: none; }
   .orbital-connection-track { stroke: Highlight; }
 }
+
+.orbital-critical {
+  display: none;
+  pointer-events: none;
+}
+
+.orbital-d20[data-critical='true'] .orbital-critical {
+  display: inline;
+  animation: orbital-critical-fade 1.35s both;
+}
+
+.orbital-critical-primary { color: var(--orbit-ambient-base); }
+.orbital-critical-secondary {
+  color: var(--orbit-ambient-light);
+  --critical-offset: 10;
+  --critical-edge-offset: 12.5;
+}
+
+.orbital-critical-edge,
+.orbital-critical-number {
+  fill: none;
+  stroke: currentColor;
+  stroke-linejoin: round;
+  filter: drop-shadow(0 0 1.7px currentColor);
+}
+
+.orbital-critical-edge {
+  stroke-width: 1.8;
+  stroke-dasharray: 12.5 12.5;
+  stroke-dashoffset: var(--critical-edge-offset, 0);
+  animation: orbital-critical-edges .54s linear infinite;
+}
+
+.orbital-critical-number {
+  font-family: var(--font);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  stroke-width: 3;
+  stroke-dasharray: 10 10;
+  stroke-dashoffset: var(--critical-offset, 0);
+  animation: orbital-critical-digits .54s linear infinite;
+}
+
+@keyframes orbital-critical-fade {
+  0%, 100% { opacity: 0; }
+  14%, 67% { opacity: .92; }
+  100% { visibility: hidden; }
+}
+@keyframes orbital-critical-edges {
+  to { stroke-dashoffset: calc(var(--critical-edge-offset, 0) - 25); }
+}
+@keyframes orbital-critical-digits {
+  to { stroke-dashoffset: calc(var(--critical-offset, 0) - 20); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .orbital-critical-edge, .orbital-critical-number { animation: none; }
+}
+@media (forced-colors: active) {
+  .orbital-d20[data-critical='true'] .orbital-critical { display: none; }
+}
