@@ -183,3 +183,7 @@ cor mantém um deslocamento estático de uma faixa.
 
 A prévia foi conferida no navegador em dois quadros de um mesmo crítico no
 D6, com a posição das cores mudando e o dado imóvel.
+
+O contorno dos algarismos usa o mesmo ciclo das arestas durante o crítico,
+com faixas de 26 unidades (antes, 10) e uma defasagem de meio ciclo entre
+as cores. O preenchimento claro permanece na camada superior.
