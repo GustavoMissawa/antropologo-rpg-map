@@ -93,3 +93,25 @@ v0.38 Alpha continuam no repositório.
 
 Os dados sintéticos e as capturas temporárias da revisão ficaram fora do
 código publicado.
+
+## Publicação e conferência em produção
+
+| Referência | Valor |
+| --- | --- |
+| Aplicação | **v0.50 — Plataforma Orbital** |
+| Publicação Sites | **109** |
+| Commit GitHub exibido em Sobre | `6c32be4b638cc3f2f5bbb21192213623f95ff0c2` |
+| Commit da fonte Sites | `6ac0a6196932747f3af2d289718c0058fb546370` |
+| Implantação concluída | `appgdep_6afda31eb6bc8191993e0eef597106ec` |
+
+Os 428 arquivos da aplicação foram comparados com o commit do GitHub antes
+do build e os 91 arquivos exclusivos da fonte Sites foram preservados.
+As APIs, as migrações e o manifesto de hospedagem seguem o mesmo código da
+publicação 108.
+
+No [site público](https://antrobologorpg.guss04.chatgpt.site/#inicio), Sobre
+exibiu **0.50** e **6c32be4b**. O menu Orbital abriu Sistemas, Fichas,
+PDFs e Agenda com painel contextual seguido da respectiva página. A troca
+para Clássico conservou o leitor do AB10 e seu endereço. A navegação
+tradicional das cinco áreas e o retorno ao Orbital foram conferidos na
+mesma sessão.
