@@ -78,3 +78,10 @@ No Chromium, a prévia mostrou a mudança da geometria durante o alinhamento
 e revelou o número quando a face parou. Foram conferidos o tema escuro com
 Safira e Violeta, o tema claro com Rubi e Cobre e a saída antecipada com a
 face imóvel. Os 454 testes automatizados, TypeScript e build passaram.
+
+A versão foi publicada no projeto original do ChatGPT Sites na publicação
+**111**, com a fonte `8af1e999463f2ade579acd545f17e3a9835b1ec0` e o código do
+GitHub `8b4e7d3b9602b25af48c6c2e629919f5395a15c3`. Em produção, Sobre exibiu **0.52** e
+**8b4e7d3b**. Uma rolagem no tema escuro confirmou a virada gradual
+da geometria e mostrou o número fino em Safira com halo Violeta. A versão
+anterior e os vínculos D1/R2 foram preservados.
