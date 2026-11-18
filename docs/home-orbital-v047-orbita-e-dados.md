@@ -85,3 +85,28 @@ quadro escrevem nos elementos do SVG e Canvas, sem renderização React.
 
 A mudança se limita à Home Orbital. O manifesto de hospedagem, os vínculos
 D1/R2, a v0.38 Alpha e o acervo histórico seguem no projeto original.
+
+## Publicação e conferência
+
+A publicação **105** foi concluída em 17/11/2026 no
+[endereço original](https://antrobologorpg.guss04.chatgpt.site/).
+
+| Referência | Valor |
+| --- | --- |
+| Aplicação | **0.47 — Desenvolvimento — Home Orbital** |
+| Branch | `dev/v0.47-orbita-e-dados` |
+| Commit publicado no GitHub | `0bdc43bbc02ebad6f4f325c0688b359d92547461` |
+| Commit da fonte Sites | `aa5397218f46f38611473e8becd4d3b5a545ccc3` |
+| Versão salva no Sites | `appgprj_6adb8be679b48191bc7fbcf908d41024~appgver_2b960ff91e6c8191ad08e3902226fdc5` |
+| Implantação concluída | `appgdep_6afcfaaa31d4819182b4036bc9dc9eb6` |
+
+Os 424 arquivos da aplicação foram comparados com o commit enviado ao
+GitHub e reconstruídos a partir da mesma fonte. A implantação retornou
+`succeeded` e Sobre exibiu **0.47** com o identificador **0bdc43bb**.
+
+Com Sistemas aberto, o disco passou da frenagem para o giro lento. A posição
+da bolinha mudou entre amostras e o outro extremo do fio permaneceu no nó.
+Fichas, PDFs e Agenda também exibiram seus painéis com um único fio e um
+novo dado a cada seleção. Escape preservou o último dado, restaurou o foco
+e devolveu a velocidade normal ao disco. O atalho de PDFs abriu a biblioteca
+existente e Início retornou ao mapa.
