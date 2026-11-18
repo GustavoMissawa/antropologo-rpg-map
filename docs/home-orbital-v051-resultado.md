@@ -102,3 +102,9 @@ limiar de toque é restrito ao dado Orbital.
 Na prévia Chromium, clique e Enter animaram o D20 e revelaram números
 válidos. A validação automatizada cobre toque sem arraste, arraste de
 900 ms e de 1 s, dispensa do resultado e seleção de destino.
+
+Os 455 testes automatizados, a checagem de tipos e o build passaram.
+A publicação **112** usou a fonte Sites `7d34d5d4f7b38bf66d340dd43d292f51bfac2c81`
+e o commit GitHub `299cd3477db6b25f5b997ff85eefd3a968cec70c`. Em produção, Sobre exibiu **0.53** e
+**299cd347**. Um clique moveu a geometria do D20 e revelou o
+número 9 após o alinhamento.
