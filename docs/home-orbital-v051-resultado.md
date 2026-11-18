@@ -40,3 +40,24 @@ movimento enquanto o resultado está visível.
 | Seis modelos | Rolagens observadas no Chromium com resultado dentro da faixa de cada dado. Os testes de geometria conferiram todas as 60 faces de D4, D6, D8, D10, D12 e D20. |
 | Entradas e limpeza | Testes com relógio controlado cobrem movimento insuficiente, saída automática e antecipada, eventos repetidos, continuidade do toque, cancelamento e isolamento entre rolagens. |
 | Verificações do código | TypeScript, `site-version.mjs --check`, build e 454 testes automatizados passaram. |
+
+## Publicação e conferência em produção
+
+| Referência | Valor |
+| --- | --- |
+| Aplicação | **v0.51 — Plataforma Orbital** |
+| Publicação Sites | **110** |
+| Commit GitHub do código publicado | `b0306f5e81d0a34efcbdd9b7d3b107a4c55b11cd` |
+| Commit da fonte Sites | `1fb72867eed1b4407efeb3600b306fac436d68ea` |
+| Implantação concluída | `appgdep_6afdd70a4a2481919e10992d42a35665` |
+
+Os 430 arquivos de aplicação foram comparados com o commit do GitHub antes
+do build. A sincronização preservou os 91 arquivos exclusivos da fonte Sites,
+as APIs, as migrações, os vínculos `DB` (D1) e `BUCKET` (R2) e a v0.38 Alpha.
+
+No [site público](https://antrobologorpg.guss04.chatgpt.site/#inicio), Sobre
+exibiu a versão **0.51** e o commit **b0306f5e**. O Chromium não exibiu
+um resultado com um gesto de 1,15 s. Em gestos válidos, o D20 manteve a
+orientação durante a apresentação e nas duas saídas. Um novo movimento
+voltou a girá-lo. Selecionar Sistemas com o resultado visível cancelou o
+resultado, transformou o D20 em D6 e permitiu voltar à Home.
