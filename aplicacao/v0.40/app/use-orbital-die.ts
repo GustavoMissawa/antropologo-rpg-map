@@ -253,7 +253,9 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
             revealResult(roll);
             return;
           }
-          motion.orientation = interpolateOrbitalOrientation(roll.start, roll.result.target, 1 - (1 - progress) ** 3);
+          // Arranque suave e desaceleração progressiva até o repouso.
+          const eased = progress ** 2 * (6 - 8 * progress + 3 * progress ** 2);
+          motion.orientation = interpolateOrbitalOrientation(roll.start, roll.result.target, eased);
         } else {
           advanceOrbitalDie(motion, seconds, slow.current, reduced.matches);
         }

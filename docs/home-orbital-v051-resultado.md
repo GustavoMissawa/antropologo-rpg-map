@@ -61,3 +61,20 @@ um resultado com um gesto de 1,15 s. Em gestos válidos, o D20 manteve a
 orientação durante a apresentação e nas duas saídas. Um novo movimento
 voltou a girá-lo. Selecionar Sistemas com o resultado visível cancelou o
 resultado, transformou o D20 em D6 e permitiu voltar à Home.
+
+## Acabamento da v0.52
+
+A v0.52 parte da publicação 110. O alinhamento da face passa de 450 ms a
+650 ms. A curva de interpolação começa com velocidade zero, ganha velocidade
+no primeiro terço e desacelera progressivamente até o repouso. Com
+movimento reduzido, o alinhamento continua imediato. A exibição dura 5 s,
+com saída de 400 ms ou 200 ms ao tentar girar o dado.
+
+O número usa peso 400. O traço luminoso deriva da primária e um halo curto
+usa a secundária. O fundo escuro da face dá contraste nos dois modos de
+exibição. O modo de cores forçadas usa as cores de sistema e dispensa o halo.
+
+No Chromium, a prévia mostrou a mudança da geometria durante o alinhamento
+e revelou o número quando a face parou. Foram conferidos o tema escuro com
+Safira e Violeta, o tema claro com Rubi e Cobre e a saída antecipada com a
+face imóvel. Os 454 testes automatizados, TypeScript e build passaram.

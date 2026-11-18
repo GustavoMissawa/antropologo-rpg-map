@@ -345,16 +345,19 @@
 
 .orbital-die-result {
   opacity: 0;
-  fill: color-mix(in srgb, #fff 80%, var(--orbit-die-edge));
+  fill: color-mix(in srgb, var(--orbit-ambient-base) 72%, #e9f4ff);
   stroke: var(--orbit-die-face-shadow);
-  stroke-width: 1.2;
+  stroke-width: .65;
   stroke-linejoin: round;
   paint-order: stroke;
   font-family: var(--font);
-  font-weight: 650;
+  font-weight: 400;
   font-variant-numeric: tabular-nums;
 }
-.orbital-d20:is([data-roll-phase='visible'], [data-roll-phase='fading']) .orbital-die-result { opacity: 1; }
+.orbital-d20:is([data-roll-phase='visible'], [data-roll-phase='fading']) .orbital-die-result {
+  opacity: 1;
+  text-shadow: 0 0 4px color-mix(in srgb, var(--orbit-ambient-light) 70%, transparent);
+}
 
 .orbital-rail,
 .orbital-connection {
@@ -710,5 +713,6 @@
   .orbital-d20 polygon { fill: Canvas; }
   .orbital-d20-edges { stroke: Highlight; }
   .orbital-die-result { fill: CanvasText; stroke: Canvas; }
+  .orbital-d20:is([data-roll-phase='visible'], [data-roll-phase='fading']) .orbital-die-result { text-shadow: none; }
   .orbital-connection-track { stroke: Highlight; }
 }

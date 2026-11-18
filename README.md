@@ -13,6 +13,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-origem-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.52 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.52-acabamento-dado-orbital` | Alinhamento suave do dado e resultado neon nas cores da aparência. |
 | v0.51 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.51-resultado-orbital` | A face sorteada fica visível por cinco segundos, com saída antecipada ao tentar girar o dado. |
 | v0.50 — Plataforma Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.50-plataforma-orbital` | Estilos Orbital e Clássico sobre a mesma plataforma. |
 | v0.49 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.49-previa-orbital` | Órbita na prévia por mouse e transformação do dado na seleção. |
@@ -27,7 +28,7 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
-A [v0.51](docs/home-orbital-v051-resultado.md) registra a rolagem do dado central, o alinhamento da face e o bloqueio de movimento até o fim da transição do número.
+A [documentação do dado Orbital](docs/home-orbital-v051-resultado.md) registra o ciclo de rolagem da v0.51 e o [acabamento do resultado na v0.52](docs/home-orbital-v051-resultado.md#acabamento-da-v052).
 
 A [v0.50](docs/plataforma-v050-orbital-classico.md) documenta o estilo padrão para as áreas internas, a navegação do cabeçalho e a opção Clássico nas configurações.
 

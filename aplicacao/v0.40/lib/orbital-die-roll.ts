@@ -5,7 +5,7 @@ import {alignOrbitalFace, rotateOrbitalPoint, type Quaternion} from './orbital-r
 export const ORBITAL_RESULT_DISPLAY_MS = 5000;
 export const ORBITAL_RESULT_AUTO_FADE_MS = 400;
 export const ORBITAL_RESULT_INPUT_FADE_MS = 200;
-export const ORBITAL_ROLL_ALIGN_SECONDS = .45;
+export const ORBITAL_ROLL_ALIGN_SECONDS = .65;
 
 export function createOrbitalRoll(kind: OrbitalDieKind, orientation: Quaternion, random = Math.random) {
   const mesh = orbitalDieMeshes[kind];
