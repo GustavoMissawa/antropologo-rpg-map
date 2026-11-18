@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {advanceOrbitalFlow, orbitalFlowBand, orbitalFlowPose, prepareOrbitalFlow} from '../lib/orbital-flow.ts';
+import {advanceOrbitalFlow, EXPANDED_ORBITAL_SPEED, orbitalFlowBand, orbitalFlowPose, prepareOrbitalFlow} from '../lib/orbital-flow.ts';
 import {startOrbitalFlow} from '../app/orbital-flow.ts';
 
 function canvas(size = 1024) {
@@ -89,9 +89,10 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
   globalThis.cancelAnimationFrame = id => frames.delete(id);
   const art = {dataset: {motion: 'paused'}};
   const clock = {seconds: 4, speed: 1};
+  const observed = [];
   const runFrame = time => {const [id, fn] = frames.entries().next().value; frames.delete(id); fn(time);};
   try {
-    const stop = startOrbitalFlow(art, canvas(), canvas(), canvas(), clock);
+    const stop = startOrbitalFlow(art, canvas(), canvas(), canvas(), clock, seconds => observed.push(seconds));
     assert.equal(art.dataset.flowReady, 'true');
     assert.equal(frames.size, 0);
     art.dataset.motion = 'running'; notify();
@@ -109,12 +110,23 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
     assert.equal(clock.speed, 0);
     assert.equal(frames.size, 0, 'o disco parado não mantém um loop ocioso');
     const frozen = clock.seconds;
+    art.dataset.diskCruising = 'true'; notify();
+    for (let time = 12000; frames.size && time <= 13500; time += 30) runFrame(time);
+    assert.equal(art.dataset.diskMotion, 'cruising');
+    assert.equal(clock.speed, EXPANDED_ORBITAL_SPEED);
+    assert.ok(clock.seconds > frozen && clock.seconds - frozen < 1.5 * EXPANDED_ORBITAL_SPEED);
+    assert.equal(observed.at(-1), clock.seconds, 'o marcador usa a mesma fase do Canvas');
+    assert.equal(frames.size, 1);
+    const beforeReturn = clock.seconds;
+    art.dataset.diskCruising = 'false';
     art.dataset.diskSelected = 'false'; notify();
-    runFrame(18000); runFrame(18030);
+    runFrame(13530);
     assert.equal(art.dataset.diskMotion, 'resuming');
-    assert.ok(clock.seconds > frozen && clock.seconds - frozen < .03);
+    assert.ok(clock.seconds > beforeReturn && clock.seconds - beforeReturn < .03);
     document.hidden = true; callbacks.get('visibilitychange')();
     assert.equal(frames.size, 0);
+    assert.equal(art.dataset.diskMotion, 'paused');
+    assert.ok(observed.every((value, i) => !i || value >= observed[i - 1]));
     stop();
     assert.equal(art.dataset.flowReady, undefined);
     assert.equal(callbacks.size, 0);
@@ -127,20 +139,20 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
 
 test('A seleção freia até zero e a retomada preserva a fase mesmo com inversões rápidas', () => {
   const clock = {seconds: 9, speed: 1};
-  advanceOrbitalFlow(clock, .03, true);
+  advanceOrbitalFlow(clock, .03, 0);
   assert.ok(clock.speed > 0 && clock.speed < 1);
   assert.ok(clock.seconds > 9 && clock.seconds < 9.03);
   const slowed = clock.speed;
-  advanceOrbitalFlow(clock, .03, false);
+  advanceOrbitalFlow(clock, .03, 1);
   assert.ok(clock.speed > slowed && clock.speed < 1);
-  for (let i = 0; i < 60; i++) advanceOrbitalFlow(clock, 1 / 60, true);
+  for (let i = 0; i < 60; i++) advanceOrbitalFlow(clock, 1 / 60, 0);
   assert.equal(clock.speed, 0);
   const frozen = clock.seconds;
-  advanceOrbitalFlow(clock, .5, true);
+  advanceOrbitalFlow(clock, .5, 0);
   assert.equal(clock.seconds, frozen);
-  advanceOrbitalFlow(clock, .03, false);
+  advanceOrbitalFlow(clock, .03, 1);
   assert.ok(clock.seconds > frozen && clock.seconds < frozen + .03);
   assert.ok(clock.speed > 0 && clock.speed < 1);
-  for (let i = 0; i < 60; i++) advanceOrbitalFlow(clock, 1 / 60, false);
+  for (let i = 0; i < 60; i++) advanceOrbitalFlow(clock, 1 / 60, 1);
   assert.equal(clock.speed, 1);
 });

@@ -25,7 +25,7 @@ export function heroDieFrame(angles:Point3){
 
 type Triangle = [number, number, number];
 
-function faceNormal([a, b, c]: Triangle, vertices: Point3[]): Point3 {
+function faceNormal([a, b, c]: readonly number[], vertices: Point3[]): Point3 {
   const [x, y, z] = vertices[a];
   const [bx, by, bz] = vertices[b];
   const [cx, cy, cz] = vertices[c];
@@ -52,38 +52,65 @@ for (const [a, b] of HERO_EDGES) {
 }
 
 const orbitalLightDirection: Point3 = [-.48, -.64, .60];
-const orbitalEdgeFaces = HERO_EDGES.map(([a, b]) =>
-  HERO_FACES.flatMap((face, index) => face.includes(a) && face.includes(b) ? [index] : []),
-);
+export type OrbitalMesh = {
+  vertices: Point3[];
+  faces: number[][];
+  edges: {start: number; end: number; faces: number[]}[];
+};
+
+/** Orient convex faces outward and precompute the neighbors of each edge. */
+export function createOrbitalMesh(vertices: Point3[], polygons: number[][]): OrbitalMesh {
+  const radius = Math.max(...vertices.map(vertex => Math.hypot(...vertex)));
+  const unitVertices = Math.abs(radius - 1) < 1e-12 ? vertices :
+    vertices.map(([x, y, z]): Point3 => [x / radius, y / radius, z / radius]);
+  const faces = polygons.map(face => dot(faceNormal(face, unitVertices), unitVertices[face[0]]) > 0 ? face : [...face].reverse());
+  const edges = new Map<string, OrbitalMesh['edges'][number]>();
+  faces.forEach((face, index) => {
+    face.forEach((start, i) => {
+      const end = face[(i + 1) % face.length];
+      const key = start < end ? start + ':' + end : end + ':' + start;
+      const edge = edges.get(key);
+      if (edge) edge.faces.push(index);
+      else edges.set(key, {start, end, faces: [index]});
+    });
+  });
+  return {vertices: unitVertices, faces, edges: [...edges.values()]};
+}
+
+export const HERO_MESH = createOrbitalMesh(HERO_VERTICES, HERO_FACES);
 
 export function orbitalDieFrame(angles: Point3) {
   return projectOrbitalDie(point => rotateHeroPoint(point, angles));
 }
 
-export function projectOrbitalDie(rotate: (point: Point3) => Point3) {
-  const vertices = HERO_VERTICES.map(rotate);
+export function projectOrbitalDie(rotate: (point: Point3) => Point3, mesh = HERO_MESH) {
+  const vertices = mesh.vertices.map(rotate);
   const projected = vertices.map(projectHeroPoint);
-  const faces = HERO_FACES.map(triangle => {
-    const [a, b, c] = triangle.map(index => projected[index]);
-    // The projected winding includes the view's perspective and drops back faces.
-    const area = (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
+  const faces = mesh.faces.map(polygon => {
+    const points = polygon.map(index => projected[index]);
+    // The projected winding includes perspective, including for four- and five-sided faces.
+    let area = 0;
+    for (let i = 0; i < points.length; i++) {
+      const a = points[i], b = points[(i + 1) % points.length];
+      area += a.x * b.y - b.x * a.y;
+    }
     const visible = area > 1e-6;
     if (!visible) return { visible, points: '', light: '0%' };
-    const normal = faceNormal(triangle, vertices);
+    const normal = faceNormal(polygon, vertices);
     const lambert = Math.max(0, dot(normal, orbitalLightDirection) / Math.hypot(...normal));
     return {
       visible,
-      points: `${a.x},${a.y} ${b.x},${b.y} ${c.x},${c.y}`,
+      points: points.map(({x, y}) => `${x},${y}`).join(' '),
       light: `${Math.round(9 + lambert * 88)}%`,
     };
   });
 
   // Stroke shared edges once, using the same projected vertices as the opaque fills.
   let edges = '';
-  for (const [index, [first, second]] of HERO_EDGES.entries()) {
-    if (!orbitalEdgeFaces[index].some(face => faces[face].visible)) continue;
-    const a = projected[first];
-    const b = projected[second];
+  for (const edge of mesh.edges) {
+    if (!edge.faces.some(face => faces[face].visible)) continue;
+    const a = projected[edge.start];
+    const b = projected[edge.end];
     edges += `M${a.x},${a.y}L${b.x},${b.y}`;
   }
   return {faces, edges};

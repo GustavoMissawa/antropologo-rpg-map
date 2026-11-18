@@ -126,3 +126,11 @@ export function advanceOrbitalDie(die: DieMotion, seconds: number, slow: boolean
   const length = Math.hypot(...pose);
   die.orientation = [pose[0] / length, pose[1] / length, pose[2] / length, pose[3] / length];
 }
+
+const surgeAxisLength = Math.hypot(.42, .8, .43);
+
+/** The transformation adds a turn around the current pose, without resetting its orientation. */
+export function turnOrbitalDie(die: DieMotion, angle: number) {
+  const scale = Math.sin(angle / 2) / surgeAxisLength;
+  die.orientation = multiply([.42 * scale, .8 * scale, .43 * scale, Math.cos(angle / 2)], die.orientation);
+}

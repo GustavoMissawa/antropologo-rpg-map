@@ -1,4 +1,4 @@
-import {advanceOrbitalFlow, prepareOrbitalFlow, type OrbitalFlowClock} from '../lib/orbital-flow.ts';
+import {advanceOrbitalFlow, EXPANDED_ORBITAL_SPEED, prepareOrbitalFlow, type OrbitalFlowClock} from '../lib/orbital-flow.ts';
 
 export function startOrbitalFlow(
   art: HTMLDivElement,
@@ -6,25 +6,29 @@ export function startOrbitalFlow(
   dust: HTMLCanvasElement,
   canvas: HTMLCanvasElement,
   clock: OrbitalFlowClock,
+  onFrame?: (seconds: number) => void,
 ) {
-  const flow = prepareOrbitalFlow(stream, dust, canvas);
-  if (!flow) return () => {};
+  const flow = art.dataset.painted === 'false' ? null : prepareOrbitalFlow(stream, dust, canvas);
+  if (!flow && !onFrame) return () => {};
   const compact = matchMedia('(max-width: 740px)');
   let frame = 0;
   let previous = 0;
 
-  const selected = () => art.dataset.diskSelected === 'true';
+  const targetSpeed = () => art.dataset.diskCruising === 'true' ? EXPANDED_ORBITAL_SPEED
+    : art.dataset.diskSelected === 'true' ? 0 : 1;
   const running = () => art.dataset.motion === 'running' && !document.hidden;
 
   function status() {
-    const next = !running() ? 'paused' : selected()
-      ? (clock.speed === 0 ? 'stopped' : 'stopping')
-      : (clock.speed === 1 ? 'orbiting' : 'resuming');
+    const target = targetSpeed();
+    const next = !running() ? 'paused'
+      : clock.speed > target ? 'stopping'
+      : clock.speed < target ? 'resuming'
+      : target === 0 ? 'stopped' : target === 1 ? 'orbiting' : 'cruising';
     if (art.dataset.diskMotion !== next) art.dataset.diskMotion = next;
   }
 
   function schedule() {
-    if (!frame && running() && (!selected() || clock.speed > 0)) frame = requestAnimationFrame(tick);
+    if (!frame && running() && (targetSpeed() > 0 || clock.speed > 0)) frame = requestAnimationFrame(tick);
   }
 
   function tick(now: number) {
@@ -33,12 +37,13 @@ export function startOrbitalFlow(
     if (!previous) previous = now;
     const delta = now - previous;
     if (delta >= (compact.matches ? 32 : 15)) {
-      advanceOrbitalFlow(clock, Math.min(delta, 60) / 1000, selected());
+      advanceOrbitalFlow(clock, Math.min(delta, 60) / 1000, targetSpeed());
       previous = now;
       flow?.paint(clock.seconds);
+      onFrame?.(clock.seconds);
     }
     status();
-    if (selected() && clock.speed === 0) previous = 0;
+    if (targetSpeed() === 0 && clock.speed === 0) previous = 0;
     schedule();
   }
 
@@ -52,10 +57,11 @@ export function startOrbitalFlow(
     status();
   }
 
-  flow.paint(clock.seconds);
-  art.dataset.flowReady = 'true';
+  flow?.paint(clock.seconds);
+  onFrame?.(clock.seconds);
+  if (flow) art.dataset.flowReady = 'true';
   const observer = new MutationObserver(update);
-  observer.observe(art, {attributeFilter: ['data-motion', 'data-disk-selected']});
+  observer.observe(art, {attributeFilter: ['data-motion', 'data-disk-selected', 'data-disk-cruising']});
   document.addEventListener('visibilitychange', update);
   update();
 
@@ -63,7 +69,7 @@ export function startOrbitalFlow(
     cancelAnimationFrame(frame);
     observer.disconnect();
     document.removeEventListener('visibilitychange', update);
-    flow.dispose();
+    flow?.dispose();
     delete art.dataset.flowReady;
     delete art.dataset.diskMotion;
   };

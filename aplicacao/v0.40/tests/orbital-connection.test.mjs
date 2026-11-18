@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {orbitalConnection} from '../lib/orbital-connection.ts';
+import {advanceOrbitalMarker, orbitalConnection} from '../lib/orbital-connection.ts';
+import {ORBITAL_MARKER_BAND, orbitalFlowBand} from '../lib/orbital-flow.ts';
 
 const center = {x: 435, y: 435};
 const targets = [{x: 660, y: 162}, {x: 785, y: 330}, {x: 785, y: 535}, {x: 655, y: 705}];
@@ -49,4 +50,30 @@ test('A geometria compacta se conecta acima dos botões e aceita medidas transit
     assert.ok(Math.hypot(beam.origin.x - compactCenter.x, beam.origin.y - compactCenter.y) > 80);
   }
   assert.ok(coordinates(orbitalConnection({x: 0, y: 0}, {x: 0, y: 0}, 0, 1).path).every(Number.isFinite));
+});
+
+test('A bolinha percorre toda a elipse, incluindo a face traseira, sem perder a ponta do fio', () => {
+  const turn = 2 * Math.PI;
+  const diskSeconds = turn / orbitalFlowBand(ORBITAL_MARKER_BAND).velocity;
+  const start = .7;
+  const quadrants = new Set();
+  const target = targets[3];
+  const first = orbitalConnection(center, target, 870, 4, start);
+  let previous = first.origin;
+  for (let i = 1; i <= 360; i++) {
+    const angle = advanceOrbitalMarker(start, diskSeconds * i / 360);
+    const {origin, path, depth} = orbitalConnection(center, target, 870, 4, angle);
+    const points = coordinates(path);
+    quadrants.add(Math.floor(angle / (turn / 4)));
+    assert.equal(depth, Math.sin(angle));
+    assert.deepEqual(points.slice(0, 2), [origin.x, origin.y]);
+    assert.deepEqual(points.slice(-2), [target.x, target.y]);
+    assert.ok(Math.hypot(origin.x - previous.x, origin.y - previous.y) < 6);
+    previous = origin;
+  }
+  assert.equal(quadrants.size, 4);
+  assert.ok(Math.hypot(previous.x - first.origin.x, previous.y - first.origin.y) < 1e-8);
+  const changed = orbitalConnection(center, targets[0], 870, 5, start);
+  assert.deepEqual(changed.origin, first.origin);
+  assert.deepEqual(coordinates(changed.path).slice(-2), [targets[0].x, targets[0].y]);
 });

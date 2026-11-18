@@ -307,9 +307,11 @@
   height: auto;
   left: 50%;
   top: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(calc(var(--orbital-die-fit, 1) * var(--orbital-die-scale, 1)));
   filter: drop-shadow(0 3px 8px var(--orbit-die-glow));
 }
+/* These two unit-radius meshes have smaller projected areas at most angles. */
+.orbital-d20:is([data-die='4'], [data-die='10']) { --orbital-die-fit: 1.16; }
 .orbital-d20-control {
   position: absolute;
   width: max(22%, 84px);
@@ -335,7 +337,7 @@
 }
 .orbital-d20-edges {
   fill: none;
-  stroke: var(--orbit-die-edge);
+  stroke: color-mix(in srgb, var(--orbit-die-edge), #fff var(--orbital-die-charge, 0%));
   stroke-width: 1.15;
   stroke-linecap: butt;
   vector-effect: non-scaling-stroke;

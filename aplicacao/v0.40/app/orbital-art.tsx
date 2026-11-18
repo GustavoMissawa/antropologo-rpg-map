@@ -5,7 +5,7 @@ import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 import {startOrbitalFlow} from './orbital-flow';
-import {initialOrbitalFrame, useOrbitalD20} from './use-orbital-d20';
+import {initialOrbitalFrame, useOrbitalDie} from './use-orbital-die';
 
 function presentBitmap(canvas: HTMLCanvasElement, bitmap: ImageBitmap) {
   const context = canvas.getContext('2d');
@@ -51,7 +51,10 @@ function renderTextures(
 
   function drawOnMainThread() {
     stopWorker();
-    if (typeof window.CanvasRenderingContext2D === 'undefined') return;
+    if (typeof window.CanvasRenderingContext2D === 'undefined') {
+      onPaint(false);
+      return;
+    }
     frame = requestAnimationFrame(() => {
       setSize();
       if (paintOrbitalLight(light, dust, colors, mode)) {
@@ -97,12 +100,17 @@ function renderTextures(
   };
 }
 
-export function OrbitalArt({slowDie}: {slowDie: boolean}) {
+export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
+  slowDie: boolean;
+  cruising: boolean;
+  activation: number;
+  onDiskFrame: (seconds: number) => void;
+}) {
   const art = useRef<HTMLDivElement>(null);
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const flow = useRef<HTMLCanvasElement>(null);
-  const {die, control} = useOrbitalD20(art, slowDie);
+  const {die, control} = useOrbitalDie(art, slowDie, activation);
 
   useEffect(() => {
     const element = art.current;
@@ -126,7 +134,7 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
     const onPaint = (painted: boolean) => {
       cancelFlow?.();
       element.dataset.painted = String(painted);
-      if (painted) cancelFlow = startOrbitalFlow(element, lightCanvas, dustCanvas, flowCanvas, clock);
+      cancelFlow = startOrbitalFlow(element, lightCanvas, dustCanvas, flowCanvas, clock, onDiskFrame);
     };
     let current = readRequest();
     let cancelTextures = renderTextures(lightCanvas, dustCanvas, current, compact.matches, onPaint);
@@ -155,17 +163,17 @@ export function OrbitalArt({slowDie}: {slowDie: boolean}) {
       cancelTextures();
       cancelFlow?.();
     };
-  }, []);
+  }, [onDiskFrame]);
 
   return (
-    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie}>
+    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie} data-disk-cruising={cruising} data-transforming="false">
       <div className="orbital-disk-fallback" aria-hidden="true" />
       <div className="orbital-plane" aria-hidden="true">
         <canvas ref={dust} className="orbital-dust" />
         <canvas ref={stream} className="orbital-stream" />
         <canvas ref={flow} className="orbital-flow" />
       </div>
-      <svg ref={die} className="orbital-d20" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
+      <svg ref={die} className="orbital-d20" data-die="20" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
         {initialOrbitalFrame.faces.map(({visible, points, light}, i) => (
           <polygon
             key={i}

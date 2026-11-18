@@ -1,12 +1,12 @@
 'use client';
 
-import {useEffect, useLayoutEffect, useRef, useState, type CSSProperties} from 'react';
+import {useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type RefObject} from 'react';
 import {ArrowUpRight, CalendarDays, CirclePlus, FileText, Layers3, UserRound} from 'lucide-react';
 import {countRules, type Rulebook, type Sheet, type PDF} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
 import {OrbitalBackdrop} from './orbital-backdrop';
-import {orbitalConnection} from '../lib/orbital-connection';
-import {orbitalHref, type OrbitalDestination} from '../lib/orbital-navigation';
+import {advanceOrbitalMarker, orbitalConnection, orbitalMarkerStart} from '../lib/orbital-connection';
+import {orbitalHref, type OrbitalDestination, type OrbitalNavigation} from '../lib/orbital-navigation';
 import {useOrbitalNavigation} from './use-orbital-navigation';
 
 export type OrbitalHomeProps = {
@@ -50,17 +50,49 @@ function orbitPoint(angle: number): Point {
   return {x: 418 + 365 * Math.cos(angle), y: 510 + 425 * Math.sin(angle)};
 }
 
-function OrbitalScene({destination, phase, onSelect}: {destination: Destination | null; phase: string; onSelect: (id: Destination) => void}) {
+function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSelect}: {
+  destination: Destination | null;
+  phase: OrbitalNavigation['phase'];
+  dieActivation: number;
+  restoringFocus: RefObject<boolean>;
+  onSelect: (id: Destination) => void;
+}) {
   const scene = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<{center: Point; width: number; targets: Partial<Record<Destination, Point>>}>();
   const [beam, setBeam] = useState<(ReturnType<typeof orbitalConnection> & {id: Destination; activation: number}) | null>(null);
   const [beamVisible, setBeamVisible] = useState(false);
+  const track = useRef<SVGPathElement>(null);
+  const pulse = useRef<SVGPathElement>(null);
+  const marker = useRef<SVGGElement>(null);
+  const orbit = useRef<{angle: number; seconds: number} | null>(null);
+  const diskSeconds = useRef(0);
+  const tether = useRef<{center: Point; width: number; target: Point; activation: number} | null>(null);
   const activation = useRef<{id: Destination | null; count: number; displayed: Destination | null}>({id: null, count: 0, displayed: null});
   const [interaction, setInteraction] = useState<NodeInteraction>({pointer: null, focus: null, last: null});
   const selected = destination;
-  const active = selected ?? activeNode(interaction);
+  const active = selected ?? (phase === 'exploration' ? activeNode(interaction) : null);
+
+  useLayoutEffect(() => {
+    if (phase === 'returning') setInteraction({pointer: null, focus: null, last: null});
+  }, [phase]);
+
+  const drawOrbit = useCallback((seconds: number) => {
+    diskSeconds.current = seconds;
+    const motion = orbit.current;
+    if (!motion) return;
+    motion.angle = advanceOrbitalMarker(motion.angle, Math.max(0, seconds - motion.seconds));
+    motion.seconds = seconds;
+    const link = tether.current;
+    if (!link || !marker.current) return;
+    const {origin, path, depth} = orbitalConnection(link.center, link.target, link.width, link.activation, motion.angle);
+    track.current?.setAttribute('d', path);
+    pulse.current?.setAttribute('d', path);
+    marker.current.setAttribute('transform', `translate(${origin.x} ${origin.y})`);
+    marker.current.setAttribute('opacity', (.77 + .23 * depth).toFixed(3));
+  }, []);
 
   function interact(source: 'pointer' | 'focus', id: Destination | null) {
+    if (phase !== 'exploration') return;
     setInteraction(previous => {
       const next = {...previous, [source]: id};
       return {...next, last: id ?? activeNode(next) ?? previous.last};
@@ -106,7 +138,9 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
 
   useLayoutEffect(() => {
     const state = activation.current;
-    if (!active || !layout?.targets[active]) {
+    if (!selected) orbit.current = null;
+    const target = active && layout?.targets[active];
+    if (!active || !layout || !target) {
       state.id = null;
       setBeamVisible(false);
       return;
@@ -116,10 +150,16 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
       state.id = active;
       state.count++;
     }
-    const next = {...orbitalConnection(layout.center, layout.targets[active], layout.width, state.count), id: active, activation: state.count};
+    if (selected && !orbit.current) {
+      orbit.current = {angle: orbitalMarkerStart(layout.center, target, state.count), seconds: diskSeconds.current};
+    }
     const show = () => {
       state.displayed = active;
-      setBeam(next);
+      setBeam({
+        ...orbitalConnection(layout.center, target, layout.width, state.count, orbit.current?.angle),
+        id: active,
+        activation: state.count,
+      });
       setBeamVisible(true);
     };
     if ((!fresh && state.displayed === active) || !state.displayed || matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -129,14 +169,20 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
     setBeamVisible(false);
     const timer = setTimeout(show, 120);
     return () => clearTimeout(timer);
-  }, [active, layout]);
+  }, [active, layout, selected]);
+
+  useLayoutEffect(() => {
+    const target = beam && layout?.targets[beam.id];
+    tether.current = beam && layout && target ? {center: layout.center, width: layout.width, target, activation: beam.activation} : null;
+    drawOrbit(diskSeconds.current);
+  }, [beam, layout, drawOrbit]);
 
   const arcStart = orbitPoint(-1.50);
   const arcEnd = orbitPoint(1.52);
 
   return (
     <div ref={scene} className="orbital-scene" data-observing={active !== null}>
-      <OrbitalArt slowDie={active !== null} />
+      <OrbitalArt slowDie={active !== null} cruising={selected !== null && phase === 'destination'} activation={dieActivation} onDiskFrame={drawOrbit} />
       <svg className="orbital-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id="orbit-rail-light" x1="0" x2="0" y1="0" y2="1">
@@ -160,12 +206,24 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
             <stop offset=".24" className="orbital-source-light" stopOpacity=".38" />
             <stop offset="1" className="orbital-source-light" stopOpacity="0" />
           </radialGradient>
+          <radialGradient id="orbit-wire-occlusion">
+            <stop offset=".72" stopColor="black" />
+            <stop offset="1" stopColor="white" />
+          </radialGradient>
+          {layout && (
+            <mask id="orbit-wire-mask" maskUnits="userSpaceOnUse" x="0" y="0" width="100%" height="100%">
+              <rect width="100%" height="100%" fill="white" />
+              <circle cx={layout.center.x} cy={layout.center.y} r={layout.width * .135} fill="url(#orbit-wire-occlusion)" />
+            </mask>
+          )}
         </defs>
         {beam && (
           <g key={beam.activation} className="orbital-connection-shape">
-            <path d={beam.path} className="orbital-connection-track" pathLength="1" />
-            <path d={beam.path} className="orbital-connection-pulse" pathLength="1" />
-            <g className="orbital-source-star" transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
+            <g mask={layout ? 'url(#orbit-wire-mask)' : undefined}>
+              <path ref={track} d={beam.path} className="orbital-connection-track" pathLength="1" />
+              <path ref={pulse} d={beam.path} className="orbital-connection-pulse" pathLength="1" />
+            </g>
+            <g ref={marker} className="orbital-source-star" opacity={selected ? .77 + .23 * beam.depth : 1} transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
               <circle r="12" fill="url(#orbit-source-halo)" className="orbital-source-halo" />
               <g className="orbital-source-flare">
                 <circle r="3" />
@@ -184,6 +242,7 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
               className="orbital-node"
               data-active={active === id}
               data-selected={selected === id}
+              aria-label={label}
               aria-expanded={selected === id}
               aria-controls="orbital-destination-panel"
               aria-hidden={!!selected && selected !== id || undefined}
@@ -193,7 +252,7 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
               onPointerLeave={() => interact('pointer', null)}
               onPointerCancel={() => interact('pointer', null)}
               onFocus={event => {
-                if (event.currentTarget.matches(':focus-visible')) interact('focus', id);
+                if (!restoringFocus.current && event.currentTarget.matches(':focus-visible')) interact('focus', id);
               }}
               onBlur={() => interact('focus', null)}
               onClick={() => onSelect(id)}
@@ -215,14 +274,26 @@ function OrbitalScene({destination, phase, onSelect}: {destination: Destination 
 export function OrbitalHome(props: OrbitalHomeProps) {
   const {books, sheets, onSystem, onAllSystems, onCreateSystem, onCreateCharacter, onOpenCharacter, onAllCharacters} = props;
   const navigation = useOrbitalNavigation();
+  const [dieActivation, setDieActivation] = useState(0);
+  const selectDestination = (id: Destination) => {
+    if (navigation.destination !== id || navigation.phase === 'returning') {
+      setDieActivation(count => count + 1);
+      navigation.select(id);
+    }
+  };
   const root = useRef<HTMLDivElement>(null);
   const lastDestination = useRef<Destination | null>(null);
+  const restoringFocus = useRef(false);
   const expanded = navigation.destination !== null && navigation.phase !== 'returning';
   useEffect(() => {
     if (navigation.destination) lastDestination.current = navigation.destination;
     if (navigation.phase === 'destination' && !document.querySelector('dialog[open]') && !document.activeElement?.matches('.orbital-d20-control')) root.current?.querySelector<HTMLElement>('#orbital-destination-title')?.focus({preventScroll: true});
     if (navigation.phase === 'exploration' && lastDestination.current) {
-      if (!document.querySelector('dialog[open]')) root.current?.querySelector<HTMLElement>(`[data-orbital-anchor="${lastDestination.current}"]`)?.closest('button')?.focus({preventScroll: true});
+      if (!document.querySelector('dialog[open]')) {
+        restoringFocus.current = true;
+        root.current?.querySelector<HTMLElement>(`[data-orbital-anchor="${lastDestination.current}"]`)?.closest('button')?.focus({preventScroll: true});
+        restoringFocus.current = false;
+      }
       lastDestination.current = null;
     }
   }, [navigation.phase, navigation.destination]);
@@ -260,8 +331,8 @@ export function OrbitalHome(props: OrbitalHomeProps) {
     }}>
       <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
-      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} onSelect={navigation.select} />
-      {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={navigation.select} />}
+      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={dieActivation} restoringFocus={restoringFocus} onSelect={selectDestination} />
+      {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={selectDestination} />}
       <div className="orbital-workspace" inert={navigation.phase !== 'exploration'} aria-hidden={navigation.phase !== 'exploration' || undefined}>
         <section className="orbital-list" aria-labelledby="orbital-systems-heading">
           <h2 id="orbital-systems-heading">Seus sistemas</h2>

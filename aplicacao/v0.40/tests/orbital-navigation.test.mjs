@@ -54,6 +54,8 @@ test('Zoom, troca e Escape preservam os mesmos nós do cenário e restauram foco
     await waitFor(()=>home.dataset.phase==='exploration');
     assert.equal(window.location.hash,'#inicio');
     assert.equal(document.activeElement.querySelector('[data-orbital-anchor]')?.dataset.orbitalAnchor,'sheets');
+    assert.equal(art.dataset.diskSelected,'false','restaurar o foco não freia o disco novamente');
+    await waitFor(()=>art.dataset.diskMotion==='orbiting');
     assert(!home.querySelector('.orbital-workspace').hasAttribute('inert'));
     assert.equal(home.querySelector('.orbital-destination-panel'),null);
     assert.equal(home.querySelector('.orbital-starfield'),stars);
@@ -147,6 +149,54 @@ test('Manipular o D20 durante a aproximação mantém o controle manual focado',
     assert.equal(document.activeElement,control);
     assert.equal(ui.host.querySelector('.orbital-art').dataset.diskSelected,'true');
   } finally {await ui.close();window.history.replaceState(null,'','#inicio');}
+});
+
+test('Selecionar transforma o dado; foco, retorno e movimento reduzido preservam o comportamento esperado', async () => {
+  const ui = await start();
+  try {
+    const home = ui.host.querySelector('.orbital-home');
+    const art = home.querySelector('.orbital-art');
+    const die = art.querySelector('.orbital-d20');
+    const control = art.querySelector('.orbital-d20-control');
+    const systems = home.querySelector('.orbital-node[aria-label="Sistemas"]');
+    await act(async () => systems.focus());
+    assert.equal(die.dataset.die, '20');
+    assert.equal(art.dataset.transforming, 'false');
+    await act(async () => systems.click());
+    assert.equal(art.dataset.transforming, 'true');
+    await waitFor(() => home.dataset.phase === 'destination' && art.dataset.transforming === 'false');
+    assert.notEqual(die.dataset.die, '20');
+    const systemsDie = die.dataset.die;
+    assert.match(control.getAttribute('aria-label'), new RegExp('D' + systemsDie + ' com'));
+    assert.equal(art.dataset.diskCruising, 'true');
+    await preferences({motionReduced: true});
+    assert.equal(art.dataset.diskMotion, 'paused');
+    await act(async () => home.querySelector('.orbital-destination-switcher a[href="#inicio/fichas"]').click());
+    assert.equal(home.dataset.phase, 'destination');
+    assert.equal(art.dataset.transforming, 'false');
+    assert.notEqual(die.dataset.die, systemsDie);
+    const sheetsDie = die.dataset.die;
+    assert.equal(home.querySelector('.orbital-art'), art);
+    assert.equal(home.querySelectorAll('.orbital-connection[data-active="true"]').length, 1);
+    const edges = die.querySelector('path');
+    const beforeDrag = edges.getAttribute('d');
+    await act(async () => {
+      for (const [type, x, y] of [['pointerdown', 20, 20], ['pointermove', 43, 28], ['pointerup', 43, 28]]) {
+        const event = new MouseEvent(type, {bubbles:true, button:0, clientX:x, clientY:y});
+        Object.defineProperties(event, {pointerId:{value:1}, pointerType:{value:'touch'}, isPrimary:{value:true}});
+        control.dispatchEvent(event);
+      }
+    });
+    await waitFor(() => edges.getAttribute('d') !== beforeDrag);
+    assert.equal(die.dataset.die, sheetsDie, 'o arraste gira o modelo mesmo em movimento reduzido');
+    await act(async () => document.activeElement.dispatchEvent(new KeyboardEvent('keydown', {key:'Escape', bubbles:true, cancelable:true})));
+    assert.equal(home.dataset.phase, 'exploration');
+    assert.equal(die.dataset.die, sheetsDie);
+  } finally {
+    await ui.close();
+    await preferences({motionReduced:false});
+    window.history.replaceState(null,'','#inicio');
+  }
 });
 
 

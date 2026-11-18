@@ -3,12 +3,13 @@ const bandCount = 11;
 const firstRadius = .245;
 const bandWidth = .071;
 const feather = .022;
+export const EXPANDED_ORBITAL_SPEED = .18;
+export const ORBITAL_MARKER_BAND = 7;
 
 export type OrbitalFlowClock = {seconds: number; speed: number};
 
 /** Integrate an interruptible speed envelope without losing orbital phase. */
-export function advanceOrbitalFlow(clock: OrbitalFlowClock, seconds: number, selected: boolean) {
-  const target = selected ? 0 : 1;
+export function advanceOrbitalFlow(clock: OrbitalFlowClock, seconds: number, target: number) {
   const decay = Math.exp(-seconds / .18);
   clock.seconds += target * seconds + (clock.speed - target) * .18 * (1 - decay);
   const speed = target + (clock.speed - target) * decay;

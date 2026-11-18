@@ -4,15 +4,15 @@
   --orbit-space-y: 0%;
   --orbit-space-origin: 50%;
 }
-.orbital-home[data-destination='systems'] {--orbit-camera-y:60px;--orbit-space-y:5%;--orbit-space-origin:25%}
+.orbital-home[data-destination='systems'] {--orbit-camera-y:clamp(24px,calc(23svh - 134px),60px);--orbit-space-y:5%;--orbit-space-origin:25%}
 .orbital-home[data-destination='sheets'] {--orbit-camera-y:20px;--orbit-space-y:2%;--orbit-space-origin:40%}
 .orbital-home[data-destination='pdfs'] {--orbit-camera-y:-40px;--orbit-space-y:-2%;--orbit-space-origin:60%}
-.orbital-home[data-destination='agenda'] {--orbit-camera-y:-95px;--orbit-space-y:-5%;--orbit-space-origin:76%}
+.orbital-home[data-destination='agenda'] {--orbit-camera-y:clamp(-95px,calc(260px - 40svh),-42px);--orbit-space-y:-5%;--orbit-space-origin:76%}
 .orbital-scene {
   transform-origin:42% 51%;
   transition:transform 1100ms cubic-bezier(.23,1,.32,1);
 }
-.orbital-home[data-expanded='true'] .orbital-scene {transform:translate(-53%,var(--orbit-camera-y)) scale(1.12)}
+.orbital-home[data-expanded='true'] .orbital-scene {transform:translate(-36%,var(--orbit-camera-y)) scale(.90)}
 .orbital-home[data-phase='returning'] .orbital-scene {transition-duration:850ms}
 .orbital-home .orbital-workspace {transition:opacity 180ms cubic-bezier(.23,1,.32,1),transform 240ms cubic-bezier(.23,1,.32,1)}
 .orbital-home[data-expanded='true'] .orbital-workspace {opacity:0;transform:translateX(-24px);pointer-events:none}
@@ -66,14 +66,18 @@
 @media(hover:hover) and (pointer:fine) {
   .orbital-destination-panel :is(a,button):hover {color:var(--orbit-node-accent)}
 }
+@media(min-width:901px) {
+  /* The destination heading carries the name. Keep the selected node clear of its panel. */
+  .orbital-home[data-expanded='true'] .orbital-node[data-selected='true'] > span:last-child {display:none}
+}
 @media(max-width:900px) {
   /* Recompose vertically; the disk recedes above the content instead of crossing it. */
   .orbital-home[data-expanded='true'] {min-height:820px}
-  .orbital-home[data-expanded='true'] .orbital-scene {transform:translate(-10%,-65px) scale(.78);transform-origin:50% 0}
+  .orbital-home[data-expanded='true'] .orbital-scene {transform:translate(-10%, max(-8vw, -42px)) scale(.78);transform-origin:50% 0}
   .orbital-home[data-expanded='true'] .orbital-navigation {border-color:transparent}
   .orbital-home[data-expanded='true'] .orbital-node {background:transparent;border-color:transparent}
   .orbital-home[data-expanded='true'] .orbital-workspace {visibility:hidden}
-  .orbital-destination-panel {top:300px;left:0;right:0}
+  .orbital-destination-panel {top:clamp(270px, calc(82vw - 18px), 440px);left:0;right:0}
   .orbital-destination-switcher {margin:12px 0 24px;gap:8px 23px}
   .orbital-destination-content h2 {font-size:30px}
   .orbital-destination-content ul {max-height:280px}
