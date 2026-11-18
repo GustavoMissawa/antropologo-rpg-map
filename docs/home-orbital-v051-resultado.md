@@ -157,3 +157,8 @@ os algarismos. Os padrões alternados usam proporções iguais de cada cor e
 deslocam-se com o mesmo período. O número original fica sobre os traços
 para preservar o núcleo branco. A saída antecipada limpa o crítico. O
 destaque dura 1,35 s dentro dos 5 s de exibição.
+
+A publicação 114 do projeto original exibe 0.49 e o commit ce495579
+em Sobre. O navegador mostrou os seis máximos em amostras com dois pares
+de cores e confirmou o resultado 20 em produção. Resultados comuns
+conservaram a saída antecipada. Os 457 testes, TypeScript e build passaram.
