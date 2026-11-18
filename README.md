@@ -13,6 +13,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-origem-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.49 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.49-previa-orbital` | Órbita na prévia por mouse e transformação do dado na seleção. |
 | v0.47 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.47-orbita-e-dados` | Órbita completa da origem do fio e transformação do dado central. |
 | v0.46 — Navegação cósmica · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.46-navegacao-cosmica` | Destinos expandidos, listas contextuais e câmera cósmica. |
 | v0.45 — Nebulosas aleatórias · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.45-nebulosas-aleatorias` | Dissipação das bordas e composição por carregamento. |
@@ -24,7 +25,9 @@ O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip
 
 ## Aparência da Home Orbital
 
-A [v0.48](docs/home-orbital-v048-hover.md) também transforma o dado ao passar o mouse sobre um nó orbital.
+A [v0.49](docs/home-orbital-v049-previa.md) mantém o disco e a estrela em movimento na prévia por mouse. A seleção do destino aciona a transformação do dado.
+
+A [v0.48](docs/home-orbital-v048-hover.md) introduziu a transformação do dado ao passar o mouse sobre um nó orbital.
 
 A [documentação da v0.47](docs/home-orbital-v047-orbita-e-dados.md) descreve o relógio compartilhado da órbita, o fio dinâmico e a transformação entre as seis geometrias do dado central.
 
