@@ -184,7 +184,7 @@ test('Selecionar transforma o dado; foco, retorno e movimento reduzido preservam
     await waitFor(() => home.dataset.phase === 'destination' && art.dataset.transforming === 'false');
     assert.notEqual(die.dataset.die, '20');
     const systemsDie = die.dataset.die;
-    assert.match(control.getAttribute('aria-label'), new RegExp('D' + systemsDie + ' com'));
+    assert.equal(control.getAttribute('aria-label'), `Rolar dado D${systemsDie}`);
     assert.equal(art.dataset.diskCruising, 'true');
     await preferences({motionReduced: true});
     assert.equal(art.dataset.diskMotion, 'paused');

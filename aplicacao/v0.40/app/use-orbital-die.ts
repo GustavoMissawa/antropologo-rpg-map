@@ -28,13 +28,14 @@ type SettlingRoll = {
   phase: 'settling';
   start: Quaternion;
   elapsed: number;
+  fromClick: boolean;
   result: ReturnType<typeof createOrbitalRoll>;
 };
 type Roll = SettlingRoll | {phase: 'visible' | 'fading'};
 
 export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: boolean, activation: number) {
   const die = useRef<SVGSVGElement>(null);
-  const control = useRef<HTMLDivElement>(null);
+  const control = useRef<HTMLButtonElement>(null);
   const result = useRef<SVGTextElement>(null);
   const announcement = useRef<HTMLDivElement>(null);
   const slow = useRef(slowDie);
@@ -84,6 +85,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     let roll: Roll | null = null;
     let fade: Animation | null = null;
     let ignoreKeyRepeat = false;
+    let lastPressType = '';
 
     function paint() {
       const next = projectOrbitalDie(point => rotateOrbitalPoint(point, motion.orientation), orbitalDieMeshes[kind]);
@@ -103,7 +105,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     function showKind(next: OrbitalDieKind) {
       kind = next;
       model.dataset.die = String(kind);
-      hitArea.setAttribute('aria-label', `Girar o dado D${kind} com as setas do teclado`);
+      hitArea.setAttribute('aria-label', `Rolar dado D${kind}`);
     }
 
     function clearShift() {
@@ -152,24 +154,28 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
         return;
       }
 
+      startRoll(false);
+    }
+
+    function startRoll(fromClick: boolean) {
       clearActivity();
       if (!shown() || shift || roll) return;
       clearOrbitalInput(motion);
       motion.automatic.speed = 0;
-      roll = {phase: 'settling', elapsed: 0, start: motion.orientation, result: createOrbitalRoll(kind, motion.orientation)};
+      roll = {phase: 'settling', elapsed: 0, start: motion.orientation, fromClick, result: createOrbitalRoll(kind, motion.orientation)};
       model.dataset.rollPhase = roll.phase;
       if (reduced.matches) revealResult(roll);
       else schedule();
     }
 
-    function trackMovement(now: number) {
+    function trackMovement(now: number, threshold?: number) {
       if (qualified && now - lastMovement >= AMBIENT_MOTION_IDLE_MS) {
         window.clearTimeout(idleTimer);
         waitForStop();
         return;
       }
       if (!qualified) {
-        const observed = advanceAmbientMotion(activity, now, true);
+        const observed = advanceAmbientMotion(activity, now, true, threshold);
         activity = observed.state;
         qualified = observed.triggered;
       }
@@ -248,7 +254,8 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
         const seconds = Math.min(delta, 60) / 1000;
         if (roll?.phase === 'settling') {
           roll.elapsed += seconds;
-          const progress = Math.min(1, roll.elapsed / ORBITAL_ROLL_ALIGN_SECONDS);
+          const duration = roll.fromClick ? .95 : ORBITAL_ROLL_ALIGN_SECONDS;
+          const progress = Math.min(1, roll.elapsed / duration);
           if (progress === 1) {
             revealResult(roll);
             return;
@@ -256,6 +263,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
           // Arranque suave e desaceleração progressiva até o repouso.
           const eased = progress ** 2 * (6 - 8 * progress + 3 * progress ** 2);
           motion.orientation = interpolateOrbitalOrientation(roll.start, roll.result.target, eased);
+          if (roll.fromClick) turnOrbitalDie(motion, 2 * Math.PI * eased);
         } else {
           advanceOrbitalDie(motion, seconds, slow.current, reduced.matches);
         }
@@ -289,7 +297,9 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     }
 
     function touchStart(event: PointerEvent) {
-      if (event.pointerType === 'mouse' || !event.isPrimary || event.button !== 0) return;
+      if (!event.isPrimary || event.button !== 0) return;
+      lastPressType = event.pointerType;
+      if (event.pointerType === 'mouse') return;
       if (pointer?.type === 'mouse') resetInput();
       start(event);
       if (pointer?.id === event.pointerId) hitArea.setPointerCapture?.(event.pointerId);
@@ -308,7 +318,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
         return;
       }
       const now = performance.now();
-      trackMovement(now);
+      trackMovement(now, pointer.type === 'touch' ? 1000 : undefined);
       if (roll) return;
       addOrbitalInput(motion, dy * sensitivity, dx * sensitivity, now / 1000);
       schedule();
@@ -342,6 +352,13 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       clearActivity();
       clearOrbitalInput(motion);
       if (id !== undefined && hitArea.hasPointerCapture?.(id)) hitArea.releasePointerCapture(id);
+    }
+
+    function click(event: PointerEvent) {
+      const type = event.pointerType || lastPressType;
+      if (event.detail !== 0 && type && type !== 'mouse') return;
+      if (roll) dismissResult(ORBITAL_RESULT_INPUT_FADE_MS);
+      else startRoll(true);
     }
 
     function keyboard(event: KeyboardEvent) {
@@ -386,7 +403,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     const listeners = {
       pointerenter: mouseEnter, pointerleave: leave, pointerdown: touchStart,
       pointermove: move, pointerup: release, pointercancel: cancel,
-      lostpointercapture: cancel, keydown: keyboard,
+      lostpointercapture: cancel, keydown: keyboard, click,
     };
     const abort = new window.AbortController();
     for (const [name, callback] of Object.entries(listeners)) {

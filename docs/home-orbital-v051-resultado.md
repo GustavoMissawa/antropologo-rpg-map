@@ -85,3 +85,20 @@ GitHub `8b4e7d3b9602b25af48c6c2e629919f5395a15c3`. Em produção, Sobre exibiu *
 **8b4e7d3b**. Uma rolagem no tema escuro confirmou a virada gradual
 da geometria e mostrou o número fino em Safira com halo Violeta. A versão
 anterior e os vínculos D1/R2 foram preservados.
+
+## Entradas de rolagem na v0.53
+
+O botão do dado inicia a rolagem com um clique do mouse ou com Enter ou
+Espaço. A animação combina uma volta completa com o alinhamento da face
+sorteada em aproximadamente 950 ms. A preferência de movimento reduzido
+mostra o resultado imediatamente. Um clique com o resultado na tela o
+dispensa, e o próximo clique pode iniciar outra rolagem.
+
+Um arraste de toque qualifica a rolagem após um segundo de movimento
+contínuo. O dado espera a parada antes de alinhar a face. A entrada por
+movimento do mouse e pelas setas mantém o limiar de dois segundos. O
+limiar de toque é restrito ao dado Orbital.
+
+Na prévia Chromium, clique e Enter animaram o D20 e revelaram números
+válidos. A validação automatizada cobre toque sem arraste, arraste de
+900 ms e de 1 s, dispensa do resultado e seleção de destino.

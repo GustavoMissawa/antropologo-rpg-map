@@ -314,6 +314,9 @@
 .orbital-d20:is([data-die='4'], [data-die='10']) { --orbital-die-fit: 1.16; }
 .orbital-d20-control {
   position: absolute;
+  padding: 0;
+  border: 0;
+  background: transparent;
   width: max(22%, 84px);
   aspect-ratio: 1;
   left: 50%;

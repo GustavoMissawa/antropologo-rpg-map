@@ -189,14 +189,40 @@ test('O primeiro movimento dispensa o resultado em 200 ms, descarta os deslocame
   assert.equal(ui.timers.size, 0);
 });
 
-test('O arraste por toque dispensa a face e uma seleção orbital cancela o efeito em curso', async t => {
+test('Um clique inicia a rolagem e um segundo clique dispensa o resultado', async t => {
+  const ui = await setup(t);
+  const click = () => ui.surface.dispatchEvent(new MouseEvent('click', {detail: 1}));
+  ui.pointer('pointerdown', 50, 'mouse');
+  click();
+  assert.equal(ui.phase(), 'visible', 'o movimento reduzido revela a face imediatamente');
+  assert.match(ui.number.textContent, /^(?:[1-9]|1\d|20)$/);
+  const face = ui.path();
+  click();
+  click();
+  assert.equal(ui.phase(), 'fading');
+  assert.equal(ui.animations.length, 1);
+  assert.equal(ui.path(), face);
+  ui.animations[0].finish();
+  assert.equal(ui.phase(), 'idle');
+});
+
+test('O toque exige um segundo de arraste e a seleção orbital cancela o efeito em curso', async t => {
   const ui = await setup(t);
   let capture = null;
   ui.surface.setPointerCapture = id => {capture = id;};
   ui.surface.hasPointerCapture = id => capture === id;
   ui.surface.releasePointerCapture = () => {capture = null;};
   ui.pointer('pointerdown', 50, 'touch');
-  ui.moveFor(2000, 'touch');
+  ui.pointer('pointerup', 50, 'touch');
+  ui.surface.dispatchEvent(new MouseEvent('click', {detail: 1}));
+  assert.equal(ui.phase(), 'idle', 'um toque sem arrastar não lança o dado');
+  ui.pointer('pointerdown', 50, 'touch');
+  ui.moveFor(900, 'touch');
+  ui.pointer('pointerup', 54, 'touch');
+  ui.advance(250);
+  assert.equal(ui.phase(), 'idle');
+  ui.pointer('pointerdown', 50, 'touch');
+  ui.moveFor(1000, 'touch');
   ui.pointer('pointerup', 55, 'touch');
   ui.advance(250);
   assert.equal(ui.phase(), 'visible');

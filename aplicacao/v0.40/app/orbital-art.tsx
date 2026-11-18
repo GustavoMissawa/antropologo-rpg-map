@@ -185,7 +185,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
         <path className="orbital-d20-edges" d={initialOrbitalFrame.edges} />
         <text ref={result} className="orbital-die-result" textAnchor="middle" dominantBaseline="central" />
       </svg>
-      <div ref={control} className="orbital-d20-control" role="group" tabIndex={0} aria-label="Girar o dado D20 com as setas do teclado" aria-description="Mova o dado por pelo menos 2 segundos e pare para rolar." />
+      <button ref={control} className="orbital-d20-control" type="button" aria-label="Rolar dado D20" aria-description="Clique, pressione Enter ou arraste por 1 segundo com o dedo para rolar. As setas giram o dado." />
       <div ref={announcement} className="orbital-visually-hidden" role="status" />
     </div>
   );
