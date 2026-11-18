@@ -16,7 +16,7 @@ test('As paletas antigas mantêm modo, primária e recomendação de uma secund�
  });
  for (const palette of palettes) {
   const old = {mode:'dark', palette:palette.id};
-  assert.deepEqual(parseAppearance(old), {...old, nebulae:true});
+  assert.deepEqual(parseAppearance(old), {...old, nebulae:true, interfaceStyle:'orbital'});
   assert.ok(secondaryPalettes.some(secondary => secondary.id === recommendedSecondary[palette.id]));
  }
  assert.equal(secondaryPalettes.find(p => p.id === 'gold').swatch, '#f2c780');
@@ -25,15 +25,15 @@ test('As paletas antigas mantêm modo, primária e recomendação de uma secund�
 
 test('A leitura migra a secundária antiga para um cartão e descarta valores inválidos', () => {
  const raw = {mode:'dark', palette:'blue', primary:' #EC689E ', secondary:'#47D5D8'};
- assert.deepEqual(parseAppearance(raw), {mode:'dark', palette:'blue', secondaryPalette:'cyan', nebulae:true});
- assert.deepEqual(parseAppearance({...raw, secondaryPalette:'coral'}), {mode:'dark', palette:'blue', secondaryPalette:'coral', nebulae:true});
- assert.deepEqual(parseAppearance({...raw, secondaryPalette:'__proto__'}), {mode:'dark', palette:'blue', nebulae:true});
- assert.deepEqual(parseAppearance({palette:'purple', secondary:'</script><style>'}), {mode:'light', palette:'purple', nebulae:true});
+ assert.deepEqual(parseAppearance(raw), {mode:'dark', palette:'blue', secondaryPalette:'cyan', nebulae:true, interfaceStyle:'orbital'});
+ assert.deepEqual(parseAppearance({...raw, secondaryPalette:'coral', interfaceStyle:'classic'}), {mode:'dark', palette:'blue', secondaryPalette:'coral', nebulae:true, interfaceStyle:'classic'});
+ assert.deepEqual(parseAppearance({...raw, secondaryPalette:'__proto__'}), {mode:'dark', palette:'blue', nebulae:true, interfaceStyle:'orbital'});
+ assert.deepEqual(parseAppearance({palette:'purple', secondary:'</script><style>', interfaceStyle:'other'}), {mode:'light', palette:'purple', nebulae:true, interfaceStyle:'orbital'});
  assert.deepEqual(parseAppearance({mode:'other', palette:'constructor'}), defaultAppearance);
 });
 
 test('Carga inicial e atualização em tempo real aplicam a mesma aparência orbital', () => {
- const raw = {mode:'dark', palette:'red', secondary:'#47D5D8'};
+ const raw = {mode:'dark', palette:'red', secondary:'#47D5D8', interfaceStyle:'classic'};
  function root() {
   const attrs = new Map();
   const properties = new Map();
@@ -53,6 +53,7 @@ test('Carga inicial e atualização em tempo real aplicam a mesma aparência orb
  applyOrbitalColors(updated, parseAppearance(raw));
  assert.equal(initial.dataset.mode, 'dark');
  assert.equal(initial.dataset.palette, 'red');
+ assert.equal(initial.dataset.interface, 'classic');
  assert.deepEqual(initial.attrs, updated.attrs);
  assert.deepEqual(initial.properties, updated.properties);
  assert.equal(updated.attrs.get('data-orbit-primary'), '#dc9a96');
@@ -184,11 +185,11 @@ test('Os cartões orbitais mantêm a secundária ao trocar de modo e a redefinem
   assert.equal(html.dataset.orbitPrimary, '#adb6c1');
   await select('mode', 'light');
   assert.equal(active('secondary'), 'cyan');
-  assert.deepEqual(JSON.parse(localStorage.getItem(key)), {mode:'light', palette:'graphite', secondaryPalette:'cyan', nebulae:true});
+  assert.deepEqual(JSON.parse(localStorage.getItem(key)), {mode:'light', palette:'graphite', secondaryPalette:'cyan', nebulae:true, interfaceStyle:'orbital'});
   assert.equal(platform.host.querySelector('.orbital-art'), art);
   await select('palette', 'blue');
   assert.equal(active('secondary'), 'violet');
-  assert.deepEqual(JSON.parse(localStorage.getItem(key)), {mode:'light', palette:'blue', nebulae:true});
+  assert.deepEqual(JSON.parse(localStorage.getItem(key)), {mode:'light', palette:'blue', nebulae:true, interfaceStyle:'orbital'});
   await select('mode', 'dark');
   await clickButton(dialog, 'Restaurar aparência padrão');
   assert.deepEqual(JSON.parse(localStorage.getItem(key)), defaultAppearance);

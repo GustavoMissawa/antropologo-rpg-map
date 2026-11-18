@@ -27,9 +27,9 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
   const handled = useRef(0);
 
   useLayoutEffect(() => {
-    if (activation === handled.current) return;
+    if (!activation || activation === handled.current || !requestShift.current) return;
     handled.current = activation;
-    requestShift.current?.();
+    requestShift.current();
   }, [activation]);
 
   useLayoutEffect(() => {
@@ -244,6 +244,10 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     window.addEventListener('blur', resetInput);
     requestShift.current = startShift;
     updateMotion();
+    if (activation && activation !== handled.current) {
+      handled.current = activation;
+      startShift();
+    }
 
     return () => {
       requestShift.current = null;

@@ -1,18 +1,21 @@
 'use client';
 
 import { useCallback,useEffect, useRef, useState, type ReactNode } from 'react';
-import { AppearanceControls } from './appearance';
+import { AppearanceControls, useAppearance } from './appearance';
 import {useSystemVisualState,hasSystemIdentity,SystemHeaderIdentity,SystemHeaderBackground,SystemMainBackground} from './system-identity';
 import {ContextHelp} from './context-help';
 import { ContentExportDialog } from './content-export';
 import { ContentImportReceipt,contentDragOver,contentDrop } from './content-import';
 import { readContentFile,importReceipt,SHEET_FILE_ACCEPT,type ImportedContent } from '../lib/content-file';
-import {orbitalDestinationFromHash} from '../lib/orbital-navigation';
+import type {OrbitalDestination} from '../lib/orbital-navigation';
+import {parsePlatformHash, platformHref, routeArea, routeForStyle, sectionRoute, type PlatformRoute} from '../lib/platform-navigation';
 import { SITE_VERSION } from '../lib/site-version';
 import {requestJson} from '../lib/browser-request';
 import {pdfsResponse,mergePdfCatalog} from '../lib/api-responses';
 import { HomeDiceBackground } from './home-dice-background';
 import {PlatformHome,CharacterLibrary} from './platform-home';
+import {OrbitalHome} from './orbital-home';
+import {WorkspaceHeading, WorkspaceTrail} from './orbital-workspace';
 import {useContentReveal} from './use-content-reveal';
 import {openPlatformSession} from '../lib/platform-session';
 import {resolveSystemContext,type PlatformPage} from '../lib/platform-context';
@@ -27,24 +30,38 @@ import { makeSheet, parseSheet, copySheet, bindSheetToRulebook, syncSheetSystem,
 type Page=PlatformPage;
 type TemplateWorkspace={bookId:string;bookName:string;sheet:Sheet;baseline:string|null};
 const names={home:'Início',rules:'Sistema',pdfs:'PDFs',sheet:'Ficha',agenda:'Agenda'};
+const areaNames={home:'Início',rules:'Sistemas',pdfs:'PDFs',sheet:'Fichas',agenda:'Agenda'};
+const editorWarning='Há alterações no tópico. Salve ou cancele a edição antes de sair de Sistema.';
 const categories=['Manuais','Personagens','Aventuras','Referências','Outros'];
 
 const date=(v:string)=>new Date(v).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
 const size=(bytes:number)=>bytes<1048576?`${Math.ceil(bytes/1024)} KB`:`${(bytes/1048576).toFixed(1)} MB`;
 function IconButton({label,children,...props}:{label:string;children:ReactNode;[k:string]:any}){return <button type="button" title={label} aria-label={label} className="icon-button" {...props}>{children}</button>;}
-function Modal({title,children,onClose,wide=false}:{title:string;children:ReactNode;onClose:()=>void;wide?:boolean}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{ref.current?.showModal();},[]);return <dialog ref={ref} className={'modal '+(wide?'wide':'')} aria-label={title} onCancel={onClose} onClick={e=>{if(e.target===ref.current)onClose();}}><div className="modal-head"><h2>{title}</h2><IconButton label="Fechar janela" onClick={onClose}><X size={20}/></IconButton></div>{children}</dialog>;}
+function Modal({title,children,onClose,wide=false,className=''}:{title:string;children:ReactNode;onClose:()=>void;wide?:boolean;className?:string}){const ref=useRef<HTMLDialogElement>(null);useEffect(()=>{ref.current?.showModal();},[]);return <dialog ref={ref} className={'modal '+(wide?'wide ':'')+className} aria-label={title} onCancel={onClose} onClick={e=>{if(e.target===ref.current)onClose();}}><div className="modal-head"><h2>{title}</h2><IconButton label="Fechar janela" onClick={onClose}><X size={20}/></IconButton></div>{children}</dialog>;}
 function Die({small=false}:{small?:boolean}){return <svg className={small?'die small':'die'} viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d={SHEET_DIE_PATHS[20]}/><text x="97" y="121" textAnchor="middle" style={{fontSize:20}}>20</text></svg>;}
 
 export default function App(){
-  const [page,setPage]=useState<Page>('home');
-  const [createSystemRequested,setCreateSystemRequested]=useState(false),[sheetLibrary,setSheetLibrary]=useState(false);
+  const appearance=useAppearance();
+  const style=appearance.value.interfaceStyle;
+  const orbital=style==='orbital';
+  const [route,setRoute]=useState<PlatformRoute>({page:'home'});
+  const displayedRoute=routeForStyle(route,style);
+  const page=displayedRoute.page;
+  const area=routeArea(displayedRoute);
+  const activeRulebookId=displayedRoute.page==='rules'?displayedRoute.bookId??null:null;
+  const sheetView=displayedRoute.page==='sheet'?displayedRoute.editor:undefined;
+  const historyHash=useRef<string|null>(null);
+  const [dieActivation,setDieActivation]=useState(0);
+  const activationCount=useRef(0);
+  const [createSystemRequested,setCreateSystemRequested]=useState(false);
   const [sheet,setSheet]=useState<Sheet|null>(null);const [recent,setRecent]=useState<Sheet[]>([]);
   const [templateDraft,setTemplateDraft]=useState<TemplateWorkspace|null>(null),[pendingEditorAction,setPendingEditorAction]=useState<(()=>void)|null>(null),[newSystemId,setNewSystemId]=useState('');
   const ruleEditorDirty=useRef(false),reportRuleEditorDirty=useCallback((dirty:boolean)=>{ruleEditorDirty.current=dirty;},[]);
-  const [rulebooks,setRulebooks]=useState<Rulebook[]>(()=>[makeAB10Rulebook()]);const [activeRulebookId,setActiveRulebookId]=useState<string|null>(null);
+  const [rulebooks,setRulebooks]=useState<Rulebook[]>(()=>[makeAB10Rulebook()]);
   const [contextId,setContextId]=useState<string|null>(null),[sessionReady,setSessionReady]=useState(false),[sessionError,setSessionError]=useState(''),[profileGlobal,setProfileGlobal]=useState(false);
   const sessionCache=useRef<Awaited<ReturnType<typeof openPlatformSession>>|null>(null);
   const [pdfs,setPdfs]=useState<PDF[]>([]);const [pdfLoading,setPdfLoading]=useState(true);const [pdfError,setPdfError]=useState('');
+  const [viewingPdf,setViewingPdf]=useState<PDF|null>(null);
   const [exporting,setExporting]=useState<Sheet|null>(null),[receipt,setReceipt]=useState('');
   const [toast,setToast]=useState('');const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const [modal,setModal]=useState<'new'|'pdf'|'help'|null>(null);const [confirm,setConfirm]=useState<{title:string;text:string;action:()=>void}|null>(null);
@@ -54,64 +71,195 @@ export default function App(){
   useEffect(()=>()=>{importRequest.current++;},[]);
   const templateDirty=!!templateDraft&&(templateDraft.baseline===null||templateDraft.baseline!==JSON.stringify(templateDraft.sheet));
   const templateBook=templateDraft?rulebooks.find(b=>b.id===templateDraft.bookId):undefined;
-  const rawEditorSheet=templateDraft?.sheet||sheet;
+  const visibleTemplate=sheetView?.kind==='template'&&templateDraft?.bookId===sheetView.id?templateDraft:null;
+  const currentCharacter=sheetView?.kind==='character'?(sheet?.id===sheetView.id?sheet:recent.find(item=>item.id===sheetView.id)):null;
+  const rawEditorSheet=visibleTemplate?.sheet||currentCharacter;
   const editorSheet=rawEditorSheet?syncSheetSystem(rawEditorSheet,rulebooks):null;
-  function notify(message:string){setToast(message);if(timer.current)clearTimeout(timer.current);timer.current=setTimeout(()=>setToast(''),4500);}
-  function go(p:Page){if(ruleEditorDirty.current){notify('Há alterações no tópico. Salve ou cancele a edição antes de sair de Sistema.');return;}setReceipt('');if(p==='rules')setActiveRulebookId(contextId);setPage(p);window.location.hash=({home:'inicio',rules:'regras',pdfs:'pdfs',sheet:'ficha',agenda:'agenda'})[p];window.scrollTo({top:0,behavior:'smooth'});}
-  useEffect(()=>{let alive=true;
-   (async()=>{let cache:Awaited<ReturnType<typeof openPlatformSession>>|undefined;try{
-    cache=await openPlatformSession();if(!alive){cache.close();return;}
-    const restored=await cache.load();if(!alive){cache.close();return;}
-    const orbital=orbitalDestinationFromHash(window.location.hash);sessionCache.current=cache;setRulebooks(restored.books);setContextId(orbital?null:restored.contextId);setActiveRulebookId(orbital?null:restored.contextId);setPage(orbital?'home':restored.page);
-    if(!orbital)window.history.replaceState(null,'',window.location.pathname+window.location.search+'#'+({home:'inicio',rules:'regras',pdfs:'pdfs',sheet:'ficha',agenda:'agenda'})[restored.page]);
-   }catch{cache?.close();if(alive)setSessionError('O navegador não permitiu recuperar o contexto da sessão. O cache existente foi preservado. Exporte novas alterações antes de recarregar.');}finally{if(alive)setSessionReady(true);}})();
-   return()=>{alive=false;sessionCache.current?.close();sessionCache.current=null;};
+  const sheetLibrary=!editorSheet&&(orbital||recent.length>0);
+  const notify=useCallback((message:string)=>{
+    setToast(message);
+    if(timer.current)clearTimeout(timer.current);
+    timer.current=setTimeout(()=>setToast(''),4500);
   },[]);
+  const navigate=useCallback((next:PlatformRoute, activate=false, replace=false)=>{
+    const hash=platformHref(next);
+    if(hash===historyHash.current)return true;
+    if(ruleEditorDirty.current){notify(editorWarning);return false;}
+    if(replace)window.history.replaceState(window.history.state,'',hash);
+    else window.history.pushState(window.history.state,'',hash);
+    historyHash.current=hash;
+    setReceipt('');
+    setViewingPdf(null);
+    setDieActivation(activate?++activationCount.current:0);
+    setRoute(next);
+    if(!replace)window.scrollTo({top:0,behavior:'instant'});
+    return true;
+  },[notify]);
+  const selectDestination=useCallback((destination:OrbitalDestination|null)=>{
+    navigate({page:'home',destination:destination??undefined},destination!==null);
+  },[navigate]);
+  function selectSection(next:Page){
+    if(!orbital&&next==='rules'){selectSystem(contextId);return;}
+    if(!orbital&&next==='sheet'){
+      const editor=templateDraft?{kind:'template' as const,id:templateDraft.bookId}:sheet?{kind:'character' as const,id:sheet.id}:undefined;
+      navigate({page:next,editor});
+      return;
+    }
+    const target=sectionRoute(next,style);
+    navigate(target,target.page==='home'&&!!target.destination);
+  }
+  useEffect(()=>{
+    let alive=true;
+    async function restore(){
+      let cache:Awaited<ReturnType<typeof openPlatformSession>>|undefined;
+      let fallback:PlatformRoute={page:'home'};
+      try {
+        cache=await openPlatformSession();
+        if(!alive){cache.close();return;}
+        const stored=await cache.load();
+        if(!alive){cache.close();return;}
+        sessionCache.current=cache;
+        setRulebooks(stored.books);
+        setContextId(stored.contextId);
+        fallback=stored.page==='rules'?{page:'rules',bookId:stored.contextId??undefined}:{page:stored.page};
+      } catch {
+        cache?.close();
+        if(!alive)return;
+        setSessionError('O navegador não permitiu recuperar o contexto da sessão. O cache existente foi preservado. Exporte novas alterações antes de recarregar.');
+      }
+      navigate(parsePlatformHash(window.location.hash)??fallback,false,true);
+      setSessionReady(true);
+    }
+    void restore();
+    return()=>{alive=false;sessionCache.current?.close();sessionCache.current=null;};
+  },[navigate]);
   useEffect(()=>{if(!sessionReady||!sessionCache.current)return;sessionCache.current.save({books:rulebooks,contextId,page}).then(()=>setSessionError('')).catch(()=>setSessionError('O contexto está ativo, mas não pôde ser guardado para recarregar esta aba. Exporte seus sistemas.'));},[sessionReady,rulebooks,contextId,page]);
-  useEffect(()=>{if(!sessionReady||!contextId||rulebooks.some(b=>b.id===contextId))return;setContextId(null);setActiveRulebookId(null);setPage('home');window.location.hash='inicio';},[sessionReady,rulebooks,contextId]);
-  useEffect(()=>{const navigate=()=>{const hash=window.location.hash;if(ruleEditorDirty.current&&hash!=='#regras'){window.history.replaceState(null,'',window.location.pathname+window.location.search+'#regras');notify('Salve ou cancele a edição antes de sair de Sistema.');return;}if(orbitalDestinationFromHash(hash)){setContextId(null);setActiveRulebookId(null);}setPage(hash==='#regras'?'rules':hash==='#pdfs'?'pdfs':hash==='#ficha'?'sheet':hash==='#agenda'?'agenda':'home');};window.addEventListener('hashchange',navigate);return()=>window.removeEventListener('hashchange',navigate);},[]);
-  function selectSystem(id:string|null){setActiveRulebookId(id);if(id)setContextId(id);}
-  function browseSystems(create=false){if(ruleEditorDirty.current){notify('Salve ou cancele a edição do tópico antes de trocar de sistema.');return;}go('rules');setActiveRulebookId(null);if(create)setCreateSystemRequested(true);}
-  function enterSystem(id:string){if(ruleEditorDirty.current){notify('Salve ou cancele a edição do tópico antes de trocar de sistema.');return;}go('rules');selectSystem(id);}
-  function openCharacter(value:Sheet){replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(false);setSheet(value);setPreview(false);go('sheet');});}
-  function returnToPlatform(){if(ruleEditorDirty.current){notify('Salve ou cancele a edição antes de voltar ao ANTROPOLOGO.');return;}setContextId(null);setActiveRulebookId(null);go('home');}
+  useEffect(()=>{
+    if(!sessionReady)return;
+    if(activeRulebookId&&rulebooks.some(book=>book.id===activeRulebookId))setContextId(activeRulebookId);
+    else if(contextId&&!rulebooks.some(book=>book.id===contextId))setContextId(null);
+  },[sessionReady,activeRulebookId,rulebooks,contextId]);
+  useEffect(()=>{
+    if(sessionReady&&route!==displayedRoute)navigate(displayedRoute,false,true);
+  },[sessionReady,route,displayedRoute,navigate]);
+  useEffect(()=>{
+    const sync=()=>{
+      const hash=window.location.hash;
+      if(historyHash.current===null||hash===historyHash.current)return;
+      if(ruleEditorDirty.current){
+        window.history.replaceState(window.history.state,'',historyHash.current);
+        notify(editorWarning);
+        return;
+      }
+      historyHash.current=hash;
+      setRoute(parsePlatformHash(hash)??{page:'home'});
+      setReceipt('');
+      setViewingPdf(null);
+      setDieActivation(0);
+    };
+    window.addEventListener('hashchange',sync);
+    window.addEventListener('popstate',sync);
+    return()=>{
+      window.removeEventListener('hashchange',sync);
+      window.removeEventListener('popstate',sync);
+      if(timer.current)clearTimeout(timer.current);
+    };
+  },[notify]);
+  function selectSystem(id:string|null){return navigate({page:'rules',bookId:id??undefined});}
+  function browseSystems(create=false){if(selectSystem(null)&&create)setCreateSystemRequested(true);}
+  function openCharacter(value:Sheet){
+    replaceTemplateWorkspace(()=>{
+      if(!navigate({page:'sheet',editor:{kind:'character',id:value.id}}))return;
+      setTemplateDraft(null);
+      setSheet(value);
+      setPreview(false);
+    });
+  }
+  function returnToPlatform(){if(navigate({page:'home'}))setContextId(null);}
   useEffect(()=>{if(sheet)setRecent(old=>[sheet,...old.filter(s=>s.id!==sheet.id)]);},[sheet]);
+  useEffect(()=>{
+    if(templateDraft||sheetView?.kind!=='template')return;
+    const book=rulebooks.find(item=>item.id===sheetView.id);
+    if(!book?.sheetTemplate)return;
+    const draft=bindSheetToRulebook(copySheet(book.sheetTemplate),book);
+    setTemplateDraft({bookId:book.id,bookName:book.name,sheet:draft,baseline:JSON.stringify(draft)});
+  },[templateDraft,sheetView,rulebooks]);
   useEffect(()=>{if(!templateDirty)return;const warn=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[templateDirty]);
   async function loadPdfs(){setPdfLoading(true);setPdfError('');try{const remote=pdfsResponse(await requestJson('/api/library'));setPdfs(current=>mergePdfCatalog(remote,current));}catch{setPdfError('Não foi possível carregar a biblioteca. Tente novamente.');}finally{setPdfLoading(false);}}
   useEffect(()=>{loadPdfs();},[]);
-  function updateSheet(fn:(s:Sheet)=>Sheet){setSheet(s=>s?{...fn(s),updatedAt:new Date().toISOString()}:s);}
-  function updateEditorSheet(fn:(s:Sheet)=>Sheet){if(templateDraft)setTemplateDraft(current=>current?{...current,sheet:{...fn(syncSheetSystem(current.sheet,rulebooks)),updatedAt:new Date().toISOString()}}:current);else updateSheet(s=>fn(syncSheetSystem(s,rulebooks)));}
+  function updateEditorSheet(fn:(s:Sheet)=>Sheet){
+    const update=(value:Sheet)=>({...fn(syncSheetSystem(value,rulebooks)),updatedAt:new Date().toISOString()});
+    if(visibleTemplate)setTemplateDraft(current=>current?{...current,sheet:update(current.sheet)}:current);
+    else if(currentCharacter)setSheet(current=>update(current?.id===currentCharacter.id?current:currentCharacter));
+  }
   function replaceTemplateWorkspace(action:()=>void){if(templateDirty){setPendingEditorAction(()=>action);return;}action();}
-  function editTemplate(book:Rulebook,createNew=false){if(book.id===AB10_RULEBOOK_ID)return;setContextId(book.id);if(templateDraft?.bookId===book.id&&(!createNew||!book.sheetTemplate)){go('sheet');setPreview(false);return;}replaceTemplateWorkspace(()=>{const draft=bindSheetToRulebook(!createNew&&book.sheetTemplate?copySheet(book.sheetTemplate):makeSheet(('Modelo — '+book.name).slice(0,200),''),book);setTemplateDraft({bookId:book.id,bookName:book.name,sheet:draft,baseline:!createNew&&book.sheetTemplate?JSON.stringify(draft):null});setPreview(false);go('sheet');});}
+  function editTemplate(book:Rulebook,createNew=false){
+    if(book.id===AB10_RULEBOOK_ID)return;
+    const target:PlatformRoute={page:'sheet',editor:{kind:'template',id:book.id}};
+    if(templateDraft?.bookId===book.id&&(!createNew||!book.sheetTemplate)){
+      if(navigate(target))setPreview(false);
+      return;
+    }
+    replaceTemplateWorkspace(()=>{
+      if(!navigate(target))return;
+      const draft=bindSheetToRulebook(!createNew&&book.sheetTemplate?copySheet(book.sheetTemplate):makeSheet(('Modelo — '+book.name).slice(0,200),''),book);
+      setContextId(book.id);
+      setTemplateDraft({bookId:book.id,bookName:book.name,sheet:draft,baseline:!createNew&&book.sheetTemplate?JSON.stringify(draft):null});
+      setPreview(false);
+    });
+  }
   function linkTemplate(book:Rulebook,source:Sheet|undefined){if(templateDraft?.bookId===book.id&&templateDirty)throw new Error('Há alterações no modelo abertas no editor. Salve ou descarte essas alterações antes de trocar o vínculo.');const current=rulebooks.find(b=>b.id===book.id);if(!current)throw new Error('Este conjunto não está mais nesta página.');const next=withRulebookSheetTemplate(current,source);setRulebooks(all=>all.map(b=>b.id===next.id?next:b));if(templateDraft?.bookId===book.id)setTemplateDraft(null);notify(source?'Ficha-modelo vinculada. Use Salvar regras para baixar o sistema completo.':'Ficha-modelo desvinculada. Os personagens foram mantidos.');}
   function saveTemplate(){if(!templateDraft)return;try{const current=rulebooks.find(b=>b.id===templateDraft.bookId);if(!current)throw new Error('O conjunto foi removido desta página. Você ainda pode exportar a ficha como JSON ou Super PNG.');const next=withRulebookSheetTemplate(current,templateDraft.sheet);setRulebooks(all=>all.map(b=>b.id===next.id?next:b));setTemplateDraft({...templateDraft,baseline:JSON.stringify(templateDraft.sheet)});notify('Modelo atualizado no sistema. Use Salvar regras para baixar regras e modelo juntos.');}catch(e){notify((e as Error).message);}}
-  function backToTemplateRules(){if(!templateDraft)return;setActiveRulebookId(templateBook?.id||null);setPage('rules');window.location.hash='regras';window.scrollTo({top:0,behavior:'smooth'});}
+  function backToTemplateRules(){if(templateDraft)selectSystem(templateBook?.id??null);}
   function discardTemplate(){if(!templateDraft)return;if(templateBook?.sheetTemplate){const draft=bindSheetToRulebook(copySheet(templateBook.sheetTemplate),templateBook);setTemplateDraft({...templateDraft,sheet:draft,baseline:JSON.stringify(draft)});notify('Alterações descartadas. O modelo salvo foi restaurado.');}else{backToTemplateRules();setTemplateDraft(null);notify('Criação do modelo cancelada.');}}
-  function exportSheet(source:Sheet|null=sheet){if(source)setExporting(syncSheetSystem(source,rulebooks));}
+  function exportSheet(source:Sheet|null=currentCharacter??null){if(source)setExporting(syncSheetSystem(source,rulebooks));}
   function acceptImported(result:ImportedContent){
-   replaceTemplateWorkspace(()=>{const message=importReceipt(result);if(result.kind==='character'){setTemplateDraft(null);setSheetLibrary(false);setSheet(result.content);setPreview(true);go('sheet');}else{addRulebook(rulebooks,result.content);setRulebooks(all=>addRulebook(all,result.content));go('rules');selectSystem(result.content.id);}setReceipt(result.source==='super-png'?message:'');notify(message);});
+   replaceTemplateWorkspace(()=>{
+    const message=importReceipt(result);
+    if(result.kind==='character'){
+      if(!navigate({page:'sheet',editor:{kind:'character',id:result.content.id}}))return;
+      setTemplateDraft(null);setSheet(result.content);setPreview(true);
+    }else{
+      addRulebook(rulebooks,result.content);
+      if(!selectSystem(result.content.id))return;
+      setRulebooks(all=>addRulebook(all,result.content));
+    }
+    setReceipt(result.source==='super-png'?message:'');notify(message);
+   });
   }
   async function importSheet(file?:File){if(!file)return;const request=++importRequest.current;try{const result=await readContentFile(file);if(request!==importRequest.current)return;if(result.kind==='ruleset')addRulebook(rulebooks,result.content);acceptImported(result);}catch(e){if(request===importRequest.current)notify((e as Error).message);}finally{if(request===importRequest.current&&importRef.current)importRef.current.value='';}}
   function openModal(m:typeof modal){setFormError('');setPdfFile(null);setPdfTitle('');if(m==='new')setNewSystemId(contextId||'');setModal(m);}
   function newCharacter(book?:Rulebook){openModal('new');if(book){setNewSystemId(book.id);setContextId(book.id);}}
-  function createCharacter(e:React.FormEvent<HTMLFormElement>){e.preventDefault();try{const data=new FormData(e.currentTarget),name=String(data.get('name')),player=String(data.get('player')),system=newSystemId?rulebooks.find(b=>b.id===newSystemId):undefined;if(newSystemId&&!system)throw new Error('O sistema selecionado não está disponível. Escolha outro.');const next=system?(system.sheetTemplate?characterFromRulebook(system,name,player):bindSheetToRulebook(makeSheet(name,player),system)):makeSheet(name,player);setModal(null);if(system)setContextId(system.id);replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(false);setSheet(next);setPreview(false);go('sheet');notify(system?.sheetTemplate?'Personagem criado com uma cópia independente do modelo.':system?'Ficha criada com os dados de '+system.name+'.':'Ficha criada. Adicione seu primeiro bloco.');});}catch(e){setFormError((e as Error).message);}}
+  function createCharacter(e:React.FormEvent<HTMLFormElement>){e.preventDefault();try{const data=new FormData(e.currentTarget),name=String(data.get('name')),player=String(data.get('player')),system=newSystemId?rulebooks.find(b=>b.id===newSystemId):undefined;if(newSystemId&&!system)throw new Error('O sistema selecionado não está disponível. Escolha outro.');const next=system?(system.sheetTemplate?characterFromRulebook(system,name,player):bindSheetToRulebook(makeSheet(name,player),system)):makeSheet(name,player);setModal(null);replaceTemplateWorkspace(()=>{if(!navigate({page:'sheet',editor:{kind:'character',id:next.id}}))return;setTemplateDraft(null);setSheet(next);setPreview(false);if(system)setContextId(system.id);notify(system?.sheetTemplate?'Personagem criado com uma cópia independente do modelo.':system?'Ficha criada com os dados de '+system.name+'.':'Ficha criada. Adicione seu primeiro bloco.');});}catch(e){setFormError((e as Error).message);}}
   async function uploadPdf(e:React.FormEvent<HTMLFormElement>){e.preventDefault();if(!pdfFile){setFormError('Selecione um arquivo PDF.');return;}if(pdfFile.size>20*1024*1024){setFormError('O limite é de 20 MB por PDF.');return;}const data=new FormData(e.currentTarget);setBusy(true);setFormError('');try{if(await pdfFile.slice(0,5).text()!=='%PDF-')throw new Error('O arquivo selecionado não é um PDF válido.');const title=String(data.get('title')||'').trim();if(!title)throw new Error('Informe o título do material.');const pdf:PDF={id:uid(),title,category:String(data.get('category')||'Outros'),description:String(data.get('description')||''),filename:pdfFile.name,size:pdfFile.size,createdAt:new Date().toISOString(),url:URL.createObjectURL(pdfFile)};setPdfs(old=>[pdf,...old]);setModal(null);setQuery('');setCategory('Todos');notify('PDF disponível apenas nesta página de teste.');}catch(e){setFormError((e as Error).message);}finally{setBusy(false);}}
   function removePdf(pdf:PDF){if(pdf.url)URL.revokeObjectURL(pdf.url);setPdfs(old=>old.filter(p=>p.id!==pdf.id));notify('PDF removido desta página.');}
   const visiblePdfs=pdfs.filter(p=>(category==='Todos'||p.category===category)&&`${p.title} ${p.description} ${p.filename}`.toLowerCase().includes(query.toLowerCase()));
 
   const mainRef=useRef<HTMLElement|null>(null);
-  useContentReveal(mainRef,sessionReady&&(page==='home'||page==='pdfs'||page==='rules'&&!activeRulebookId||page==='sheet'&&sheetLibrary),[page,contextId,rulebooks.length,recent.length,pdfs.length,sheetLibrary].join(':'));
+  useContentReveal(mainRef,sessionReady&&(page==='home'||page==='pdfs'||page==='rules'&&!activeRulebookId||page==='sheet'&&sheetLibrary),[page,style,contextId,rulebooks.length,recent.length,pdfs.length,sheetLibrary].join(':'));
   const visualState=useSystemVisualState();
   const selectedContext=resolveSystemContext(rulebooks,contextId);
-  const contextBook=profileGlobal?undefined:selectedContext;
-  const orbitalHome=page==='home'&&!selectedContext;
+  const contextBook=profileGlobal?undefined:orbital?resolveSystemContext(rulebooks,activeRulebookId??editorSheet?.system?.id??null):selectedContext;
+  const orbitalHome=page==='home'&&orbital;
   const hasIdentity=hasSystemIdentity(contextBook);
-  const fieldsCount=sheet?.blocks.reduce((n,b)=>n+b.fields.length,0)||0;
-  return <PlayerSpaceProvider onProfileVisibilityChange={setProfileGlobal}>{!sessionReady&&<div className="session-restore-status" role="status">Preparando sua sessão…</div>}<div inert={!sessionReady} data-session-ready={sessionReady} data-context={contextBook?'system':'global'} data-system-id={contextBook?.id||undefined} className={'app-shell'+(hasIdentity?' has-system-identity':'')+(contextBook?' system-mode':' global-mode')+(orbitalHome?' orbital-home-mode':'')}>
-    <a className="skip-link" href="#main">Pular para o conteúdo</a>
+  const homeActions={
+    books:rulebooks,sheets:recent,pdfs,pdfLoading,pdfError,
+    onAddPdf:()=>openModal('pdf'),onSystem:selectSystem,
+    onAllSystems:()=>browseSystems(),onCreateSystem:()=>browseSystems(true),
+    onCreateCharacter:()=>newCharacter(selectedContext),onOpenCharacter:openCharacter,
+    onAllCharacters:()=>navigate({page:'sheet'}),
+    onPdfs:()=>navigate({page:'pdfs'}),onAgenda:()=>navigate({page:'agenda'}),
+  };
+  const pdfSearch=<label className="search"><Search size={18}/><input aria-label="Buscar PDFs" placeholder="Buscar por título ou descrição..." value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<IconButton label="Limpar busca" onClick={()=>setQuery('')}><X size={15}/></IconButton>}</label>;
+  const pdfCategories=<div className="filter-row" aria-label="Categorias de PDFs">{['Todos',...categories].map(c=><button key={c} aria-pressed={category===c} className={category===c?'active':''} onClick={()=>setCategory(c)}>{c}{c==='Todos'&&<span>{pdfs.length}</span>}</button>)}</div>;
+  const addPdfButton=<button className="button primary" onClick={()=>openModal('pdf')}><Upload size={16}/> Adicionar PDF</button>;
+  const pdfCount=<span className="library-count">{visiblePdfs.length} {visiblePdfs.length===1?'arquivo':'arquivos'}{visiblePdfs.length!==pdfs.length?' de '+pdfs.length:''}</span>;
+  const sheetActions=<><button className="button secondary" onClick={()=>importRef.current?.click()}><Upload size={16}/> Carregar ficha</button><button className="button primary" onClick={()=>openModal('new')}><Plus size={16}/> Criar ficha</button></>;
+  return <PlayerSpaceProvider onProfileVisibilityChange={setProfileGlobal}>{!sessionReady&&<div className="session-restore-status" role="status">Preparando sua sessão…</div>}<div inert={!sessionReady} data-session-ready={sessionReady} data-interface={style} data-context={contextBook?'system':'global'} data-system-id={contextBook?.id||undefined} className={'app-shell'+(hasIdentity?' has-system-identity':'')+(contextBook?' system-mode':' global-mode')+(orbital?' orbital-chrome':'')+(orbitalHome?' orbital-home-mode':'')}>
+    <a className="skip-link" href="#main" onClick={event=>{event.preventDefault();mainRef.current?.focus();}}>Pular para o conteúdo</a>
     <div className={'main-wrap'+(page==='home'?' is-home':page==='sheet'?' is-sheet':'')+(contextBook?.visuals?.areas.mainBackground?.assetId?' has-system-main-background':'')}>
       {contextBook&&<SystemMainBackground book={contextBook} state={visualState}/>}
-      {!orbitalHome&&!contextBook?.visuals?.areas.mainBackground?.assetId&&<HomeDiceBackground/>}
+      {!orbital&&!contextBook?.visuals?.areas.mainBackground?.assetId&&<HomeDiceBackground/>}
       {page==='sheet'&&<div id="sheet-page-background" className="sheet-page-background" aria-hidden="true"/>}
       <header className="topbar">
         {contextBook&&<SystemHeaderBackground book={contextBook} state={visualState}/>}
@@ -119,37 +267,61 @@ export default function App(){
           <button type="button" className="header-platform-brand" aria-label="Voltar ao ANTROPOLOGO" title="Voltar ao ANTROPOLOGO" onClick={returnToPlatform}><PlatformLogo/></button>
           {contextBook&&<><span className="header-context-separator" aria-hidden="true">×</span><SystemHeaderIdentity book={contextBook} state={visualState} onSwitch={()=>browseSystems()}/></>}
         </div>
-        <nav className="global-top-nav" aria-label="Áreas da plataforma">{(['home','rules','sheet','pdfs','agenda'] as Page[]).map(id=><button type="button" key={id} aria-current={page===id?'page':undefined} onClick={()=>go(id)}>{names[id]}</button>)}</nav>
-        <div className="header-right"><IconButton label={'Ajuda de '+names[page]} className="icon-button contextual-help-trigger" aria-haspopup="dialog" onClick={()=>openModal('help')}><CircleHelp size={19}/></IconButton><AppearanceControls/><span className="private-badge"><Sparkles size={12}/> VERSÃO DE TESTE · v{SITE_VERSION}</span><ProfileControl onOpenAgenda={()=>go('agenda')}/></div>
+        <nav className="global-top-nav" aria-label="Áreas da plataforma">{(['home','rules','sheet','pdfs','agenda'] as Page[]).map(id=><button type="button" key={id} aria-current={area===id?'page':undefined} onClick={()=>selectSection(id)}>{names[id]}</button>)}</nav>
+        <div className="header-right"><IconButton label={'Ajuda de '+names[area]} className="icon-button contextual-help-trigger" aria-haspopup="dialog" onClick={()=>openModal('help')}><CircleHelp size={19}/></IconButton><AppearanceControls {...appearance}/><span className="private-badge"><Sparkles size={12}/> VERSÃO DE TESTE · v{SITE_VERSION}</span><ProfileControl onOpenAgenda={()=>navigate({page:'agenda'})}/></div>
       </header>
-      <main ref={mainRef} id="main" tabIndex={-1} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>{page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
+      <main ref={mainRef} id="main" tabIndex={-1} data-workspace={page} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>
+      {orbital&&page!=='home'&&<WorkspaceTrail section={areaNames[area]} onMap={()=>selectDestination(null)} onSection={()=>selectSection(area)}/>}
+      {page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
 
-      {page==='home'&&<PlatformHome books={rulebooks} sheets={recent} context={selectedContext} pdfs={pdfs} pdfLoading={pdfLoading} pdfError={pdfError} onAddPdf={()=>openModal('pdf')} onSystem={enterSystem} onAllSystems={()=>browseSystems()} onCreateSystem={()=>browseSystems(true)} onCreateCharacter={()=>newCharacter(selectedContext)} onOpenCharacter={openCharacter} onAllCharacters={()=>replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheetLibrary(true);go('sheet');})} onPdfs={()=>go('pdfs')} onAgenda={()=>go('agenda')}/>}
+      {page==='home'&&(orbitalHome?
+        <OrbitalHome {...homeActions} destination={displayedRoute.page==='home'?displayedRoute.destination??null:null} dieActivation={dieActivation} onSelectDestination={selectDestination}/>:
+        <PlatformHome {...homeActions} context={selectedContext}/>)}
       {orbitalHome&&<TestNotice/>}
 
-      {page==='rules'&&<RulesLibrary createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
+      {page==='rules'&&<RulesLibrary orbital={orbital} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
 
       {page==='pdfs'&&<>
-        <div className="page-eyebrow">SEUS MATERIAIS DE JOGO</div><div className="page-title-row"><div><h1>Biblioteca de PDFs<span className="accent">.</span></h1><p>Manuais, referências e aventuras sempre à mão.</p></div><button className="button primary" onClick={()=>openModal('pdf')}><Upload size={16}/> Adicionar PDF</button></div>
-        <div className="library-toolbar"><label className="search"><Search size={18}/><input aria-label="Buscar PDFs" placeholder="Buscar por título ou descrição..." value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<IconButton label="Limpar busca" onClick={()=>setQuery('')}><X size={15}/></IconButton>}</label><span className="library-count">{pdfs.length} {pdfs.length===1?'arquivo':'arquivos'} na biblioteca</span></div>
-        <div className="filter-row" aria-label="Categorias de PDFs">{['Todos',...categories].map(c=><button key={c} aria-pressed={category===c} className={category===c?'active':''} onClick={()=>setCategory(c)}>{c}{c==='Todos'&&<span>{pdfs.length}</span>}</button>)}</div>
-        {pdfError&&<div className="error-banner">{pdfError}<button onClick={loadPdfs}>Tentar novamente</button></div>}{pdfLoading&&!pdfs.length?<div className="loading-state"><span className="spinner"/> Carregando biblioteca...</div>:visiblePdfs.length?<div className="pdf-grid">{visiblePdfs.map(pdf=><article className="pdf-card" key={pdf.id}><div className="pdf-cover"><span className="pdf-cover-label">ANTROPOLOGO RPG</span><FileText size={53} strokeWidth={1}/><span className="pdf-type">PDF / {pdf.category.toUpperCase()}</span></div><div className="pdf-info"><span className="subtle-label">{pdf.category} · {size(pdf.size)}</span><h3>{pdf.title}</h3><p>{pdf.description||pdf.filename}</p><div className="pdf-actions"><a href={pdf.url} target="_blank" rel="noreferrer" className="text-button">Abrir PDF <ExternalLink size={14}/></a><a className="icon-button" href={pdf.url} download={pdf.filename} title={'Baixar '+pdf.title} aria-label={'Baixar '+pdf.title}><Download size={17}/></a><IconButton label={'Remover '+pdf.title} onClick={()=>setConfirm({title:'Remover PDF?',text:`“${pdf.title}” será removido da biblioteca desta página.`,action:()=>removePdf(pdf)})}><Trash2 size={16}/></IconButton></div></div></article>)}</div>:<div className="library-empty"><div className="empty-file-art"><span/><FolderOpen size={56} strokeWidth={1.2}/><span/></div><span className="page-eyebrow">UM LUGAR PARA SUAS REFERÊNCIAS</span><h2>{pdfs.length?'Nenhum PDF por aqui.':'Sua biblioteca começa aqui.'}</h2><p>{pdfs.length?'Tente outro termo ou escolha uma categoria diferente.':'Adicione materiais dos seus sistemas e organize cada arquivo por categoria. Os PDFs ficam só nesta página durante o teste.'}</p><button className="button primary" onClick={()=>pdfs.length?(setQuery(''),setCategory('Todos')):openModal('pdf')}>{pdfs.length?<><Search size={16}/> Limpar filtros</>:<><Plus size={16}/> Adicionar primeiro PDF</>}</button><span className="empty-hint">Arquivos PDF · Até 20 MB por arquivo</span></div>}
+        {orbital?<WorkspaceHeading area="pdfs" title="Biblioteca de PDFs" description="Organize manuais, aventuras e referências da sua mesa." actions={addPdfButton}/>:<>
+          <div className="page-eyebrow">SEUS MATERIAIS DE JOGO</div><div className="page-title-row"><div><h1>Biblioteca de PDFs<span className="accent">.</span></h1><p>Manuais, referências e aventuras sempre à mão.</p></div>{addPdfButton}</div>
+        </>}
+        <div className={orbital?'orbital-pdf-layout':undefined}>
+        {orbital?<aside className="orbital-collection-sidebar"><h2>Filtrar biblioteca</h2>{pdfSearch}{pdfCategories}</aside>:<><div className="library-toolbar">{pdfSearch}{pdfCount}</div>{pdfCategories}</>}
+        <section className="pdf-results" aria-label="Documentos">
+        {orbital&&<div className="orbital-collection-heading"><h2>Documentos</h2>{pdfCount}</div>}
+        {pdfError&&<div className="error-banner" role="alert">{pdfError}<button onClick={loadPdfs}>Tentar novamente</button></div>}
+        {pdfLoading&&!pdfs.length?<div className="loading-state" role="status"><span className="spinner"/> Carregando biblioteca...</div>:
+          visiblePdfs.length?<div className="pdf-grid">{visiblePdfs.map(pdf=><article className="pdf-card" key={pdf.id}>
+            <div className="pdf-cover" aria-hidden="true">{!orbital&&<span className="pdf-cover-label">ANTROPOLOGO RPG</span>}<FileText size={orbital?27:53} strokeWidth={1.4}/><span className="pdf-type">{orbital?'PDF':'PDF / '+pdf.category.toUpperCase()}</span></div>
+            <div className="pdf-info"><span className="subtle-label">{pdf.category} · {size(pdf.size)}</span><h3>{pdf.title}</h3><p>{pdf.description||pdf.filename}</p>
+              <div className="pdf-actions">{orbital?<button type="button" className="text-button" onClick={()=>setViewingPdf(pdf)}>Abrir PDF <Eye size={16}/></button>:<a href={pdf.url} target="_blank" rel="noreferrer" className="text-button">Abrir PDF <ExternalLink size={14}/></a>}
+                <a className="icon-button" href={pdf.url} download={pdf.filename} title={'Baixar '+pdf.title} aria-label={'Baixar '+pdf.title}><Download size={17}/></a>
+                <IconButton label={'Remover '+pdf.title} onClick={()=>setConfirm({title:'Remover PDF?',text:`“${pdf.title}” será removido da biblioteca desta página.`,action:()=>removePdf(pdf)})}><Trash2 size={16}/></IconButton>
+              </div>
+            </div>
+          </article>)}</div>:
+          <div className={orbital?'orbital-collection-empty':'library-empty'}>
+            {orbital?<FolderOpen size={34} strokeWidth={1.4} aria-hidden="true"/>:<><div className="empty-file-art"><span/><FolderOpen size={56} strokeWidth={1.2}/><span/></div><span className="page-eyebrow">UM LUGAR PARA SUAS REFERÊNCIAS</span></>}
+            <h2>{pdfs.length?'Nenhum PDF por aqui.':'Sua biblioteca começa aqui.'}</h2><p>{pdfs.length?'Tente outro termo ou escolha uma categoria diferente.':'Adicione materiais dos seus sistemas e organize cada arquivo por categoria. Os PDFs ficam só nesta página durante o teste.'}</p>
+            <button className="button primary" onClick={()=>pdfs.length?(setQuery(''),setCategory('Todos')):openModal('pdf')}>{pdfs.length?<><Search size={16}/> Limpar filtros</>:<><Plus size={16}/> Adicionar primeiro PDF</>}</button><span className="empty-hint">Arquivos PDF · Até 20 MB por arquivo</span>
+          </div>}
+        </section>
+        </div>
         <div className="info-strip"><Shield size={18}/><p>Biblioteca de teste: os PDFs adicionados ficam nesta página e se perdem ao recarregar. Eles não são enviados ao site.</p></div>
       </>}
 
       {page==='sheet'&&<>
-        <div className="page-eyebrow">{templateDraft?'ESTRUTURA OFICIAL DO SEU SISTEMA':'UM PERSONAGEM. A SUA MANEIRA.'}</div><div className="page-title-row"><div><h1>{templateDraft?'Ficha-modelo do sistema':sheetLibrary?'Suas fichas':'Ficha de personagem'}<span className="accent">.</span></h1><p>{templateDraft?'Você está editando o modelo. Personagens já criados continuam independentes.':'Comece do zero. Adicione o que importa. Faça sua própria construção.'}</p></div><div className="action-group wrap"><button className="button secondary" onClick={()=>importRef.current?.click()}><Upload size={16}/> Carregar ficha</button><button className="button primary" onClick={()=>openModal('new')}><Plus size={16}/> Criar ficha</button></div></div>
+        {orbital?<WorkspaceHeading area="sheet" title={visibleTemplate?'Ficha-modelo':editorSheet?'Ficha de personagem':'Suas fichas'} description={visibleTemplate?visibleTemplate.bookName:editorSheet?.system?.name??(!editorSheet?'Abra uma ficha ou crie um personagem para jogar.':undefined)} actions={editorSheet?<button className="button secondary" onClick={()=>navigate({page:'sheet'})}><Layers3 size={16}/> Biblioteca de fichas</button>:sheetActions}/>:
+        <><div className="page-eyebrow">{visibleTemplate?'ESTRUTURA OFICIAL DO SEU SISTEMA':'UM PERSONAGEM. A SUA MANEIRA.'}</div><div className="page-title-row"><div><h1>{visibleTemplate?'Ficha-modelo do sistema':sheetLibrary?'Suas fichas':'Ficha de personagem'}<span className="accent">.</span></h1><p>{visibleTemplate?'Você está editando o modelo. Personagens já criados continuam independentes.':'Comece do zero. Adicione o que importa. Faça sua própria construção.'}</p></div><div className="action-group wrap">{sheetActions}</div></div></>}
 
-        {templateDraft&&<section className="template-workspace-context" aria-label="Vínculo do modelo ao sistema"><div><span className="subtle-label">FICHA-MODELO · {templateDirty?'ALTERAÇÕES PENDENTES':'MODELO SALVO'}</span><strong>{templateBook?.name||templateDraft.bookName}</strong><p>{templateBook?'Salvar modelo atualiza o conjunto nesta página. Depois, use Salvar regras para baixar o sistema completo.':'Este conjunto foi removido. Exporte a ficha como JSON ou Super PNG para conservar seu trabalho.'}</p></div><div className="action-group wrap"><button type="button" className="button secondary" onClick={backToTemplateRules}><ArrowLeft size={16}/> Voltar às regras</button><button type="button" className="button secondary" onClick={()=>exportSheet(templateDraft.sheet)}><Download size={16}/> Exportar ficha</button>{templateDirty&&<button type="button" className="text-button" onClick={discardTemplate}>{templateBook?.sheetTemplate?'Descartar alterações':'Cancelar criação'}</button>}</div></section>}
-        <p className="content-drop-hint">Carregue ou arraste um JSON ou Super PNG. Arquivos .ab10 e .regras continuam compatíveis.</p>
+        {visibleTemplate&&<section className="template-workspace-context" aria-label="Vínculo do modelo ao sistema"><div><span className="subtle-label">FICHA-MODELO · {templateDirty?'ALTERAÇÕES PENDENTES':'MODELO SALVO'}</span><strong>{templateBook?.name||visibleTemplate.bookName}</strong><p>{templateBook?'Salvar modelo atualiza o conjunto nesta página. Depois, use Salvar regras para baixar o sistema completo.':'Este conjunto foi removido. Exporte a ficha como JSON ou Super PNG para conservar seu trabalho.'}</p></div><div className="action-group wrap"><button type="button" className="button secondary" onClick={backToTemplateRules}><ArrowLeft size={16}/> Voltar às regras</button><button type="button" className="button secondary" onClick={()=>exportSheet(visibleTemplate.sheet)}><Download size={16}/> Exportar ficha</button>{templateDirty&&<button type="button" className="text-button" onClick={discardTemplate}>{templateBook?.sheetTemplate?'Descartar alterações':'Cancelar criação'}</button>}</div></section>}
+        {(!orbital||!editorSheet)&&<p className="content-drop-hint">Carregue ou arraste um JSON ou Super PNG. Arquivos .ab10 e .regras continuam compatíveis.</p>}
         {receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
-        {sheetLibrary?<CharacterLibrary sheets={recent} onCreate={()=>newCharacter(contextBook)} onOpen={openCharacter}/>:!editorSheet?<div className="sheet-welcome"><div className="sheet-welcome-copy"><span className="round-icon"><UserRound size={28}/></span><h2>Uma folha em branco.<br/>Um mundo de possibilidades.</h2><p>Sua ficha pode usar posição livre ou encaixe em grade. Crie abas e espalhe blocos de atributos, perícias ou história pelo espaço, na posição que fizer sentido para você.</p><div className="hero-actions"><button className="button primary" onClick={()=>openModal('new')}><Plus size={17}/> Criar ficha</button><button className="button secondary" onClick={()=>importRef.current?.click()}><FolderOpen size={17}/> Carregar ficha</button></div><span className="muted small-text">Já tem uma ficha? Importe JSON, Super PNG ou .ab10.</span></div><div className="sheet-illustration"><div className="mock-paper"><span className="mock-badge">SEU PRÓXIMO PERSONAGEM</span><div className="mock-head"><span/><div><i/><i/></div></div><div className="mock-block"><span>ATRIBUTOS</span><div><i/><i/><i/></div></div><div className="mock-block"><span>PERÍCIAS</span><p/><p/><p/></div><div className="mock-dash"><Plus size={15}/> Seu próximo bloco</div></div><span className="illustration-label">Sua ficha, do seu jeito.</span></div></div>:<>
-          <SheetMap key={editorSheet.id} sheet={editorSheet} onChange={updateEditorSheet} onExport={templateDraft?saveTemplate:()=>exportSheet()} preview={preview} onPreviewChange={setPreview} isTemplate={!!templateDraft} systems={rulebooks}/>
-
-        </>}
-        {!sheetLibrary&&recent.length>(templateDraft?0:1)&&<section className="recent-sheets"><div className="section-heading"><h2>Fichas nesta página</h2><span>{recent.length} {recent.length===1?'PERSONAGEM':'PERSONAGENS'}</span></div><div className="recent-grid">{recent.filter(s=>templateDraft||s.id!==sheet?.id).map(s=><button key={s.id} className="recent-sheet" onClick={()=>replaceTemplateWorkspace(()=>{setTemplateDraft(null);setSheet(s);setPreview(false);notify('Ficha aberta.');window.scrollTo({top:0,behavior:'smooth'});})}><UserRound size={22}/><div><strong>{s.name||'Sem nome'}</strong><span>{s.blocks.length} blocos · {date(s.updatedAt)}</span></div><ArrowRight size={16}/></button>)}</div></section>}
+        {!editorSheet&&(sheetLibrary?<CharacterLibrary sheets={recent} onCreate={()=>newCharacter(selectedContext)} onOpen={openCharacter} orbital={orbital}/>:<div className="sheet-welcome"><div className="sheet-welcome-copy"><span className="round-icon"><UserRound size={28}/></span><h2>Uma folha em branco.<br/>Um mundo de possibilidades.</h2><p>Sua ficha pode usar posição livre ou encaixe em grade. Crie abas e espalhe blocos de atributos, perícias ou história pelo espaço, na posição que fizer sentido para você.</p><div className="hero-actions"><button className="button primary" onClick={()=>openModal('new')}><Plus size={17}/> Criar ficha</button><button className="button secondary" onClick={()=>importRef.current?.click()}><FolderOpen size={17}/> Carregar ficha</button></div><span className="muted small-text">Já tem uma ficha? Importe JSON, Super PNG ou .ab10.</span></div><div className="sheet-illustration"><div className="mock-paper"><span className="mock-badge">SEU PRÓXIMO PERSONAGEM</span><div className="mock-head"><span/><div><i/><i/></div></div><div className="mock-block"><span>ATRIBUTOS</span><div><i/><i/><i/></div></div><div className="mock-block"><span>PERÍCIAS</span><p/><p/><p/></div><div className="mock-dash"><Plus size={15}/> Seu próximo bloco</div></div><span className="illustration-label">Sua ficha, do seu jeito.</span></div></div>)}
+        {editorSheet&&<SheetMap key={editorSheet.id} sheet={editorSheet} onChange={updateEditorSheet} onExport={visibleTemplate?saveTemplate:()=>exportSheet()} preview={preview} onPreviewChange={setPreview} isTemplate={!!visibleTemplate} systems={rulebooks}/>}
+        {!orbital&&editorSheet&&recent.length>(visibleTemplate?0:1)&&<section className="recent-sheets"><div className="section-heading"><h2>Fichas nesta página</h2><span>{recent.length} {recent.length===1?'PERSONAGEM':'PERSONAGENS'}</span></div><div className="recent-grid">{recent.filter(s=>visibleTemplate||s.id!==currentCharacter?.id).map(s=><button key={s.id} className="recent-sheet" onClick={()=>openCharacter(s)}><UserRound size={22}/><div><strong>{s.name||'Sem nome'}</strong><span>{s.blocks.length} blocos · {date(s.updatedAt)}</span></div><ArrowRight size={16}/></button>)}</div></section>}
       </>}
-      {page==='agenda'&&<RPGCalendar/>}
+      {page==='agenda'&&<RPGCalendar orbital={orbital}/>}
       </main>
     </div>
     {exporting&&<ContentExportDialog content={exporting} onClose={()=>setExporting(null)} notify={notify}/>}
@@ -159,6 +331,10 @@ export default function App(){
     {pendingEditorAction&&<Modal title="Modelo com alterações pendentes" onClose={()=>setPendingEditorAction(null)}><p className="modal-intro">Salve o modelo antes de trocar de ficha, ou descarte as alterações para seguir. O modelo salvo e os personagens existentes serão mantidos.</p><div className="modal-footer"><button type="button" className="button secondary" onClick={()=>setPendingEditorAction(null)}>Continuar edição</button><button type="button" className="button danger" onClick={()=>{const action=pendingEditorAction;setPendingEditorAction(null);action();}}>Descartar e seguir</button></div></Modal>}
     {modal==='pdf'&&<Modal title="Adicionar à biblioteca" onClose={()=>{if(!busy)setModal(null);}}><p className="modal-intro">Teste a organização da biblioteca. O arquivo fica só nesta página e se perde ao recarregar.</p><form onSubmit={uploadPdf}><label className="upload-zone"><Upload size={27}/><strong>{pdfFile?pdfFile.name:'Escolher arquivo PDF'}</strong><span>{pdfFile?size(pdfFile.size):'Até 20 MB · Clique para selecionar'}</span><input type="file" accept="application/pdf,.pdf" aria-label="Arquivo PDF" disabled={busy} onChange={e=>{const file=e.target.files?.[0]||null;setPdfFile(file);if(file&&!pdfTitle)setPdfTitle(file.name.replace(/\.pdf$/i,''));}}/></label><label className="form-label">Título<input name="title" maxLength={200} required value={pdfTitle} onChange={e=>setPdfTitle(e.target.value)} placeholder="Título do material"/></label><label className="form-label">Categoria<select name="category">{categories.map(c=><option key={c}>{c}</option>)}</select></label><label className="form-label">Descrição <span>opcional</span><textarea name="description" maxLength={1000} rows={2} placeholder="O que encontramos neste material?"/></label>{formError&&<p className="form-error" role="alert">{formError}</p>}<div className="modal-footer"><button className="button secondary" type="button" disabled={busy} onClick={()=>setModal(null)}>Cancelar</button><button className="button primary" disabled={busy} type="submit">{busy?<><span className="spinner"/> Enviando...</>:<><Plus size={16}/> Adicionar PDF</>}</button></div></form></Modal>}
     {confirm&&<Modal title={confirm.title} onClose={()=>setConfirm(null)}><p className="modal-intro">{confirm.text}</p><div className="modal-footer"><button className="button secondary" onClick={()=>setConfirm(null)}>Cancelar</button><button className="button danger" onClick={()=>{confirm.action();setConfirm(null);}}>Remover <Trash2 size={15}/></button></div></Modal>}
-    {modal==='help'&&<Modal title={'Ajuda de '+names[page]} onClose={()=>setModal(null)}><ContextHelp initialArea={page}/><button className="button primary full" onClick={()=>setModal(null)}>Concluir <Check size={15}/></button></Modal>}
+    {modal==='help'&&<Modal title={'Ajuda de '+names[area]} onClose={()=>setModal(null)}><ContextHelp initialArea={area}/><button className="button primary full" onClick={()=>setModal(null)}>Concluir <Check size={15}/></button></Modal>}
+    {viewingPdf&&<Modal title={viewingPdf.title} className="orbital-pdf-viewer" wide onClose={()=>setViewingPdf(null)}>
+      <div className="orbital-pdf-viewer-tools"><span>{viewingPdf.category} · {size(viewingPdf.size)}</span><a className="button secondary" href={viewingPdf.url} download={viewingPdf.filename}><Download size={16}/> Baixar</a><a className="text-button" href={viewingPdf.url} target="_blank" rel="noreferrer">Abrir em outra aba <ExternalLink size={15}/></a></div>
+      <iframe src={viewingPdf.url} title={'Documento PDF '+viewingPdf.title}/>
+    </Modal>}
   </div></PlayerSpaceProvider>;
 }

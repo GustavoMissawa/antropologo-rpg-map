@@ -275,16 +275,14 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
   );
 }
 
-export function OrbitalHome(props: OrbitalHomeProps) {
+export function OrbitalHome(props: OrbitalHomeProps & {
+  destination: Destination | null;
+  dieActivation: number;
+  onSelectDestination: (destination: Destination | null) => void;
+}) {
   const {books, sheets, onSystem, onAllSystems, onCreateSystem, onCreateCharacter, onOpenCharacter, onAllCharacters} = props;
-  const navigation = useOrbitalNavigation();
-  const [dieActivation, setDieActivation] = useState(0);
-  const selectDestination = (id: Destination) => {
-    if (navigation.destination !== id || navigation.phase === 'returning') {
-      setDieActivation(count => count + 1);
-      navigation.select(id);
-    }
-  };
+  const navigation = useOrbitalNavigation(props.destination);
+  const selectDestination = props.onSelectDestination;
   const root = useRef<HTMLDivElement>(null);
   const lastDestination = useRef<Destination | null>(null);
   const restoringFocus = useRef(false);
@@ -316,7 +314,7 @@ export function OrbitalHome(props: OrbitalHomeProps) {
       const start = press; press = null;
       if (start && start.id === event.pointerId && !event.defaultPrevented && outside(event.target)
         && Math.hypot(event.clientX - start.x, event.clientY - start.y) <= 8
-        && !document.querySelector('dialog[open]')) navigation.select(null);
+        && !document.querySelector('dialog[open]')) selectDestination(null);
     };
     document.addEventListener('pointerdown', down);
     document.addEventListener('pointerup', up);
@@ -326,16 +324,16 @@ export function OrbitalHome(props: OrbitalHomeProps) {
       document.removeEventListener('pointerup', up);
       document.removeEventListener('pointercancel', cancel);
     };
-  }, [expanded, navigation.select]);
+  }, [expanded, selectDestination]);
   return (
     <div ref={root} className="orbital-home" data-phase={navigation.phase} data-destination={navigation.destination ?? undefined} data-expanded={expanded} onKeyDown={event => {
       if (event.key === 'Escape' && navigation.destination && !event.defaultPrevented && !document.querySelector('dialog[open]')) {
-        event.preventDefault(); navigation.select(null);
+        event.preventDefault(); selectDestination(null);
       }
     }}>
       <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
-      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={dieActivation} restoringFocus={restoringFocus} onSelect={selectDestination} />
+      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={props.dieActivation} restoringFocus={restoringFocus} onSelect={selectDestination} />
       {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={selectDestination} />}
       <div className="orbital-workspace" inert={navigation.phase !== 'exploration'} aria-hidden={navigation.phase !== 'exploration' || undefined}>
         <section className="orbital-list" aria-labelledby="orbital-systems-heading">

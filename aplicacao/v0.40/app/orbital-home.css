@@ -1,5 +1,5 @@
 /* The horizon is continuous across the sticky header and the scene. */
-.orbital-home-mode {
+.orbital-chrome {
   --orbit-ambient-base: var(--orbit-primary-choice, var(--orbit-primary-default));
   --orbit-ambient-light: var(--orbit-secondary-choice, var(--orbit-secondary-default));
   --orbit-sky-pigment: color-mix(in srgb, var(--orbit-ambient-base) 36%, var(--orbit-ambient-light));
@@ -43,11 +43,11 @@
   background: var(--orbit-background) var(--orbit-horizon);
 }
 
-:root:has(.orbital-home-mode) {
+:root:has(.orbital-chrome) {
   scrollbar-color: color-mix(in srgb, var(--orbit-primary-choice, var(--orbit-primary-default)) 32%, #131820) #10141a;
 }
 
-:root[data-mode='light'] .orbital-home-mode {
+:root[data-mode='light'] .orbital-chrome {
   --orbit-sky-start: color-mix(in srgb, #f7f8fc 58%, var(--orbit-ambient-base));
   --orbit-background: color-mix(in srgb, #faf9fc 86%, var(--orbit-sky-pigment));
   --orbit-sky-end: color-mix(in srgb, #faf8fc 54%, var(--orbit-ambient-light));
@@ -80,7 +80,7 @@
   --orbit-die-glow: #22283140;
 }
 
-:root[data-mode='light']:has(.orbital-home-mode) {
+:root[data-mode='light']:has(.orbital-chrome) {
   scrollbar-color: color-mix(in srgb, var(--orbit-primary-choice, var(--orbit-primary-default)) 29%, #6b7681) #e0e5e9;
 }
 
@@ -133,7 +133,7 @@
     radial-gradient(circle at 84% 81%, var(--orbit-star-faint) 0 .8px, transparent 1.35px);
 }
 
-.app-shell.orbital-home-mode .topbar {
+.app-shell.orbital-chrome .topbar {
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   min-height: var(--orbit-header);
   gap: 18px;
@@ -144,14 +144,14 @@
   backdrop-filter: none;
 }
 
-.orbital-home-mode .header-platform-brand {
+.orbital-chrome .header-platform-brand {
   --palette-value: var(--orbit-control-accent);
   --primary-dark: var(--orbit-control-bright, #92caa5);
   min-height: 44px;
   max-width: 100%;
 }
 
-:root[data-mode='light'] .orbital-home-mode .header-platform-brand {
+:root[data-mode='light'] .orbital-chrome .header-platform-brand {
   --orbit-metal-primary: color-mix(in srgb, var(--orbit-ambient-base) 36%, #1c142b);
   --orbit-metal-secondary: color-mix(in srgb, var(--orbit-ambient-light) 40%, #24121f);
   --platform-metal-silver: linear-gradient(174deg,
@@ -166,15 +166,15 @@
     var(--orbit-metal-secondary) 56%, var(--orbit-metal-secondary) 85%, var(--orbit-metal-primary));
 }
 
-.orbital-home-mode .header-platform-brand .platform-word {
+.orbital-chrome .header-platform-brand .platform-word {
   font-size: clamp(23px, 2.52vw, 40px);
   letter-spacing: -.04em;
 }
 
-.orbital-home-mode .header-platform-brand .platform-rpg { color: var(--orbit-ink); }
-.orbital-home-mode .topbar .header-right { justify-self: end; }
-.orbital-home-mode .topbar .global-top-nav { gap: clamp(4px, 1.4vw, 25px); justify-content: center; }
-.orbital-home-mode .topbar .global-top-nav button {
+.orbital-chrome .header-platform-brand .platform-rpg { color: var(--orbit-ink); }
+.orbital-chrome .topbar .header-right { justify-self: end; }
+.orbital-chrome .topbar .global-top-nav { gap: clamp(4px, 1.4vw, 25px); justify-content: center; }
+.orbital-chrome .topbar .global-top-nav button {
   position: relative;
   min-height: 44px;
   padding: 8px 6px;
@@ -187,9 +187,9 @@
   transition: color 160ms ease-out;
 }
 
-.orbital-home-mode .topbar .global-top-nav button:hover,
-.orbital-home-mode .topbar .global-top-nav button[aria-current='page'] { color: var(--orbit-control-accent); }
-.orbital-home-mode .topbar .global-top-nav button[aria-current='page']::after {
+.orbital-chrome .topbar .global-top-nav button:hover,
+.orbital-chrome .topbar .global-top-nav button[aria-current='page'] { color: var(--orbit-control-accent); }
+.orbital-chrome .topbar .global-top-nav button[aria-current='page']::after {
   content: '';
   position: absolute;
   inset: auto 7px 0;
@@ -198,22 +198,22 @@
   box-shadow: 0 0 10px var(--orbit-control-glow, #df9a41a1);
 }
 
-.orbital-home-mode .topbar :is(.contextual-help-trigger, .appearance-trigger, .profile-avatar) {
+.orbital-chrome .topbar :is(.contextual-help-trigger, .appearance-trigger, .profile-avatar) {
   color: var(--orbit-ink);
   background: var(--orbit-control);
   border-color: var(--orbit-control-line);
   box-shadow: none;
 }
-.orbital-home-mode .topbar :is(.contextual-help-trigger, .appearance-trigger):hover,
-.orbital-home-mode .topbar .profile-trigger:hover .profile-avatar { background: var(--orbit-control-hover); }
-.orbital-home-mode .topbar :is(.header-language, .profile-trigger) { color: var(--orbit-ink); }
-.orbital-home-mode .topbar .profile-trigger { min-height: 44px; }
-.orbital-home-mode :is(.topbar, .orbital-home) button:focus-visible {
+.orbital-chrome .topbar :is(.contextual-help-trigger, .appearance-trigger):hover,
+.orbital-chrome .topbar .profile-trigger:hover .profile-avatar { background: var(--orbit-control-hover); }
+.orbital-chrome .topbar :is(.header-language, .profile-trigger) { color: var(--orbit-ink); }
+.orbital-chrome .topbar .profile-trigger { min-height: 44px; }
+.orbital-chrome :is(.topbar, .orbital-home) button:focus-visible {
   outline: 2px solid var(--orbit-control-accent);
   outline-offset: 3px;
 }
 
-.app-shell.orbital-home-mode .is-home > main {
+.app-shell.orbital-chrome .is-home > main {
   padding: 0 clamp(20px, 3.65vw, 68px) 34px;
 }
 
@@ -586,15 +586,15 @@
 .orbital-home-mode .test-link-badge { border-color: var(--orbit-control-glow, #7eb4ae62); }
 
 @media (max-width: 1090px) {
-  .orbital-home-mode { --orbit-header: 114px; }
-  .app-shell.orbital-home-mode .topbar { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0; padding-bottom: 4px; }
-  .orbital-home-mode .topbar :is(.topbar-left, .header-right) { min-height: 65px; }
-  .orbital-home-mode .topbar .global-top-nav { grid-area: 2 / 1 / auto / -1; gap: clamp(8px, 3vw, 29px); }
+  .orbital-chrome { --orbit-header: 114px; }
+  .app-shell.orbital-chrome .topbar { grid-template-columns: minmax(0, 1fr) auto; row-gap: 0; padding-bottom: 4px; }
+  .orbital-chrome .topbar :is(.topbar-left, .header-right) { min-height: 65px; }
+  .orbital-chrome .topbar .global-top-nav { grid-area: 2 / 1 / auto / -1; gap: clamp(8px, 3vw, 29px); }
 }
 
 @media (min-width: 1091px) and (max-width: 1200px) {
-  .orbital-home-mode .topbar .global-top-nav { grid-area: 1 / 2; }
-  .orbital-home-mode .topbar .header-right { grid-area: 1 / 3; }
+  .orbital-chrome .topbar .global-top-nav { grid-area: 1 / 2; }
+  .orbital-chrome .topbar .header-right { grid-area: 1 / 3; }
 }
 
 @media (max-width: 900px) {
@@ -656,18 +656,18 @@
 
 @media (max-width: 570px) {
   .app-shell.orbital-home-mode .is-home > main { padding-inline: 16px; }
-  .app-shell.orbital-home-mode .topbar { padding-inline: 14px; column-gap: 8px; }
-  .orbital-home-mode .header-platform-brand .platform-word { font-size: clamp(16px, 4.6vw, 25px); }
-  .orbital-home-mode .topbar .global-top-nav { justify-content: space-between; gap: 0; }
-  .orbital-home-mode .topbar .global-top-nav button { font-size: 10px; letter-spacing: .07em; }
-  .orbital-home-mode .topbar .header-right { gap: 5px; }
-  .orbital-home-mode .topbar :is(.appearance-trigger, .contextual-help-trigger, .profile-trigger) {
+  .app-shell.orbital-chrome .topbar { padding-inline: 14px; column-gap: 8px; }
+  .orbital-chrome .header-platform-brand .platform-word { font-size: clamp(16px, 4.6vw, 25px); }
+  .orbital-chrome .topbar .global-top-nav { justify-content: space-between; gap: 0; }
+  .orbital-chrome .topbar .global-top-nav button { font-size: 10px; letter-spacing: .07em; }
+  .orbital-chrome .topbar .header-right { gap: 5px; }
+  .orbital-chrome .topbar :is(.appearance-trigger, .contextual-help-trigger, .profile-trigger) {
     min-width: 44px;
     min-height: 44px;
     justify-content: center;
   }
-  .orbital-home-mode .topbar .contextual-help-trigger { display: inline-flex; }
-  .orbital-home-mode .topbar .profile-trigger-label { display: none; }
+  .orbital-chrome .topbar .contextual-help-trigger { display: inline-flex; }
+  .orbital-chrome .topbar .profile-trigger-label { display: none; }
   .orbital-list h2 { letter-spacing: .10em; }
   .orbital-shortcut { gap: 7px; font-size: 13px; }
 }
@@ -681,18 +681,18 @@
   .orbital-connection-track { stroke-dashoffset: 0; }
   .orbital-star-ring, .orbital-star-glint { display: none; }
   .orbital-node-dot::before { transition: none; transform: none; }
-  .orbital-home-mode :is(.orbital-connection, .orbital-node, .orbital-node-dot, .orbital-shortcut, .global-top-nav button) { transition: none; }
+  .orbital-chrome :is(.orbital-connection, .orbital-node, .orbital-node-dot, .orbital-shortcut, .global-top-nav button) { transition: none; }
 }
 
 @media (forced-colors: active) {
-  .app-shell.orbital-home-mode :is(.topbar, .main-wrap, .orbital-node) { background: Canvas; }
+  .app-shell.orbital-chrome :is(.topbar, .main-wrap, .orbital-node) { background: Canvas; }
   .app-shell.orbital-home-mode .main-wrap::before,
   .app-shell.orbital-home-mode .main-wrap::after,
   .orbital-art::before { display: none; }
   .orbital-home { color: CanvasText; }
   .orbital-node { border: 1px solid ButtonText; }
   .orbital-node[data-active='true'] { outline: 2px solid Highlight; }
-  .orbital-home-mode :is(.topbar, .orbital-home) button:focus-visible { outline-color: Highlight; }
+  .orbital-chrome :is(.topbar, .orbital-home) button:focus-visible { outline-color: Highlight; }
   .orbital-plane { opacity: .52; }
   .orbital-d20 polygon { fill: Canvas; }
   .orbital-d20-edges { stroke: Highlight; }

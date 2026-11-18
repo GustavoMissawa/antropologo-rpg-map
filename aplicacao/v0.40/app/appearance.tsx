@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useId, useRef, useState, type KeyboardEvent } from 'react';
-import { Check, Info, Moon, Palette, RotateCcw, Settings, Sun, X } from 'lucide-react';
+import { Check, Compass, Info, LayoutGrid, Moon, Palette, RotateCcw, Settings, Sun, X } from 'lucide-react';
 import { applyOrbitalColors, defaultAppearance, palettes, secondaryPalettes, recommendedSecondary, parseAppearance, paletteFaviconURL, type Appearance } from '../lib/appearance';
 import { SITE_RELEASE } from '../lib/site-version';
 
@@ -43,6 +43,22 @@ function AppearancePreferences({value,onChange,saveError}: AppearancePreferences
   const secondary = value.secondaryPalette ?? recommended;
   const recommendation = secondaryPalettes.find(option => option.id === recommended)?.name;
   return <>
+    <fieldset className="appearance-fieldset">
+      <legend>Estilo da interface</legend>
+      <div className="interface-options">
+        {([
+          {id:'orbital', label:'Orbital', detail:'Padrão', Icon:Compass},
+          {id:'classic', label:'Clássico', detail:'Legado', Icon:LayoutGrid},
+        ] as const).map(({id, label, detail, Icon}) =>
+          <label key={id} className={'interface-choice ' + (value.interfaceStyle === id ? 'chosen' : '')}>
+            <input className="appearance-radio" type="radio" name="appearance-interface" value={id} checked={value.interfaceStyle === id} onChange={() => onChange({...value, interfaceStyle:id})}/>
+            <Icon size={19} aria-hidden="true"/>
+            <span><strong>{label}</strong><small>{detail}</small></span>
+            {value.interfaceStyle === id && <Check size={15} aria-hidden="true"/>}
+          </label>
+        )}
+      </div>
+    </fieldset>
     <fieldset className="appearance-fieldset">
       <legend>Modo de exibição</legend>
       <div className="mode-options">
@@ -159,42 +175,47 @@ function SettingsDialog({ value, onChange, onClose, saveError }: AppearancePrefe
       </dl>
       <section className="settings-history" aria-labelledby={`${id}-history`}>
         <h4 id={`${id}-history`}>Histórico de atualizações</h4>
-        <p>As notas de versão serão exibidas aqui.</p>
+        <p>Orbital é o estilo padrão das bibliotecas, editores e Agenda. Em Aparência, Clássico mantém a apresentação e a navegação anteriores.</p>
       </section>
     </section>
     <div className="modal-footer appearance-footer">
-      {section === 'appearance' && <button className="button ghost" type="button" title="Voltar para Claro, Floresta e Dourado" onClick={() => onChange(defaultAppearance)}><RotateCcw size={14} aria-hidden="true"/> Restaurar aparência padrão</button>}
+      {section === 'appearance' && <button className="button ghost" type="button" onClick={() => onChange(defaultAppearance)}><RotateCcw size={14} aria-hidden="true"/> Restaurar aparência padrão</button>}
       <button className="button primary" type="button" onClick={close}>Pronto <Check size={15}/></button>
     </div>
   </dialog>;
 }
 
-export function AppearanceControls() {
+export function useAppearance() {
   const [value,setValue] = useState<Appearance>(defaultAppearance);
-  const [open,setOpen] = useState(false);
   const [saveError,setSaveError] = useState(false);
   function apply(next:Appearance,save=true) {
     const safe=parseAppearance(next);
     document.documentElement.dataset.mode=safe.mode;
     document.documentElement.dataset.palette=safe.palette;
     document.documentElement.dataset.nebulae=String(safe.nebulae);
+    document.documentElement.dataset.interface=safe.interfaceStyle;
     applyOrbitalColors(document.documentElement, safe);
     const icon=document.getElementById('platform-favicon');
     if(icon)icon.setAttribute('href',paletteFaviconURL(safe.palette));
     setValue(safe);
-    if(save)try{localStorage.setItem('ab10-appearance',JSON.stringify(safe));setSaveError(false);}catch{setSaveError(true);}
+    if(save)try{window.localStorage.setItem('ab10-appearance',JSON.stringify(safe));setSaveError(false);}catch{setSaveError(true);}
   }
   useEffect(()=>{
-    try{apply(parseAppearance(JSON.parse(localStorage.getItem('ab10-appearance')||'null')),false);}catch{apply(defaultAppearance,false);}
+    try{apply(parseAppearance(JSON.parse(window.localStorage.getItem('ab10-appearance')||'null')),false);}catch{apply(defaultAppearance,false);}
     const sync=(event:StorageEvent)=>{if(event.key==='ab10-appearance'){try{apply(parseAppearance(JSON.parse(event.newValue||'null')),false);}catch{apply(defaultAppearance,false);}}};
     window.addEventListener('storage',sync);
     return ()=>window.removeEventListener('storage',sync);
   },[]);
+  return {value, onChange:apply, saveError};
+}
+
+export function AppearanceControls(preferences: AppearancePreferencesProps) {
+  const [open,setOpen] = useState(false);
   return <>
     <div className="appearance-controls">
       <span className="header-language" lang="pt-BR" aria-label="Idioma: português" title="Português (Brasil)">PT</span>
       <button type="button" className="appearance-trigger" aria-label="Configurações" aria-haspopup="dialog" title="Configurações" onClick={()=>setOpen(true)}><Settings size={17} aria-hidden="true"/><span>Configurações</span></button>
     </div>
-    {open && <SettingsDialog value={value} onChange={apply} onClose={()=>setOpen(false)} saveError={saveError}/>}
+    {open && <SettingsDialog {...preferences} onClose={()=>setOpen(false)}/>}
   </>;
 }

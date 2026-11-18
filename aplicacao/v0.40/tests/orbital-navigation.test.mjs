@@ -121,7 +121,7 @@ test('Painel usa PDFs carregados e abre os fluxos reais de criação de ficha e 
     await clickButton(ui.host,'Fechar janela');
     await clickButton(panel,'Ver todas as fichas');
     assert.equal(window.location.hash,'#ficha');
-    assert(ui.host.querySelector('.character-library'));
+    assert(ui.host.querySelector('.orbital-character-index'));
   } finally {await ui.close();globalThis.fetch=native;await preferences({motionReduced:false});window.history.replaceState(null,'','#inicio');}
 });
 
@@ -218,8 +218,10 @@ test('Selecionar transforma o dado; foco, retorno e movimento reduzido preservam
 
 
 test('Voltar a um destino orbital não limpa o sistema com tópico pendente', async () => {
-  sessionStorage.clear();window.history.replaceState(null,'','#regras');
+  sessionStorage.clear();
   const book=makeRulebook('Contexto preservado');
+  const readerHash='#regras/'+encodeURIComponent(book.id);
+  window.history.replaceState(null,'',readerHash);
   const cache=await openPlatformSession();
   await cache.save({books:[makeAB10Rulebook(),book],contextId:book.id,page:'rules'});cache.close();
   for(const key of ['Node','DOMParser'])Object.defineProperty(globalThis,key,{configurable:true,value:window[key]});
@@ -230,7 +232,7 @@ test('Voltar a um destino orbital não limpa o sistema com tópico pendente', as
     await act(async()=>{status.value='test';status.dispatchEvent(new Event('change',{bubbles:true}));});
     const editor=ui.host.querySelector('.rule-topic-editor');
     await act(async()=>{window.location.hash='#inicio/fichas';});
-    await waitFor(()=>window.location.hash==='#regras');
+    await waitFor(()=>window.location.hash===readerHash);
     assert.equal(ui.host.querySelector('.app-shell').dataset.systemId,book.id);
     assert.equal(ui.host.querySelector('.rule-topic-editor'),editor);
     assert.equal(status.value,'test');

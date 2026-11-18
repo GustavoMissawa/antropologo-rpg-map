@@ -24,8 +24,15 @@ export const secondaryPalettes = [
   { id: 'coral', name: 'Coral', swatch: '#e99691' },
 ] as const;
 export type SecondaryPaletteId = (typeof secondaryPalettes)[number]['id'];
-export type Appearance = { mode: AppearanceMode; palette: PaletteId; secondaryPalette?: SecondaryPaletteId; nebulae: boolean };
-export const defaultAppearance: Appearance = { mode: 'light', palette: 'green', nebulae: true };
+export type InterfaceStyle = 'orbital' | 'classic';
+export type Appearance = {
+  mode: AppearanceMode;
+  palette: PaletteId;
+  secondaryPalette?: SecondaryPaletteId;
+  nebulae: boolean;
+  interfaceStyle: InterfaceStyle;
+};
+export const defaultAppearance: Appearance = { mode: 'light', palette: 'green', nebulae: true, interfaceStyle: 'orbital' };
 export const recommendedSecondary: Record<PaletteId, SecondaryPaletteId> = {
   green: 'gold',
   blue: 'violet',
@@ -54,6 +61,8 @@ function readAppearance(input: unknown, colors: typeof orbitalPaletteColors, fal
     palette: typeof value.palette === 'string' && Object.hasOwn(colors.primary, value.palette)
       ? value.palette as PaletteId : fallback.palette,
     nebulae: typeof value.nebulae === 'boolean' ? value.nebulae : fallback.nebulae,
+    interfaceStyle: value.interfaceStyle === 'classic' || value.interfaceStyle === 'orbital'
+      ? value.interfaceStyle : fallback.interfaceStyle,
   };
   if (typeof value.secondaryPalette === 'string' && Object.hasOwn(colors.secondary, value.secondaryPalette)) {
     appearance.secondaryPalette = value.secondaryPalette as SecondaryPaletteId;
@@ -121,6 +130,7 @@ export const appearanceBootstrap = `(()=>{
   r.dataset.mode=preferences.mode;
   r.dataset.palette=preferences.palette;
   r.dataset.nebulae=String(preferences.nebulae);
+  r.dataset.interface=preferences.interfaceStyle;
   (${writeOrbitalColors.toString()})(r,preferences,colors,${JSON.stringify(recommendedSecondary)},${JSON.stringify(originalOrbitalColors)});
   let icon=document.getElementById('platform-favicon');
   if(!icon){

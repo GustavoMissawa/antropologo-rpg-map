@@ -1,16 +1,13 @@
 'use client';
 
-import {useCallback, useEffect, useReducer} from 'react';
-import {initialOrbitalNavigation, orbitalDestinationFromHash, orbitalHref, orbitalNavigationReducer, type OrbitalDestination} from '../lib/orbital-navigation';
+import {useEffect, useReducer} from 'react';
+import {initialOrbitalNavigation, orbitalNavigationReducer, type OrbitalDestination} from '../lib/orbital-navigation';
 
-export function useOrbitalNavigation() {
+export function useOrbitalNavigation(destination: OrbitalDestination | null) {
   const [state, dispatch] = useReducer(orbitalNavigationReducer, initialOrbitalNavigation);
   useEffect(() => {
-    const sync = () => dispatch({type: 'select', destination: orbitalDestinationFromHash(window.location.hash)});
-    sync();
-    window.addEventListener('hashchange', sync);
-    return () => window.removeEventListener('hashchange', sync);
-  }, []);
+    dispatch({type: 'select', destination});
+  }, [destination]);
   useEffect(() => {
     if (state.phase === 'exploration' || state.phase === 'destination') return;
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -25,10 +22,5 @@ export function useOrbitalNavigation() {
       document.removeEventListener('visibilitychange', finishWhenPaused);
     };
   }, [state]);
-  const select = useCallback((destination: OrbitalDestination | null) => {
-    dispatch({type: 'select', destination});
-    const hash = destination ? orbitalHref(destination) : '#inicio';
-    if (window.location.hash !== hash) window.location.hash = hash;
-  }, []);
-  return {...state, select};
+  return state;
 }

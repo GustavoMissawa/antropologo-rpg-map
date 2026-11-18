@@ -29,7 +29,7 @@ test('Personalização tem Computador, Celular e Super PNG, com fundo compartilh
 });
 
 test('Fechar personalização com ajustes pendentes pede decisão e conserva o rascunho ao continuar',async()=>{
- sessionStorage.clear();const visuals=assignThemeAsset(emptySystemVisuals(),'expandedLogo',pngAsset()),book={...makeRulebook('Rascunho visual temporário'),visuals},cache=await openPlatformSession();await cache.save({books:[makeAB10Rulebook(),book],contextId:book.id,page:'rules'});cache.close();await preferences({narrow:false,motionReduced:false});const ui=await mountPlatform();
+ sessionStorage.clear();const visuals=assignThemeAsset(emptySystemVisuals(),'expandedLogo',pngAsset()),book={...makeRulebook('Rascunho visual temporário'),visuals},cache=await openPlatformSession();await cache.save({books:[makeAB10Rulebook(),book],contextId:book.id,page:'rules'});cache.close();window.history.replaceState(null,'','#regras/'+book.id);await preferences({narrow:false,motionReduced:false});const ui=await mountPlatform();
  try{
   await clickButton(ui.host,'Editar sistema');await clickButton(ui.host,'Personalizar');const editor=ui.host.querySelector('.system-visual-editor'),select=editor.querySelector('select');
   const {act}=await import('./helpers/platform-dom.mjs');await act(async()=>{select.value='cover';select.dispatchEvent(new Event('change',{bubbles:true}));});

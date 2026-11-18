@@ -27,6 +27,7 @@ import "./rules-reader.css";
 import "./orbital-home.css";
 import "./orbital-backdrop.css";
 import "./orbital-destination.css";
+import "./orbital-workspace.css";
 import { appearanceBootstrap, paletteCSS } from '../lib/appearance';
 
 export const metadata: Metadata = {

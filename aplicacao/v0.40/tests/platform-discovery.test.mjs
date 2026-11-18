@@ -24,11 +24,9 @@ test('Home global oferece os atalhos e distingue a biblioteca do contexto AB10',
     await clickButton(orbit, 'Entrar no sistema AB10 — Absolute 10');
     assert.equal(ui.host.querySelector('.app-shell').dataset.systemId, 'ab10');
     await clickButton(ui.host, 'Início');
-    assert(ui.host.querySelector('.contextual-hero'));
-    assert.equal(ui.host.querySelector('.orbital-home'), null);
-    await clickButton(ui.host, 'Trocar sistema');
-    assert(ui.host.textContent.includes('Outro universo'));
-    assert.equal(ui.host.querySelector('.app-shell').dataset.systemId, 'ab10');
+    assert(ui.host.querySelector('.orbital-home'));
+    assert.equal(ui.host.querySelector('.app-shell').dataset.context, 'global');
+    assert(ui.host.querySelector('.orbital-home').textContent.includes('Outro universo'));
     await clickButton(ui.host, 'Voltar ao ANTROPOLOGO');
     assert.equal(ui.host.querySelector('.app-shell').dataset.context, 'global');
     await clickButton(ui.host.querySelector('.orbital-home'), 'Criar sistema');
@@ -55,8 +53,8 @@ test('Os quatro destinos orbitais abrem as áreas existentes e preservam as aç�
       assert.equal(ui.host.querySelector('.orbital-home'), null);
       if (label === 'Sistemas') assert(ui.host.textContent.includes('Outro universo'));
       if (label === 'Fichas') {
-        assert(ui.host.querySelector('.character-library-grid').firstElementChild.textContent.includes('Criar personagem'));
-        assert(ui.host.textContent.includes('Todas as fichas desta página'));
+        assert(ui.host.querySelector('.orbital-character-index'));
+        assert(ui.host.textContent.includes('Nenhum personagem nesta sessão'));
       }
       await clickButton(ui.host, 'Início');
     }
@@ -64,7 +62,7 @@ test('Os quatro destinos orbitais abrem as áreas existentes e preservam as aç�
     assert(ui.host.querySelector('dialog[open][aria-label="Criar nova ficha"]'));
     await clickButton(ui.host, 'Fechar janela');
     await clickButton(ui.host.querySelector('.orbital-home'), 'Ver suas fichas');
-    assert(ui.host.querySelector('.character-library'));
+    assert(ui.host.querySelector('.orbital-character-index'));
   } finally {
     await ui.close();
   }
@@ -280,7 +278,10 @@ test('A confirmação de estrela cancela o destino anterior e não sobrevive à 
     await clickButton(ui.host.querySelector('.orbital-navigation'), 'PDFs');
     await clickButton(ui.host.querySelector('.global-top-nav'), 'Agenda');
     await act(async () => new Promise(resolve => setTimeout(resolve, 180)));
-    assert.equal(window.location.hash, '#agenda', 'a confirmação antiga foi descartada ao desmontar a Home');
+    assert.equal(window.location.hash, '#inicio/agenda', 'a confirmação antiga acompanha a seleção mais recente');
+    await waitFor(() => ui.host.querySelector('.orbital-home').dataset.phase === 'destination');
+    await clickButton(ui.host.querySelector('.orbital-destination-panel'), 'Abrir Agenda');
+    assert.equal(window.location.hash, '#agenda');
   } finally {
     await ui.close();
   }

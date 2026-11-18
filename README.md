@@ -13,6 +13,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-origem-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.50 — Plataforma Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.50-plataforma-orbital` | Estilos Orbital e Clássico sobre a mesma plataforma. |
 | v0.49 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.49-previa-orbital` | Órbita na prévia por mouse e transformação do dado na seleção. |
 | v0.47 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.47-orbita-e-dados` | Órbita completa da origem do fio e transformação do dado central. |
 | v0.46 — Navegação cósmica · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.46-navegacao-cosmica` | Destinos expandidos, listas contextuais e câmera cósmica. |
@@ -24,6 +25,8 @@ O seletor abre v0.40 por padrão. As duas versões começaram com os mesmos arqu
 O código veio da pasta `projeto/` de `ANTROPOLOGO_RPG_v0.38_backup_completo.zip`, correspondente à árvore Git `209a953f5c3e13941b5c8f41d5c9d9922acaf07b` do commit de origem `17d76ebfdb9fdb83514df05cc107a1837c86419b`. A cópia de desenvolvimento conserva inclusive a versão interna do pacote na origem para manter a igualdade inicial. O identificador de desenvolvimento já aparece no seletor do atlas.
 
 ## Aparência da Home Orbital
+
+A [v0.50](docs/plataforma-v050-orbital-classico.md) documenta o estilo padrão para as áreas internas, a navegação do cabeçalho e a opção Clássico nas configurações.
 
 A [v0.49](docs/home-orbital-v049-previa.md) mantém o disco e a estrela em movimento na prévia por mouse. A seleção do destino aciona a transformação do dado.
 
