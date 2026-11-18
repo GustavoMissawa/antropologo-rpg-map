@@ -13,6 +13,7 @@ Mapa visual e histórico do código-fonte da aplicação. O editor usa React Flo
 | v0.41 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.41-d20-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.42 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.42-d20-interativo` | O atlas segue com os mapas da v0.38 e da v0.40. |
 | v0.43 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.43-origem-orbital` | O atlas segue com os mapas da v0.38 e da v0.40. |
+| v0.54 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.54-vertices-orbitais` | Pulsos discretos nos vértices visíveis e resultado com núcleo claro. |
 | v0.53 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.53-rolagem-orbital` | Rolagem por clique e arraste de um segundo por toque. |
 | v0.52 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.52-acabamento-dado-orbital` | Alinhamento suave do dado e resultado neon nas cores da aparência. |
 | v0.51 — Home Orbital · Desenvolvimento | `aplicacao/v0.40/` na branch `dev/v0.51-resultado-orbital` | A face sorteada fica visível por cinco segundos, com saída antecipada ao tentar girar o dado. |

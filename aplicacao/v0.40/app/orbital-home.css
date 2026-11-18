@@ -346,11 +346,16 @@
   vector-effect: non-scaling-stroke;
 }
 
+.orbital-vertex-gradient stop {
+  stop-color: color-mix(in srgb, var(--orbit-ambient-base) 84%, white);
+}
+.orbital-vertex-glow { opacity: 0; pointer-events: none; }
+
 .orbital-die-result {
   opacity: 0;
-  fill: color-mix(in srgb, var(--orbit-ambient-base) 72%, #e9f4ff);
-  stroke: var(--orbit-die-face-shadow);
-  stroke-width: .65;
+  fill: #f5f8fc;
+  stroke: color-mix(in srgb, var(--orbit-ambient-base) 72%, var(--orbit-die-face-shadow));
+  stroke-width: .85;
   stroke-linejoin: round;
   paint-order: stroke;
   font-family: var(--font);
@@ -359,7 +364,7 @@
 }
 .orbital-d20:is([data-roll-phase='visible'], [data-roll-phase='fading']) .orbital-die-result {
   opacity: 1;
-  text-shadow: 0 0 4px color-mix(in srgb, var(--orbit-ambient-light) 70%, transparent);
+  text-shadow: 0 0 2.5px color-mix(in srgb, var(--orbit-ambient-base) 44%, transparent);
 }
 
 .orbital-rail,
@@ -692,6 +697,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .orbital-vertex-glow { display: none; }
   .orbital-art canvas,
   .orbital-connection[data-active='true'] .orbital-connection-pulse { animation: none; }
   .orbital-connection-pulse { display: none; }
@@ -704,6 +710,7 @@
 }
 
 @media (forced-colors: active) {
+  .orbital-vertex-glow { display: none; }
   .app-shell.orbital-chrome :is(.topbar, .main-wrap, .orbital-node) { background: Canvas; }
   .app-shell.orbital-home-mode .main-wrap::before,
   .app-shell.orbital-home-mode .main-wrap::after,

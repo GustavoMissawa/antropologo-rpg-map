@@ -94,11 +94,13 @@ test('Os seis sólidos têm faces planas, convexas e oclusão correta em várias
       const vertices = mesh.vertices.map(rotate);
       const view = projectOrbitalDie(rotate, mesh);
       const expectedEdges = new Set();
+      const expectedVertices = new Set();
       for (const [index, face] of mesh.faces.entries()) {
         const [a, b, c] = face.map(i => vertices[i]);
         const visible = dot(normal(a, b, c), subtract([0, 0, 1 / .13], a)) > 0;
         assert.equal(view.faces[index].visible, visible, 'visibilidade D' + kind);
         if (!visible) continue;
+        for (const vertex of face) expectedVertices.add(vertex);
         const corners = view.faces[index].points.split(' ');
         assert.equal(corners.length, sides);
         for (const [i, corner] of corners.entries()) expectedEdges.add([corner, corners[(i + 1) % sides]].sort().join('|'));
@@ -106,6 +108,11 @@ test('Os seis sólidos têm faces planas, convexas e oclusão correta em várias
       const drawn = view.edges.slice(1).split('M').map(edge => edge.split('L').sort().join('|'));
       assert.equal(drawn.length, expectedEdges.size);
       assert.deepEqual(new Set(drawn), expectedEdges);
+      assert.deepEqual(view.visibleVertices, expectedVertices, 'o vértice precisa pertencer a uma face frontal');
+      for (const vertex of view.visibleVertices) {
+        const {x, y} = view.projected[vertex];
+        assert.ok(drawn.some(edge => edge.split('|').includes(`${x},${y}`)));
+      }
     }
   }
 });

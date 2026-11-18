@@ -107,11 +107,14 @@ export function projectOrbitalDie(rotate: (point: Point3) => Point3, mesh = HERO
 
   // Stroke shared edges once, using the same projected vertices as the opaque fills.
   let edges = '';
+  const visibleVertices = new Set<number>();
   for (const edge of mesh.edges) {
     if (!edge.faces.some(face => faces[face].visible)) continue;
+    visibleVertices.add(edge.start);
+    visibleVertices.add(edge.end);
     const a = projected[edge.start];
     const b = projected[edge.end];
     edges += `M${a.x},${a.y}L${b.x},${b.y}`;
   }
-  return {faces, edges};
+  return {faces, edges, projected, visibleVertices};
 }

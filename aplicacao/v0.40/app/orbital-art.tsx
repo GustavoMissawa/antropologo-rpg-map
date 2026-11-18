@@ -1,6 +1,6 @@
 'use client';
 
-import {useEffect, useRef, type CSSProperties} from 'react';
+import {useEffect, useId, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
@@ -111,6 +111,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
   const dust = useRef<HTMLCanvasElement>(null);
   const flow = useRef<HTMLCanvasElement>(null);
   const {die, control, result, announcement} = useOrbitalDie(art, slowDie, activation);
+  const vertexEffectId = useId();
 
   useEffect(() => {
     const element = art.current;
@@ -183,6 +184,19 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
           />
         ))}
         <path className="orbital-d20-edges" d={initialOrbitalFrame.edges} />
+        <defs>
+          <clipPath id={`${vertexEffectId}-silhouette`}>
+            <path className="orbital-vertex-clip" />
+          </clipPath>
+          <radialGradient id={`${vertexEffectId}-glow`} className="orbital-vertex-gradient">
+            <stop offset="0" stopOpacity=".92" />
+            <stop offset=".34" stopOpacity=".42" />
+            <stop offset="1" stopOpacity="0" />
+          </radialGradient>
+        </defs>
+        <g clipPath={`url(#${vertexEffectId}-silhouette)`}>
+          <circle className="orbital-vertex-glow" r="7" visibility="hidden" fill={`url(#${vertexEffectId}-glow)`} />
+        </g>
         <text ref={result} className="orbital-die-result" textAnchor="middle" dominantBaseline="central" />
       </svg>
       <button ref={control} className="orbital-d20-control" type="button" aria-label="Rolar dado D20" aria-description="Clique, pressione Enter ou arraste por 1 segundo com o dedo para rolar. As setas giram o dado." />

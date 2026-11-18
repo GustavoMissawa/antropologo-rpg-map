@@ -245,3 +245,74 @@ test('O toque exige um segundo de arraste e a seleção orbital cancela o efeito
   ui.surface.dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight', cancelable: true}));
   await waitFor(() => ui.path() !== modelPath);
 });
+
+test('A revelação pulsa um vértice frontal, recorta o brilho e respeita movimento reduzido', async t => {
+  const ui = await setup(t);
+  const glow = ui.model.querySelector('.orbital-vertex-glow');
+  const clip = ui.model.querySelector('.orbital-vertex-clip');
+  const frames = new Map();
+  let frameId = 0;
+  for (const [name, callback] of [
+    ['requestAnimationFrame', draw => { frames.set(++frameId, draw); return frameId; }],
+    ['cancelAnimationFrame', id => frames.delete(id)],
+  ]) {
+    const original = Object.getOwnPropertyDescriptor(globalThis, name);
+    Object.defineProperty(globalThis, name, {configurable: true, value: callback});
+    t.after(() => Object.defineProperty(globalThis, name, original));
+  }
+  let now = 0;
+  function drawFrame(elapsed = 32) {
+    now += elapsed;
+    ui.advance(elapsed);
+    const queued = [...frames.values()];
+    frames.clear();
+    for (const draw of queued) draw(now);
+  }
+  let pulse;
+  glow.animate = (frames, options) => {
+    pulse = {frames, options, onfinish: null, cancel() {}};
+    return pulse;
+  };
+  assert.equal(glow.getAttribute('visibility'), 'hidden');
+  await preferences({motionReduced: false});
+  drawFrame(60000);
+  drawFrame();
+  assert.equal(glow.getAttribute('visibility'), 'visible');
+  assert.equal(pulse.frames[1].opacity, .46);
+  assert.ok(pulse.options.duration >= 200 && pulse.options.duration <= 450);
+  pulse.onfinish();
+  drawFrame();
+  assert.equal(glow.getAttribute('visibility'), 'hidden', 'os vértices ficam apagados entre pulsos');
+
+  ui.pointer('pointerenter');
+  for (let i = 0; i < 32 && glow.getAttribute('visibility') === 'hidden'; i++) {
+    ui.pointer('pointermove', i % 2 ? 60 : 50);
+    drawFrame();
+  }
+  assert.equal(glow.getAttribute('visibility'), 'visible');
+  assert.equal(pulse.frames[1].opacity, .58);
+  pulse.onfinish();
+
+  ui.surface.click();
+  for (let i = 0; i < 35; i++) drawFrame();
+  assert.equal(ui.phase(), 'visible');
+  assert.equal(ui.timers.size, 1, 'o pulso não cria um temporizador de rolagem extra');
+  assert.equal(glow.getAttribute('visibility'), 'visible');
+  assert.equal(pulse.options.duration, 360);
+  assert.equal(pulse.frames.at(0).opacity, 0);
+  assert.equal(pulse.frames.at(-1).opacity, 0);
+  const front = [...ui.model.querySelectorAll('polygon[visibility="visible"]')];
+  const vertex = glow.getAttribute('cx') + ',' + glow.getAttribute('cy');
+  assert.ok(front.some(face => face.getAttribute('points').split(' ').includes(vertex)));
+  assert.equal(clip.getAttribute('d'), front.map(face => 'M' + face.getAttribute('points') + 'Z').join(''));
+  pulse.onfinish();
+  assert.equal(glow.getAttribute('visibility'), 'hidden');
+  assert.equal(ui.phase(), 'visible');
+
+  ui.surface.click();
+  ui.animations[0].finish();
+  await preferences({motionReduced: true});
+  ui.surface.click();
+  assert.equal(ui.phase(), 'visible');
+  assert.equal(glow.getAttribute('visibility'), 'hidden');
+});

@@ -168,9 +168,11 @@ test('D20 orbital pausa no estado oculto, fora da área visível e em movimento 
     const initial = surface();
     const pause = ms => act(async () => new Promise(resolve => setTimeout(resolve, ms)));
     assert.equal(die.querySelectorAll('polygon').length, 20);
-    assert.equal(die.querySelectorAll('path').length, 1);
-    assert.ok(die.querySelector('path').getAttribute('d'));
-    assert.equal(die.querySelector('marker, circle, [marker-start], [marker-mid]'), null);
+    assert.equal(die.querySelectorAll('.orbital-d20-edges').length, 1);
+    assert.ok(die.querySelector('.orbital-d20-edges').getAttribute('d'));
+    assert.equal(die.querySelector('marker, [marker-start], [marker-mid]'), null);
+    assert.equal(die.querySelectorAll('circle').length, 1);
+    assert.equal(die.querySelector('.orbital-vertex-glow').getAttribute('visibility'), 'hidden');
     assert.ok(die.querySelector('polygon[visibility="hidden"]'));
     assert.ok(initial.length);
     assert.equal(art.dataset.motion, 'paused');

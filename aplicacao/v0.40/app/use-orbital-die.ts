@@ -56,10 +56,12 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     const element = art.current;
     const surface = control.current;
     const svg = die.current;
-    const edges = svg?.querySelector('path');
+    const edges = svg?.querySelector('.orbital-d20-edges');
+    const vertexGlow = svg?.querySelector<SVGCircleElement>('.orbital-vertex-glow');
+    const vertexClip = svg?.querySelector<SVGPathElement>('.orbital-vertex-clip');
     const numberLabel = result.current;
     const liveResult = announcement.current;
-    if (!element || !surface || !svg || !edges || !numberLabel || !liveResult) return;
+    if (!element || !surface || !svg || !edges || !vertexGlow || !vertexClip || !numberLabel || !liveResult) return;
 
     const hitArea = surface;
     const backdrop = element;
@@ -67,6 +69,8 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     const model = svg;
     const number = numberLabel;
     const status = liveResult;
+    const glow = vertexGlow;
+    const clip = vertexClip;
     const faces = svg.querySelectorAll('polygon');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
     const compact = matchMedia('(max-width: 740px)');
@@ -86,8 +90,48 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     let fade: Animation | null = null;
     let ignoreKeyRepeat = false;
     let lastPressType = '';
+    let nextPulseAt = performance.now() + 1400 + Math.random() * 1600;
+    let pulse: {vertex: number; animation: Animation} | null = null;
 
-    function paint() {
+    function clearVertexPulse() {
+      if (!pulse) return;
+      pulse.animation.onfinish = null;
+      pulse.animation.cancel();
+      pulse = null;
+      glow.setAttribute('visibility', 'hidden');
+    }
+
+    function paintVertexPulse(view: ReturnType<typeof projectOrbitalDie>, now: number, reveal: boolean) {
+      if (reduced.matches || shift || !shown() || !glow.animate) return;
+      if (reveal || (pulse && !view.visibleVertices.has(pulse.vertex))) clearVertexPulse();
+      if (reveal || (now >= nextPulseAt && !roll)) {
+        const manual = now - lastMovement <= AMBIENT_MOTION_IDLE_MS;
+        nextPulseAt = now + (manual ? 1550 : 3400) + Math.random() * (manual ? 850 : 2400);
+        const vertices = [...view.visibleVertices];
+        if (!pulse && vertices.length) {
+          const vertex = vertices[Math.floor(Math.random() * vertices.length)];
+          const peak = reveal ? .72 : manual ? .58 : .46;
+          const animation = glow.animate([
+            {opacity: 0},
+            {opacity: peak, offset: .4},
+            {opacity: 0},
+          ], {duration: reveal ? 360 : 250 + Math.random() * 140, easing: 'ease-in-out'});
+          pulse = {vertex, animation};
+          animation.onfinish = () => {
+            if (pulse?.animation === animation) clearVertexPulse();
+          };
+          glow.setAttribute('visibility', 'visible');
+        }
+      }
+      if (!pulse) return;
+      const {x, y} = view.projected[pulse.vertex];
+      glow.setAttribute('cx', String(x));
+      glow.setAttribute('cy', String(y));
+      // A single nonzero path fills the union of the front-facing polygons.
+      clip.setAttribute('d', view.faces.filter(face => face.visible).map(face => `M${face.points}Z`).join(''));
+    }
+
+    function paint(now = performance.now(), reveal = false) {
       const next = projectOrbitalDie(point => rotateOrbitalPoint(point, motion.orientation), orbitalDieMeshes[kind]);
       for (let i = 0; i < faces.length; i++) {
         const face = faces[i];
@@ -100,6 +144,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
         if (face.getAttribute('visibility') !== visibility) face.setAttribute('visibility', visibility);
       }
       outline.setAttribute('d', next.edges);
+      paintVertexPulse(next, now, reveal);
     }
 
     function showKind(next: OrbitalDieKind) {
@@ -116,6 +161,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     }
 
     function startShift() {
+      clearVertexPulse();
       clearRoll();
       resetInput();
       shift = beginOrbitalDieShift(kind, shift);
@@ -169,6 +215,9 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     }
 
     function trackMovement(now: number, threshold?: number) {
+      if (now - lastMovement > AMBIENT_MOTION_IDLE_MS) {
+        nextPulseAt = Math.min(nextPulseAt, now + 500 + Math.random() * 400);
+      }
       if (qualified && now - lastMovement >= AMBIENT_MOTION_IDLE_MS) {
         window.clearTimeout(idleTimer);
         waitForStop();
@@ -199,7 +248,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
 
     function revealResult({result}: SettlingRoll) {
       motion.orientation = result.target;
-      paint();
+      paint(performance.now(), true);
       stop();
       number.setAttribute('x', String(result.x));
       number.setAttribute('y', String(result.y));
@@ -278,7 +327,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
           }
         }
         previous = now;
-        paint();
+        paint(now);
       }
       schedule();
     }
@@ -383,6 +432,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       const paused = !shown() || reduced.matches;
       backdrop.dataset.motion = paused ? 'paused' : 'running';
       if (paused) {
+        clearVertexPulse();
         stop();
         if (shift) {
           showKind(shift.next);
@@ -428,6 +478,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     return () => {
       requestShift.current = null;
       abort.abort();
+      clearVertexPulse();
       clearRoll();
       resetInput();
       stop();

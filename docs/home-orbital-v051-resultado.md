@@ -108,3 +108,32 @@ A publicação **112** usou a fonte Sites `7d34d5d4f7b38bf66d340dd43d292f51bfac2
 e o commit GitHub `299cd3477db6b25f5b997ff85eefd3a968cec70c`. Em produção, Sobre exibiu **0.53** e
 **299cd347**. Um clique moveu a geometria do D20 e revelou o
 número 9 após o alinhamento.
+
+## Vértices e número na v0.54
+
+A revisão parte da v0.53, publicação 112. O renderizador reutiliza a
+projeção atual. Somente vértices ligados a faces frontais podem acender.
+Um único círculo SVG com gradiente radial segue o vértice escolhido.
+O recorte é a união das faces visíveis e acompanha a rotação. Quando o
+vértice fica oculto, o pulso é encerrado. O recorte mantém a luz dentro
+da silhueta mesmo em vértices da borda.
+
+Os pulsos comuns duram de 250 a 390 ms. A entrada manual permite um pulso
+mais cedo e um pouco mais intenso. A revelação acende um ponto por 360 ms,
+inclusive quando o dado já está imóvel. O efeito usa a cor primária e
+fica desativado com movimento reduzido. O relógio e a opacidade dos
+pulsos são independentes da exibição de 5 s e do bloqueio da rolagem.
+
+O número conserva a fonte, o peso e o tamanho calculado na v0.53. O
+preenchimento quase branco fica sobre um contorno fino tingido pela
+primária. O halo próximo ao texto usa a mesma cor. Em cores forçadas,
+texto e contorno usam cores de sistema.
+
+Na prévia em Chromium, o pulso apareceu e se apagou sozinho durante o
+giro automático. Uma rolagem por movimento do mouse revelou o resultado
+com um pulso presente e recortado pelas faces dianteiras. A inspeção
+visual incluiu os seis sólidos, os números 1, 4, 8, 10, 13 e 20, Safira no
+tema escuro e Rubi no claro. Os testes conferiram a oclusão em 48
+orientações por modelo, os pulsos automáticos, manuais e de revelação,
+a ausência de brilho entre pulsos, o movimento reduzido e as regras de
+rolagem. Os 456 testes, a checagem de tipos e o build passaram.
