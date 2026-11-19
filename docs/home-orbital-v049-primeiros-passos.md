@@ -4,11 +4,15 @@ A mudança parte da publicação 119. A versão da aplicação segue em 0.49.
 
 | Momento | Condição | Resposta da interface |
 | --- | --- | --- |
-| Sinal de Entrada | Visitante anônimo e 30 s de inatividade na Home | O avatar de Entrar recebe dois pulsos suaves e um brilho discreto. |
+| Sinal de Entrada | Visitante anônimo e 15 s de inatividade na Home | O avatar de Entrar recebe dois pulsos com halo mais forte. |
 | Configurações | O cadastro Orbital retorna com a conta autenticada | O diálogo existente substitui o formulário de cadastro. |
-| Sistemas | Configurações fechadas, destino ainda desconhecido e 30 s de inatividade na Home | O nó Sistemas brilha. Os demais destinos continuam disponíveis. |
+| Sistemas | Configurações fechadas, destino ainda desconhecido e 10 s de inatividade na Home | O nó Sistemas brilha. Os demais destinos continuam disponíveis. |
 | Disco | Sistemas expandido, disco ainda desconhecido e 10 s de inatividade | O disco ganha brilho e chega gradualmente a duas vezes a velocidade do estado expandido. |
 | Retorno | Clique no disco ou ativação pelo teclado | A navegação existente retorna à Home e registra a descoberta. |
+
+Em Entrar e Sistemas, o brilho dura 4 s. Os outros ícones vão a 50% de
+opacidade e voltam ao normal com uma transição de 200 ms. Os rótulos mantêm
+a legibilidade.
 
 Os destaques somem com atividade significativa, mudança de contexto ou perda
 de foco. Cliques, rolagem, digitação, entrada em nós orbitais e movimento

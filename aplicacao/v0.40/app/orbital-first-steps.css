@@ -5,10 +5,10 @@
 .orbital-chrome .topbar .profile-avatar::after {
   content: '';
   position: absolute;
-  inset: -1px;
-  border: 1px solid var(--orbit-control-accent);
+  inset: -3px;
+  border: 2px solid var(--orbit-control-bright);
   border-radius: inherit;
-  box-shadow: 0 0 13px var(--orbit-control-glow);
+  box-shadow: 0 0 8px var(--orbit-control-accent), 0 0 24px var(--orbit-control-glow);
   opacity: 0;
   pointer-events: none;
   transition: opacity 200ms ease-out;
@@ -16,17 +16,35 @@
 
 .orbital-chrome .topbar .profile-trigger[data-entry-signal='true'] .profile-avatar::after,
 .orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before {
-  opacity: .64;
+  opacity: .82;
   animation: orbital-discovery-pulse 1.25s ease-in-out 2;
 }
 
-.orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before { transform: scale(1); }
-.orbital-node[data-first-steps='true'] .orbital-node-dot { box-shadow: 0 0 19px var(--orbit-glow-strong); }
-.orbital-home[data-first-steps='systems'] .orbital-node:not([data-first-steps='true']) { opacity: .82; }
+.orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before { transform: scale(1.35); }
+.orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot {
+  border-color: var(--orbit-wire);
+  box-shadow: 0 0 10px var(--orbit-wire), 0 0 26px var(--orbit-glow-strong);
+}
+
+.orbital-home-mode .topbar :is(.contextual-help-trigger svg, .appearance-trigger svg, .profile-avatar),
+.orbital-home :is(.orbital-node-icon, .orbital-shortcut svg) {
+  transition: opacity 200ms ease-out;
+}
+.orbital-home .orbital-node-dot {
+  transition: opacity 200ms ease-out, background-color 180ms ease-out, box-shadow 180ms ease-out;
+}
+
+@media (forced-colors: none) {
+  .orbital-home-mode[data-attention-cue] .topbar :is(.contextual-help-trigger svg, .appearance-trigger svg),
+  .orbital-home-mode[data-attention-cue='systems'] .topbar .profile-avatar,
+  .orbital-home[data-first-steps='entry'] :is(.orbital-node-dot, .orbital-node-icon, .orbital-shortcut svg),
+  .orbital-home[data-first-steps='systems'] .orbital-node:not([data-first-steps='true']) :is(.orbital-node-dot, .orbital-node-icon),
+  .orbital-home[data-first-steps='systems'] .orbital-shortcut svg { opacity: .5; }
+}
 
 @keyframes orbital-discovery-pulse {
-  0%, 100% { opacity: .64; }
-  50% { opacity: .94; }
+  0%, 100% { opacity: .82; }
+  50% { opacity: 1; }
 }
 
 .orbital-disk-return {
@@ -50,6 +68,9 @@
 .orbital-art[data-disk-boost='true'] :is(.orbital-plane, .orbital-disk-fallback) { filter: brightness(1.22); }
 
 @media (prefers-reduced-motion: reduce) {
+  .orbital-home .orbital-node-dot,
+  .orbital-home-mode .topbar :is(.contextual-help-trigger svg, .appearance-trigger svg, .profile-avatar),
+  .orbital-home :is(.orbital-node-icon, .orbital-shortcut svg),
   .orbital-chrome .topbar .profile-avatar::after,
   .orbital-chrome .topbar .profile-trigger[data-entry-signal='true'] .profile-avatar::after,
   .orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before,
@@ -61,8 +82,7 @@
 }
 
 @media (forced-colors: active) {
-  .orbital-home[data-first-steps='disk'] .orbital-destination-panel,
-  .orbital-home[data-first-steps='systems'] .orbital-node { opacity: 1; }
+  .orbital-home[data-first-steps='disk'] .orbital-destination-panel { opacity: 1; }
   .orbital-chrome .topbar .profile-trigger[data-entry-signal='true'] .profile-avatar,
   .orbital-node[data-first-steps='true'],
   .orbital-art[data-disk-boost='true'] .orbital-disk-return { outline: 2px solid Highlight; }

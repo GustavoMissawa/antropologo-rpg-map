@@ -5,8 +5,8 @@ import {advanceFirstSteps, pendingFirstStepsCue, FIRST_STEPS_IDLE_MS} from '../l
 const initial = {settings: 'pending', systems: 'pending', disk: 'pending'};
 const advance = (...actions) => actions.reduce(advanceFirstSteps, initial);
 
-test('Primeiros Passos respeita os estágios e oferece 30 s na Home e 10 s em Sistemas', () => {
-  assert.deepEqual(FIRST_STEPS_IDLE_MS, {entry: 30000, systems: 30000, disk: 10000});
+test('Primeiros Passos respeita os estágios, com 15 s para Entrar e 10 s para Sistemas e disco', () => {
+  assert.deepEqual(FIRST_STEPS_IDLE_MS, {entry: 15000, systems: 10000, disk: 10000});
   assert.equal(pendingFirstStepsCue(null, 'home'), null);
   const opened = advance('settings-opened');
   assert.equal(pendingFirstStepsCue(opened, 'home'), null);

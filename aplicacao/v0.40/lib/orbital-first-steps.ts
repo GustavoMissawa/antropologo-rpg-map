@@ -3,7 +3,8 @@ type StageState = typeof FIRST_STEPS_STATES[number];
 export type FirstStepsProgress = {settings: StageState; systems: StageState; disk: StageState};
 export type FirstStepsZone = 'home' | 'systems';
 export type FirstStepsCue = 'entry' | 'systems' | 'disk';
-export const FIRST_STEPS_IDLE_MS = {entry: 30_000, systems: 30_000, disk: 10_000} as const;
+export const FIRST_STEPS_IDLE_MS = {entry: 15_000, systems: 10_000, disk: 10_000} as const;
+export const FIRST_STEPS_ATTENTION_MS = 4_000;
 
 export const FIRST_STEPS_ACTIONS = [
   'settings-opened', 'settings-closed', 'systems-presented', 'systems-visited', 'disk-presented', 'disk-used',

@@ -4,7 +4,7 @@ import {useCallback, useEffect, useLayoutEffect, useRef, useState} from 'react';
 import {requestJson} from '../lib/browser-request';
 import type {DemoUser} from '../lib/demo-auth';
 import {
-  FIRST_STEPS_IDLE_MS, pendingFirstStepsCue,
+  FIRST_STEPS_ATTENTION_MS, FIRST_STEPS_IDLE_MS, pendingFirstStepsCue,
   type FirstStepsAction, type FirstStepsCue, type FirstStepsProgress, type FirstStepsZone,
 } from '../lib/orbital-first-steps';
 
@@ -66,6 +66,12 @@ function useIdleCue(
   const cue = active?.scope === scope ? active.cue : null;
   const listening = !!(candidate || cue);
   useLayoutEffect(() => {setActive(null);}, [scope]);
+
+  useEffect(() => {
+    if (cue !== 'entry' && cue !== 'systems') return;
+    const restore = setTimeout(() => setActive(current => current === active ? null : current), FIRST_STEPS_ATTENTION_MS);
+    return () => clearTimeout(restore);
+  }, [active, cue]);
 
   useEffect(() => {
     if (!scope || !listening) return;
