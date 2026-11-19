@@ -100,16 +100,19 @@ function renderTextures(
   };
 }
 
-export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
+export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDisk, onDiskReturn}: {
   slowDie: boolean;
   cruising: boolean;
   activation: number;
   onDiskFrame: (seconds: number) => void;
+  boostDisk: boolean;
+  onDiskReturn?: () => void;
 }) {
   const art = useRef<HTMLDivElement>(null);
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const flow = useRef<HTMLCanvasElement>(null);
+  const diskPress = useRef<{x: number; y: number} | null>(null);
   const {die, control, result, announcement} = useOrbitalDie(art, slowDie, activation);
   const vertexEffectId = useId();
 
@@ -167,13 +170,21 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame}: {
   }, [onDiskFrame]);
 
   return (
-    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie} data-disk-cruising={cruising} data-transforming="false">
+    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie} data-disk-cruising={cruising} data-disk-boost={boostDisk} data-transforming="false">
       <div className="orbital-disk-fallback" aria-hidden="true" />
       <div className="orbital-plane" aria-hidden="true">
         <canvas ref={dust} className="orbital-dust" />
         <canvas ref={stream} className="orbital-stream" />
         <canvas ref={flow} className="orbital-flow" />
       </div>
+      {onDiskReturn && <button className="orbital-disk-return" type="button" aria-label="Voltar à Home Orbital"
+        onPointerDown={event => {diskPress.current = {x: event.clientX, y: event.clientY};}}
+        onPointerCancel={() => {diskPress.current = null;}}
+        onClick={event => {
+          const press = diskPress.current;
+          diskPress.current = null;
+          if (event.detail === 0 || !press || Math.hypot(event.clientX - press.x, event.clientY - press.y) <= 8) onDiskReturn();
+        }} />}
       <svg ref={die} className="orbital-d20" data-die="20" data-roll-phase="idle" viewBox="0 0 200 200" aria-hidden="true" focusable="false">
         {initialOrbitalFrame.faces.map(({visible, points, light}, i) => (
           <polygon

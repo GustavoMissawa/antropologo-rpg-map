@@ -1,6 +1,6 @@
 import { eq } from 'drizzle-orm';
 import { getDb } from '../db';
-import { demoAccounts,demoAuthSessions } from '../db/schema';
+import { demoAccounts,demoAuthSessions,demoFirstSteps } from '../db/schema';
 import { DEMO_LIFETIME_MS,parseCredentials,randomHex,hashPassword,digest,constantTimeEqual } from './demo-auth';
 import { cleanupDemo,limitAuth,mutationBody,RouteError,routeFailure,sessionCookie } from './player-server';
 export async function authenticate(request:Request,register:boolean){try{
@@ -15,7 +15,14 @@ export async function authenticate(request:Request,register:boolean){try{
  if(register){
   if(account)throw new RouteError('Este @ já está em uso. Escolha outro ou entre com sua senha.',409);
   expiresAt=Date.now()+DEMO_LIFETIME_MS;
-  try{await db.batch([db.insert(demoAccounts).values({handle,calendarKey:crypto.randomUUID(),passwordHash,passwordSalt:salt,createdAt:Date.now(),expiresAt}),db.insert(demoAuthSessions).values({tokenHash,handle,expiresAt})]);}
+  const calendarKey=crypto.randomUUID();
+  try{
+   await db.batch([
+    db.insert(demoAccounts).values({handle,calendarKey,passwordHash,passwordSalt:salt,createdAt:Date.now(),expiresAt}),
+    db.insert(demoAuthSessions).values({tokenHash,handle,expiresAt}),
+    db.insert(demoFirstSteps).values({userId:calendarKey}),
+   ]);
+  }
   catch(error){if((await db.select({handle:demoAccounts.handle}).from(demoAccounts).where(eq(demoAccounts.handle,handle)).get()))throw new RouteError('Este @ já está em uso. Escolha outro ou entre com sua senha.',409);throw error;}
  }else{
   if(!account||!constantTimeEqual(passwordHash,account.passwordHash))throw new RouteError('@ ou senha incorretos, ou conta de teste expirada.',401);

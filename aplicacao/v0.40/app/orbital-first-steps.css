@@ -1,0 +1,69 @@
+.orbital-chrome .topbar .profile-avatar {
+  position: relative;
+}
+
+.orbital-chrome .topbar .profile-avatar::after {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border: 1px solid var(--orbit-control-accent);
+  border-radius: inherit;
+  box-shadow: 0 0 13px var(--orbit-control-glow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 200ms ease-out;
+}
+
+.orbital-chrome .topbar .profile-trigger[data-entry-signal='true'] .profile-avatar::after,
+.orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before {
+  opacity: .64;
+  animation: orbital-discovery-pulse 1.25s ease-in-out 2;
+}
+
+.orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before { transform: scale(1); }
+.orbital-node[data-first-steps='true'] .orbital-node-dot { box-shadow: 0 0 19px var(--orbit-glow-strong); }
+.orbital-home[data-first-steps='systems'] .orbital-node:not([data-first-steps='true']) { opacity: .82; }
+
+@keyframes orbital-discovery-pulse {
+  0%, 100% { opacity: .64; }
+  50% { opacity: .94; }
+}
+
+.orbital-disk-return {
+  position: absolute;
+  inset: 11%;
+  transform: rotate(37deg) scaleY(.74);
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  pointer-events: auto;
+  touch-action: manipulation;
+}
+
+.orbital-destination-panel { transition: opacity 200ms ease-out; }
+.orbital-home[data-first-steps='disk'] .orbital-destination-panel { opacity: .87; }
+.orbital-home[data-first-steps='disk'] .orbital-starfield { opacity: .72; }
+.orbital-home[data-first-steps='disk'] .orbital-nebulae { opacity: .65; }
+.orbital-home[data-first-steps='disk'] .orbital-node[data-selected='true'] { opacity: .8; }
+
+.orbital-art :is(.orbital-plane, .orbital-disk-fallback) { transition: filter 200ms ease-out; }
+.orbital-art[data-disk-boost='true'] :is(.orbital-plane, .orbital-disk-fallback) { filter: brightness(1.22); }
+
+@media (prefers-reduced-motion: reduce) {
+  .orbital-chrome .topbar .profile-avatar::after,
+  .orbital-chrome .topbar .profile-trigger[data-entry-signal='true'] .profile-avatar::after,
+  .orbital-home .orbital-node[data-first-steps='true'] .orbital-node-dot::before,
+  .orbital-home .orbital-destination-panel,
+  .orbital-art :is(.orbital-plane, .orbital-disk-fallback) {
+    animation: none;
+    transition: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .orbital-home[data-first-steps='disk'] .orbital-destination-panel,
+  .orbital-home[data-first-steps='systems'] .orbital-node { opacity: 1; }
+  .orbital-chrome .topbar .profile-trigger[data-entry-signal='true'] .profile-avatar,
+  .orbital-node[data-first-steps='true'],
+  .orbital-art[data-disk-boost='true'] .orbital-disk-return { outline: 2px solid Highlight; }
+}

@@ -1,5 +1,6 @@
 import { sqliteTable,text,index,integer } from 'drizzle-orm/sqlite-core';
 import type { Session } from '../lib/schedule';
+import { FIRST_STEPS_STATES } from '../lib/orbital-first-steps';
 export const playerProfiles=sqliteTable('player_profiles',{
  userId:text('user_id').primaryKey(),name:text('name').notNull(),email:text('email').notNull(),updatedAt:text('updated_at').notNull(),
 });
@@ -13,6 +14,12 @@ export const demoAccounts=sqliteTable('demo_accounts',{
 });
 export const demoAuthSessions=sqliteTable('demo_auth_sessions',{
  tokenHash:text('token_hash').primaryKey(),handle:text('handle').notNull().references(()=>demoAccounts.handle,{onDelete:'cascade'}),expiresAt:integer('expires_at').notNull(),
+});
+export const demoFirstSteps = sqliteTable('demo_first_steps', {
+ userId: text('user_id').primaryKey().references(() => demoAccounts.calendarKey, {onDelete: 'cascade'}),
+ settings: text('settings', {enum: FIRST_STEPS_STATES}).notNull().default('pending'),
+ systems: text('systems', {enum: FIRST_STEPS_STATES}).notNull().default('pending'),
+ disk: text('disk', {enum: FIRST_STEPS_STATES}).notNull().default('pending'),
 });
 export const demoCalendarEvents=sqliteTable('demo_calendar_events',{
  id:text('id').primaryKey(),userId:text('user_id').notNull().references(()=>demoAccounts.calendarKey,{onDelete:'cascade'}),date:text('date').notNull(),data:text('data',{mode:'json'}).$type<Session>().notNull(),updatedAt:text('updated_at').notNull(),

@@ -7,6 +7,7 @@ import {OrbitalArt} from './orbital-art';
 import {OrbitalBackdrop} from './orbital-backdrop';
 import {advanceOrbitalMarker, orbitalConnection, orbitalMarkerStart} from '../lib/orbital-connection';
 import {orbitalHref, type OrbitalDestination, type OrbitalNavigation} from '../lib/orbital-navigation';
+import type {FirstStepsCue, FirstStepsZone} from '../lib/orbital-first-steps';
 import {useOrbitalNavigation} from './use-orbital-navigation';
 
 export type OrbitalHomeProps = {
@@ -50,12 +51,14 @@ function orbitPoint(angle: number): Point {
   return {x: 418 + 365 * Math.cos(angle), y: 510 + 425 * Math.sin(angle)};
 }
 
-function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSelect}: {
+function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSelect, firstStepsCue, onDiskReturn}: {
   destination: Destination | null;
   phase: OrbitalNavigation['phase'];
   dieActivation: number;
   restoringFocus: RefObject<boolean>;
   onSelect: (id: Destination) => void;
+  firstStepsCue: FirstStepsCue | null;
+  onDiskReturn: () => void;
 }) {
   const scene = useRef<HTMLDivElement>(null);
   const [layout, setLayout] = useState<{center: Point; width: number; targets: Partial<Record<Destination, Point>>}>();
@@ -184,7 +187,8 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
 
   return (
     <div ref={scene} className="orbital-scene" data-observing={active !== null}>
-      <OrbitalArt slowDie={active !== null} cruising={pointerPreview || phase === 'destination'} activation={dieActivation} onDiskFrame={drawOrbit} />
+      <OrbitalArt slowDie={active !== null} cruising={pointerPreview || phase === 'destination'} activation={dieActivation}
+        onDiskFrame={drawOrbit} boostDisk={firstStepsCue === 'disk'} onDiskReturn={selected ? onDiskReturn : undefined} />
       <svg className="orbital-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>
           <linearGradient id="orbit-rail-light" x1="0" x2="0" y1="0" y2="1">
@@ -242,6 +246,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
               key={id}
               type="button"
               className="orbital-node"
+              data-first-steps={firstStepsCue === 'systems' && id === 'systems' || undefined}
               data-active={active === id}
               data-selected={selected === id}
               aria-label={label}
@@ -279,6 +284,9 @@ export function OrbitalHome(props: OrbitalHomeProps & {
   destination: Destination | null;
   dieActivation: number;
   onSelectDestination: (destination: Destination | null) => void;
+  firstStepsCue: FirstStepsCue | null;
+  onFirstStepsZone: (zone: FirstStepsZone | null) => void;
+  onDiskReturn: () => void;
 }) {
   const {books, sheets, onSystem, onAllSystems, onCreateSystem, onCreateCharacter, onOpenCharacter, onAllCharacters} = props;
   const navigation = useOrbitalNavigation(props.destination);
@@ -287,6 +295,13 @@ export function OrbitalHome(props: OrbitalHomeProps & {
   const lastDestination = useRef<Destination | null>(null);
   const restoringFocus = useRef(false);
   const expanded = navigation.destination !== null && navigation.phase !== 'returning';
+  const firstStepsZone = navigation.phase === 'exploration' ? 'home'
+    : navigation.phase === 'destination' && navigation.destination === 'systems' ? 'systems' : null;
+  const reportZone = props.onFirstStepsZone;
+  useLayoutEffect(() => {
+    reportZone(firstStepsZone);
+    return () => reportZone(null);
+  }, [firstStepsZone, reportZone]);
   useEffect(() => {
     if (navigation.destination) lastDestination.current = navigation.destination;
     if (navigation.phase === 'destination' && !document.querySelector('dialog[open]') && !document.activeElement?.matches('.orbital-d20-control')) root.current?.querySelector<HTMLElement>('#orbital-destination-title')?.focus({preventScroll: true});
@@ -326,14 +341,16 @@ export function OrbitalHome(props: OrbitalHomeProps & {
     };
   }, [expanded, selectDestination]);
   return (
-    <div ref={root} className="orbital-home" data-phase={navigation.phase} data-destination={navigation.destination ?? undefined} data-expanded={expanded} onKeyDown={event => {
+    <div ref={root} className="orbital-home" data-phase={navigation.phase} data-destination={navigation.destination ?? undefined} data-expanded={expanded} data-first-steps={props.firstStepsCue ?? undefined} onKeyDown={event => {
       if (event.key === 'Escape' && navigation.destination && !event.defaultPrevented && !document.querySelector('dialog[open]')) {
         event.preventDefault(); selectDestination(null);
       }
     }}>
       <OrbitalBackdrop />
       <h1 className="orbital-visually-hidden">Início do ANTROPOLOGO RPG</h1>
-      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={props.dieActivation} restoringFocus={restoringFocus} onSelect={selectDestination} />
+      <OrbitalScene destination={expanded ? navigation.destination : null} phase={navigation.phase} dieActivation={props.dieActivation}
+        restoringFocus={restoringFocus} onSelect={selectDestination} firstStepsCue={props.firstStepsCue}
+        onDiskReturn={() => {props.onDiskReturn(); selectDestination(null);}} />
       {navigation.destination && <OrbitalDestinationPanel {...props} destination={navigation.destination} ready={navigation.phase === 'destination'} returning={navigation.phase === 'returning'} onSelect={selectDestination} />}
       <div className="orbital-workspace" inert={navigation.phase !== 'exploration'} aria-hidden={navigation.phase !== 'exploration' || undefined}>
         <section className="orbital-list" aria-labelledby="orbital-systems-heading">

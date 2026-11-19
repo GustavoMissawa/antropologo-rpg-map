@@ -15,6 +15,13 @@
       "when": 1792787551833,
       "tag": "0001_narrow_robbie_robertson",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1795063240253,
+      "tag": "0002_first_steps",
+      "breakpoints": true
     }
   ]
 }

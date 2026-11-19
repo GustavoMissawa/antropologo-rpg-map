@@ -14,7 +14,7 @@ export function startOrbitalFlow(
   let frame = 0;
   let previous = 0;
 
-  const targetSpeed = () => art.dataset.diskCruising === 'true' ? EXPANDED_ORBITAL_SPEED
+  const targetSpeed = () => art.dataset.diskCruising === 'true' ? EXPANDED_ORBITAL_SPEED * (art.dataset.diskBoost === 'true' ? 2 : 1)
     : art.dataset.diskSelected === 'true' ? 0 : 1;
   const running = () => art.dataset.motion === 'running' && !document.hidden;
 
@@ -61,7 +61,7 @@ export function startOrbitalFlow(
   onFrame?.(clock.seconds);
   if (flow) art.dataset.flowReady = 'true';
   const observer = new MutationObserver(update);
-  observer.observe(art, {attributeFilter: ['data-motion', 'data-disk-selected', 'data-disk-cruising']});
+  observer.observe(art, {attributeFilter: ['data-motion', 'data-disk-selected', 'data-disk-cruising', 'data-disk-boost']});
   document.addEventListener('visibilitychange', update);
   update();
 

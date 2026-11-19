@@ -209,13 +209,14 @@ export function useAppearance() {
   return {value, onChange:apply, saveError};
 }
 
-export function AppearanceControls(preferences: AppearancePreferencesProps) {
-  const [open,setOpen] = useState(false);
+export function AppearanceControls({open, onOpen, onClose, ...preferences}: AppearancePreferencesProps & {
+  open: boolean; onOpen: () => void; onClose: () => void;
+}) {
   return <>
     <div className="appearance-controls">
       <span className="header-language" lang="pt-BR" aria-label="Idioma: português" title="Português (Brasil)">PT</span>
-      <button type="button" className="appearance-trigger" aria-label="Configurações" aria-haspopup="dialog" title="Configurações" onClick={()=>setOpen(true)}><Settings size={17} aria-hidden="true"/><span>Configurações</span></button>
+      <button type="button" className="appearance-trigger" aria-label="Configurações" aria-haspopup="dialog" title="Configurações" onClick={onOpen}><Settings size={17} aria-hidden="true"/><span>Configurações</span></button>
     </div>
-    {open && <SettingsDialog {...preferences} onClose={()=>setOpen(false)}/>}
+    {open && <SettingsDialog {...preferences} onClose={onClose}/>}
   </>;
 }

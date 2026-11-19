@@ -15,6 +15,8 @@ import {pdfsResponse,mergePdfCatalog} from '../lib/api-responses';
 import { HomeDiceBackground } from './home-dice-background';
 import {PlatformHome,CharacterLibrary} from './platform-home';
 import {OrbitalHome} from './orbital-home';
+import {useOrbitalFirstSteps} from './use-orbital-first-steps';
+import type {FirstStepsZone} from '../lib/orbital-first-steps';
 import {WorkspaceHeading, WorkspaceTrail} from './orbital-workspace';
 import {useContentReveal} from './use-content-reveal';
 import {openPlatformSession} from '../lib/platform-session';
@@ -23,7 +25,7 @@ import { PlatformLogo } from './platform-brand';
 import { SHEET_DIE_PATHS } from '../lib/sheet-die-paths';
 import { SheetMap } from './sheet-map';
 import { RulesLibrary } from './rules-library';
-import { PlayerSpaceProvider, ProfileControl, RPGCalendar, TestNotice } from './player-space';
+import { PlayerSpaceProvider, ProfileControl, RPGCalendar, TestNotice, usePlayer } from './player-space';
 import { ArrowDown, ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check, ChevronDown, ChevronRight, CircleHelp, Copy, Dices, Download, ExternalLink, FilePlus2, FileText, FolderOpen, GripVertical, Home, Layers3, LockKeyhole, Menu, MoreHorizontal, Pencil, Plus, Search, Shield, Sparkles, Trash2, Upload, UserRound, X, Eye, Settings2, CheckCircle2, CalendarDays, Compass } from 'lucide-react';
 import { makeSheet, parseSheet, copySheet, bindSheetToRulebook, syncSheetSystem, characterFromRulebook, withRulebookSheetTemplate, AB10_RULEBOOK_ID, uid, makeAB10Rulebook, addRulebook, type Rulebook, type Sheet, type PDF } from '../lib/model';
 
@@ -41,6 +43,11 @@ function Modal({title,children,onClose,wide=false,className=''}:{title:string;ch
 function Die({small=false}:{small?:boolean}){return <svg className={small?'die small':'die'} viewBox="0 0 200 200" fill="none" aria-hidden="true"><path d={SHEET_DIE_PATHS[20]}/><text x="97" y="121" textAnchor="middle" style={{fontSize:20}}>20</text></svg>;}
 
 export default function App(){
+  return <PlayerSpaceProvider><PlatformApp/></PlayerSpaceProvider>;
+}
+
+function PlatformApp(){
+  const {user,authLoading,authError,profileOpen:profileGlobal}=usePlayer();
   const appearance=useAppearance();
   const style=appearance.value.interfaceStyle;
   const orbital=style==='orbital';
@@ -58,13 +65,15 @@ export default function App(){
   const [templateDraft,setTemplateDraft]=useState<TemplateWorkspace|null>(null),[pendingEditorAction,setPendingEditorAction]=useState<(()=>void)|null>(null),[newSystemId,setNewSystemId]=useState('');
   const ruleEditorDirty=useRef(false),reportRuleEditorDirty=useCallback((dirty:boolean)=>{ruleEditorDirty.current=dirty;},[]);
   const [rulebooks,setRulebooks]=useState<Rulebook[]>(()=>[makeAB10Rulebook()]);
-  const [contextId,setContextId]=useState<string|null>(null),[sessionReady,setSessionReady]=useState(false),[sessionError,setSessionError]=useState(''),[profileGlobal,setProfileGlobal]=useState(false);
+  const [contextId,setContextId]=useState<string|null>(null),[sessionReady,setSessionReady]=useState(false),[sessionError,setSessionError]=useState('');
   const sessionCache=useRef<Awaited<ReturnType<typeof openPlatformSession>>|null>(null);
   const [pdfs,setPdfs]=useState<PDF[]>([]);const [pdfLoading,setPdfLoading]=useState(true);const [pdfError,setPdfError]=useState('');
   const [viewingPdf,setViewingPdf]=useState<PDF|null>(null);
   const [exporting,setExporting]=useState<Sheet|null>(null),[receipt,setReceipt]=useState('');
   const [toast,setToast]=useState('');const timer=useRef<ReturnType<typeof setTimeout>|null>(null);
   const [modal,setModal]=useState<'new'|'pdf'|'help'|null>(null);const [confirm,setConfirm]=useState<{title:string;text:string;action:()=>void}|null>(null);
+  const [settings,setSettings]=useState<'orbital'|'classic'|'registration'|null>(null);
+  const [firstStepsZone,setFirstStepsZone]=useState<FirstStepsZone|null>(null);
   const [busy,setBusy]=useState(false);const [formError,setFormError]=useState('');
   const [query,setQuery]=useState('');const [category,setCategory]=useState('Todos');const [preview,setPreview]=useState(false);
   const importRef=useRef<HTMLInputElement>(null),importRequest=useRef(0);const [pdfFile,setPdfFile]=useState<File|null>(null);const [pdfTitle,setPdfTitle]=useState('');
@@ -241,6 +250,15 @@ export default function App(){
   const selectedContext=resolveSystemContext(rulebooks,contextId);
   const contextBook=profileGlobal?undefined:orbital?resolveSystemContext(rulebooks,activeRulebookId??editorSheet?.system?.id??null):selectedContext;
   const orbitalHome=page==='home'&&orbital;
+  const destination=displayedRoute.page==='home'?displayedRoute.destination??null:null;
+  const firstSteps=useOrbitalFirstSteps({
+    user,
+    ready: orbital && sessionReady && !authLoading && (!!user || !authError),
+    zone: orbitalHome && (firstStepsZone==='home' && destination===null || firstStepsZone==='systems' && destination==='systems') ? firstStepsZone : null,
+    blocked: !!(settings || profileGlobal || modal || viewingPdf || exporting || confirm || pendingEditorAction),
+    systemsSelected: orbitalHome && destination==='systems',
+    registrationSettings: settings==='registration',
+  });
   const hasIdentity=hasSystemIdentity(contextBook);
   const homeActions={
     books:rulebooks,sheets:recent,pdfs,pdfLoading,pdfError,
@@ -255,7 +273,7 @@ export default function App(){
   const addPdfButton=<button className="button primary" onClick={()=>openModal('pdf')}><Upload size={16}/> Adicionar PDF</button>;
   const pdfCount=<span className="library-count">{visiblePdfs.length} {visiblePdfs.length===1?'arquivo':'arquivos'}{visiblePdfs.length!==pdfs.length?' de '+pdfs.length:''}</span>;
   const sheetActions=<><button className="button secondary" onClick={()=>importRef.current?.click()}><Upload size={16}/> Carregar ficha</button><button className="button primary" onClick={()=>openModal('new')}><Plus size={16}/> Criar ficha</button></>;
-  return <PlayerSpaceProvider onProfileVisibilityChange={setProfileGlobal}>{!sessionReady&&<div className="session-restore-status" role="status">Preparando sua sessão…</div>}<div inert={!sessionReady} data-session-ready={sessionReady} data-interface={style} data-context={contextBook?'system':'global'} data-system-id={contextBook?.id||undefined} className={'app-shell'+(hasIdentity?' has-system-identity':'')+(contextBook?' system-mode':' global-mode')+(orbital?' orbital-chrome':'')+(orbitalHome?' orbital-home-mode':'')}>
+  return <>{!sessionReady&&<div className="session-restore-status" role="status">Preparando sua sessão…</div>}<div inert={!sessionReady} data-session-ready={sessionReady} data-interface={style} data-context={contextBook?'system':'global'} data-system-id={contextBook?.id||undefined} className={'app-shell'+(hasIdentity?' has-system-identity':'')+(contextBook?' system-mode':' global-mode')+(orbital?' orbital-chrome':'')+(orbitalHome?' orbital-home-mode':'')}>
     <a className="skip-link" href="#main" onClick={event=>{event.preventDefault();mainRef.current?.focus();}}>Pular para o conteúdo</a>
     <div className={'main-wrap'+(page==='home'?' is-home':page==='sheet'?' is-sheet':'')+(contextBook?.visuals?.areas.mainBackground?.assetId?' has-system-main-background':'')}>
       {contextBook&&<SystemMainBackground book={contextBook} state={visualState}/>}
@@ -268,14 +286,17 @@ export default function App(){
           {contextBook&&<><span className="header-context-separator" aria-hidden="true">×</span><SystemHeaderIdentity book={contextBook} state={visualState} onSwitch={()=>browseSystems()}/></>}
         </div>
         <nav className="global-top-nav" aria-label="Áreas da plataforma">{(['home','rules','sheet','pdfs','agenda'] as Page[]).map(id=><button type="button" key={id} aria-current={area===id?'page':undefined} onClick={()=>selectSection(id)}>{names[id]}</button>)}</nav>
-        <div className="header-right"><IconButton label={'Ajuda de '+names[area]} className="icon-button contextual-help-trigger" aria-haspopup="dialog" onClick={()=>openModal('help')}><CircleHelp size={19}/></IconButton><AppearanceControls {...appearance}/><span className="private-badge"><Sparkles size={12}/> VERSÃO DE TESTE · v{SITE_VERSION}</span><ProfileControl onOpenAgenda={()=>navigate({page:'agenda'})}/></div>
+        <div className="header-right"><IconButton label={'Ajuda de '+names[area]} className="icon-button contextual-help-trigger" aria-haspopup="dialog" onClick={()=>openModal('help')}><CircleHelp size={19}/></IconButton><AppearanceControls {...appearance} open={!!settings} onOpen={()=>setSettings(style)} onClose={()=>{
+          if (settings!=='classic' || orbital) firstSteps.settingsClosed();
+          setSettings(null);
+        }}/><span className="private-badge"><Sparkles size={12}/> VERSÃO DE TESTE · v{SITE_VERSION}</span><ProfileControl entrySignal={firstSteps.cue==='entry'} onRegistered={orbital?()=>setSettings('registration'):undefined} onOpenAgenda={()=>navigate({page:'agenda'})}/></div>
       </header>
       <main ref={mainRef} id="main" tabIndex={-1} data-workspace={page} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>
       {orbital&&page!=='home'&&<WorkspaceTrail section={areaNames[area]} onMap={()=>selectDestination(null)} onSection={()=>selectSection(area)}/>}
       {page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
 
       {page==='home'&&(orbitalHome?
-        <OrbitalHome {...homeActions} destination={displayedRoute.page==='home'?displayedRoute.destination??null:null} dieActivation={dieActivation} onSelectDestination={selectDestination}/>:
+        <OrbitalHome {...homeActions} destination={destination} dieActivation={dieActivation} onSelectDestination={selectDestination} firstStepsCue={firstSteps.cue} onFirstStepsZone={setFirstStepsZone} onDiskReturn={firstSteps.diskUsed}/>:
         <PlatformHome {...homeActions} context={selectedContext}/>)}
       {orbitalHome&&<TestNotice/>}
 
@@ -336,5 +357,5 @@ export default function App(){
       <div className="orbital-pdf-viewer-tools"><span>{viewingPdf.category} · {size(viewingPdf.size)}</span><a className="button secondary" href={viewingPdf.url} download={viewingPdf.filename}><Download size={16}/> Baixar</a><a className="text-button" href={viewingPdf.url} target="_blank" rel="noreferrer">Abrir em outra aba <ExternalLink size={15}/></a></div>
       <iframe src={viewingPdf.url} title={'Documento PDF '+viewingPdf.title}/>
     </Modal>}
-  </div></PlayerSpaceProvider>;
+  </div></>;
 }
