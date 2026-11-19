@@ -69,6 +69,20 @@ const normal = (a, b, c) => {
   return [y * w - z * v, z * u - x * w, x * v - y * u];
 };
 
+test('O D10 orbital tem diâmetro próximo da altura e dez faces proporcionais entre si', () => {
+  const {vertices, faces} = orbitalDieMeshes[10];
+  const [positivePole, negativePole, ...belt] = vertices;
+  const height = Math.hypot(...subtract(positivePole, negativePole));
+  const diameter = 2 * Math.max(...belt.map(([x, y]) => Math.hypot(x, y)));
+  assert.ok(diameter / height >= .98 && diameter / height <= 1.05);
+
+  const faceAreas = faces.map(([a, b, c, d]) => (
+    Math.hypot(...normal(vertices[a], vertices[b], vertices[c])) +
+    Math.hypot(...normal(vertices[a], vertices[c], vertices[d]))
+  ) / 2);
+  assert.ok(faceAreas.every(area => Math.abs(area - faceAreas[0]) < 1e-12));
+});
+
 test('Os seis sólidos têm faces planas, convexas e oclusão correta em várias orientações', () => {
   const expected = [[4, 4, 6, 3], [8, 6, 12, 4], [6, 8, 12, 3], [12, 10, 20, 4], [20, 12, 30, 5], [12, 20, 30, 3]];
   for (const [index, kind] of ORBITAL_DICE.entries()) {

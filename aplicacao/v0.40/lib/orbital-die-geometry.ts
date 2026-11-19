@@ -40,11 +40,13 @@ const octahedron = createOrbitalMesh(
 );
 
 // Two staggered pentagons join at ten triangles. Its dual has ten kite faces.
+// This half-height puts the dual's widest diameter close to its tip-to-tip length.
 const pentagon = [0, 1, 2, 3, 4];
+const antiprismHalfHeight = .94;
 const antiprism = createOrbitalMesh(
   [0, 1].flatMap(ring => pentagon.map((i): Point3 => {
     const angle = (2 * i + ring) * Math.PI / 5;
-    return [Math.cos(angle), Math.sin(angle), ring === 0 ? .5 : -.5];
+    return [Math.cos(angle), Math.sin(angle), ring === 0 ? antiprismHalfHeight : -antiprismHalfHeight];
   })),
   [pentagon, pentagon.map(i => i + 5), ...pentagon.flatMap(i => {
     const next = (i + 1) % 5;
