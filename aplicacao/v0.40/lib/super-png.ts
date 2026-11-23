@@ -1,5 +1,7 @@
 import {deflate,Inflate} from 'pako';
 import {CONTENT_QUOTAS,contentByteLimit,contentQuotaLabel,SUPER_PNG_FILE_BYTES,MAX_SUPER_PNG_METADATA_BYTES,serializedUtf8Size} from './content-limits.ts';
+import {crc32,isPng,PNG_SIGNATURE} from './png-bytes.ts';
+export {crc32,isPng} from './png-bytes.ts';
 // PNG iTXt follows the W3C PNG specification. The image remains a regular PNG;
 // a single UTF-8 text chunk, after IDAT, carries a versioned application payload.
 export const SUPER_PNG_FORMAT='antropologo-super-png';
@@ -8,16 +10,12 @@ export const SUPER_PNG_KEYWORD='ANTROPOLOGO RPG';
 export const MAX_EXPORT_DATA_BYTES=CONTENT_QUOTAS.character;
 export const MAX_SUPER_PNG_BYTES=SUPER_PNG_FILE_BYTES;
 const MAX_METADATA_BYTES=MAX_SUPER_PNG_METADATA_BYTES;
-const SIGNATURE=new Uint8Array([137,80,78,71,13,10,26,10]);
 const encoder=new TextEncoder();
 const decoder=new TextDecoder('utf-8',{fatal:true});
 export type SuperPngKind='character'|'ruleset';
 export type SuperPngData={kind:SuperPngKind;name:string;payload:unknown;integrity:'valid'};
 type Chunk={type:string;start:number;dataStart:number;dataEnd:number;end:number};
-const crcTable=Uint32Array.from({length:256},(_,n)=>{for(let k=0;k<8;k++)n=n&1?0xedb88320^(n>>>1):n>>>1;return n>>>0;});
-export function crc32(bytes:Uint8Array):number{let crc=0xffffffff;for(const byte of bytes)crc=crcTable[(crc^byte)&255]^(crc>>>8);return (crc^0xffffffff)>>>0;}
 const checksum=(text:string)=>crc32(encoder.encode(text)).toString(16).padStart(8,'0');
-export function isPng(bytes:Uint8Array):boolean{return bytes.length>=8&&SIGNATURE.every((value,i)=>bytes[i]===value);}
 const corrupt=():never=>{throw new Error('O PNG parece alterado ou corrompido. A integridade não pôde ser validada.');};
 function chunks(bytes:Uint8Array):Chunk[]{
  if(!isPng(bytes))throw new Error('Este arquivo não é um PNG válido.');
@@ -73,7 +71,7 @@ export function embedSuperPng(image:Uint8Array,kind:SuperPngKind,name:string,pay
  if(raw.length>MAX_METADATA_BYTES)throw new Error('Os dados do Super PNG ultrapassam o limite permitido.');
  const text=deflate(raw,{level:1}),data=new Uint8Array(keyword.length+5+text.length);
  data.set(keyword);data[keyword.length+1]=1;data.set(text,keyword.length+5);
- const metadata=makeChunk('iTXt',data),pieces:Uint8Array[]=[SIGNATURE];
+ const metadata=makeChunk('iTXt',data),pieces:Uint8Array[]=[PNG_SIGNATURE];
  for(const chunk of parsed){if(metadataText(image,chunk)!==undefined)continue;if(chunk.type==='IEND')pieces.push(metadata);pieces.push(image.subarray(chunk.start,chunk.end));}
  const size=pieces.reduce((n,p)=>n+p.length,0);if(size>MAX_SUPER_PNG_BYTES)throw new Error('O Super PNG ultrapassa 30 MiB. Use uma imagem menor.');
  const output=new Uint8Array(size);let at=0;for(const part of pieces){output.set(part,at);at+=part.length;}return output;

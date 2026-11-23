@@ -7,13 +7,16 @@ import { ContentImportReceipt,contentDragOver,contentDrop } from './content-impo
 import { readContentFile,importReceipt,RULEBOOK_FILE_ACCEPT,type ImportedContent } from '../lib/content-file';
 import { SheetDialog } from './sheet-dialog';
 import { AB10Logo } from './platform-brand';
-import { RuleTopicEditor,type RuleTopicDraft } from './rule-topic-editor';
+import type { RuleTopicDraft } from './rule-topic-editor';
+import { deferEditor } from './deferred-editor';
 import { RuleTopicContent } from './rule-topic-content';
 import { ruleAnchorId,ruleDocumentHeadings } from '../lib/rule-document';
 import { RulebookMetadataDialog,type RulebookMetadata } from './rulebook-metadata';
 import { RulebookSheetLink } from './rulebook-sheet-link';
 import { RulesIndex } from './rules-index';
 import { WorkspaceHeading } from './orbital-workspace';
+
+const RuleTopicEditor = deferEditor(() => import('./rule-topic-editor.tsx').then(module => module.RuleTopicEditor), 'o editor de regras');
 
 type Props={orbital?:boolean;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
 const statuses={draft:'Rascunho',test:'Em teste',canon:'Canônico'};

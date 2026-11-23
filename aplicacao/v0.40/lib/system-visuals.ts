@@ -1,7 +1,7 @@
 import {imageSize} from 'image-size';
 import {parseGIF} from 'gifuct-js';
 import {MIB} from './content-limits.ts';
-import {crc32} from './super-png.ts';
+import {crc32} from './png-bytes.ts';
 export {serializedUtf8Size} from './content-limits.ts';
 
 export const THEME_AREAS=['collapsedLogo','collapsedBackground','expandedLogo','expandedBackground','mainBackground','superPngCover'] as const;

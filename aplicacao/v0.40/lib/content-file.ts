@@ -1,7 +1,7 @@
 import {validateImportedThemeMedia} from './theme-media-validation.ts';
-import {MAX_JSON_BYTES,contentByteLimit,contentQuotaLabel} from './content-limits.ts';
+import {MAX_JSON_BYTES,SUPER_PNG_FILE_BYTES,contentByteLimit,contentQuotaLabel} from './content-limits.ts';
 import {parseSheet,parseRulebook,serializeRulebook,type Sheet,type Rulebook} from './model.ts';
-import {extractSuperPng,isPng,MAX_SUPER_PNG_BYTES} from './super-png.ts';
+import {isPng} from './png-bytes.ts';
 export type ExportContent=Sheet|Rulebook;
 export type ImportedContent=({kind:'character';content:Sheet}|{kind:'ruleset';content:Rulebook})&{source:'json'|'super-png';integrity?:'valid'};
 export const CONTENT_FILE_ACCEPT='.ab10,.regras,.json,.png,application/json,image/png';
@@ -17,9 +17,10 @@ export function parseImportedContent(input:unknown,source:'json'|'super-png'='js
  throw new Error('O arquivo não contém uma ficha ou conjunto de regras do ANTROPOLOGO RPG.');
 }
 export async function readContentFile(file:Pick<File,'size'|'name'|'arrayBuffer'>):Promise<ImportedContent>{
- if(file.size>MAX_SUPER_PNG_BYTES)throw new Error('O limite é de 20 MiB para sistemas JSON, 5 MiB para fichas JSON ou 30 MiB para Super PNG.');
+ if(file.size>SUPER_PNG_FILE_BYTES)throw new Error('O limite é de 20 MiB para sistemas JSON, 5 MiB para fichas JSON ou 30 MiB para Super PNG.');
  const bytes=new Uint8Array(await file.arrayBuffer());
  if(isPng(bytes)){
+  const {extractSuperPng}=await import('./super-png.ts');
   const decoded=extractSuperPng(bytes);if(!decoded)throw new Error('Este PNG é uma imagem comum: não contém dados do ANTROPOLOGO.');
   const result=parseImportedContent(decoded.payload,'super-png');if(result.kind==='ruleset'&&result.content.visuals)await validateImportedThemeMedia(result.content.visuals.assets);return result;
  }

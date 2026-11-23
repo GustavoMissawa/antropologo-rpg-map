@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback,useEffect, useRef, useState, type ReactNode } from 'react';
+import { useCallback,useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { AppearanceControls, useAppearance } from './appearance';
 import {useSystemVisualState,hasSystemIdentity,SystemHeaderIdentity,SystemHeaderBackground,SystemMainBackground} from './system-identity';
 import {ContextHelp} from './context-help';
@@ -23,7 +23,7 @@ import {openPlatformSession} from '../lib/platform-session';
 import {resolveSystemContext,type PlatformPage} from '../lib/platform-context';
 import { PlatformLogo } from './platform-brand';
 import { SHEET_DIE_PATHS } from '../lib/sheet-die-paths';
-import { SheetMap } from './sheet-map';
+import { deferEditor } from './deferred-editor';
 import { RulesLibrary } from './rules-library';
 import { PlayerSpaceProvider, ProfileControl, RPGCalendar, TestNotice, usePlayer } from './player-space';
 import { ArrowDown, ArrowDownToLine, ArrowLeft, ArrowRight, ArrowUp, BookOpen, Check, ChevronDown, ChevronRight, CircleHelp, Copy, Dices, Download, ExternalLink, FilePlus2, FileText, FolderOpen, GripVertical, Home, Layers3, LockKeyhole, Menu, MoreHorizontal, Pencil, Plus, Search, Shield, Sparkles, Trash2, Upload, UserRound, X, Eye, Settings2, CheckCircle2, CalendarDays, Compass } from 'lucide-react';
@@ -35,6 +35,7 @@ const names={home:'Início',rules:'Sistema',pdfs:'PDFs',sheet:'Ficha',agenda:'Ag
 const areaNames={home:'Início',rules:'Sistemas',pdfs:'PDFs',sheet:'Fichas',agenda:'Agenda'};
 const editorWarning='Há alterações no tópico. Salve ou cancele a edição antes de sair de Sistema.';
 const categories=['Manuais','Personagens','Aventuras','Referências','Outros'];
+const SheetMap = deferEditor(() => import('./sheet-map.tsx').then(module => module.SheetMap), 'o editor de ficha');
 
 const date=(v:string)=>new Date(v).toLocaleDateString('pt-BR',{day:'2-digit',month:'short'});
 const size=(bytes:number)=>bytes<1048576?`${Math.ceil(bytes/1024)} KB`:`${(bytes/1048576).toFixed(1)} MB`;
@@ -78,12 +79,12 @@ function PlatformApp(){
   const [query,setQuery]=useState('');const [category,setCategory]=useState('Todos');const [preview,setPreview]=useState(false);
   const importRef=useRef<HTMLInputElement>(null),importRequest=useRef(0);const [pdfFile,setPdfFile]=useState<File|null>(null);const [pdfTitle,setPdfTitle]=useState('');
   useEffect(()=>()=>{importRequest.current++;},[]);
-  const templateDirty=!!templateDraft&&(templateDraft.baseline===null||templateDraft.baseline!==JSON.stringify(templateDraft.sheet));
+  const templateDirty=useMemo(()=>!!templateDraft&&(templateDraft.baseline===null||templateDraft.baseline!==JSON.stringify(templateDraft.sheet)),[templateDraft]);
   const templateBook=templateDraft?rulebooks.find(b=>b.id===templateDraft.bookId):undefined;
   const visibleTemplate=sheetView?.kind==='template'&&templateDraft?.bookId===sheetView.id?templateDraft:null;
   const currentCharacter=sheetView?.kind==='character'?(sheet?.id===sheetView.id?sheet:recent.find(item=>item.id===sheetView.id)):null;
   const rawEditorSheet=visibleTemplate?.sheet||currentCharacter;
-  const editorSheet=rawEditorSheet?syncSheetSystem(rawEditorSheet,rulebooks):null;
+  const editorSheet=useMemo(()=>rawEditorSheet?syncSheetSystem(rawEditorSheet,rulebooks):null,[rawEditorSheet,rulebooks]);
   const sheetLibrary=!editorSheet&&(orbital||recent.length>0);
   const notify=useCallback((message:string)=>{
     setToast(message);

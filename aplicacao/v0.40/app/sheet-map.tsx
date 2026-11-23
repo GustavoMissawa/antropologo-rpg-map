@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect,useRef,useState,type CSSProperties,type PointerEvent as ReactPointerEvent } from 'react';
+import { useEffect,useMemo,useRef,useState,type CSSProperties,type PointerEvent as ReactPointerEvent } from 'react';
 import { ArrowDown,ArrowLeft,ArrowRight,ArrowUp,Check,Copy,Dices,FileText,GripVertical,Grid3X3,Hand,ImagePlus,Layers3,Link2,Maximize2,Minimize2,Minus,MousePointer2,Move,MoveDiagonal2,Pencil,Plus,Scan,Search,Settings2,Shield,Sparkles,Trash2,UserRound,X } from 'lucide-react';
 import { copyBlock,fitMapView,positionLayout,setPositionMode,makeBlock,mapBounds,uid,GRID_SIZE,MAP_LIMIT,type Block,type BlockLayout,type Field,type Sheet,type Rulebook } from '../lib/model';
 import { createFieldResolver } from '../lib/sheet-engine';
@@ -38,8 +38,18 @@ export function SheetMap({sheet,onChange,onExport,preview,onPreviewChange,isTemp
  const [diceOpen,setDiceOpen]=useState(false),[zoom,setZoom]=useState(1),[selectedId,setSelectedId]=useState<string|null>(null),[draft,setDraft]=useState<{id:string;layout:BlockLayout}|null>(null),[heights,setHeights]=useState<Record<string,number>>({}),[hand,setHand]=useState(false),[expanded,setExpanded]=useState(false),[addOpen,setAddOpen]=useState(false),[tabEditor,setTabEditor]=useState<'new'|'rename'|null>(null),[fieldEditor,setFieldEditor]=useState<{blockId:string;fieldId?:string;besideId?:string}|null>(null),[confirmation,setConfirmation]=useState<{title:string;text:string;action:()=>void}|null>(null),[status,setStatus]=useState('');
  const grid=sheet.positionMode==='grid',step=grid?GRID_SIZE:24;
  const place=(layout:BlockLayout)=>positionLayout(layout,sheet.positionMode);
- const resolve=createFieldResolver(sheet),fieldLabels=new Map(sheet.blocks.flatMap(b=>b.fields.map(f=>[f.id,f.label] as const)));
- const activeTab=sheet.tabs.find(t=>t.id===sheet.activeTabId)||sheet.tabs[0];const blocks=sheet.blocks.filter(b=>b.tabId===activeTab.id);const selected=blocks.find(b=>b.id===selectedId);const liveBlocks=preview?connectedBlockLayouts(blocks,sheet.connections,heights):blocks.map(b=>draft?.id===b.id?{...b,layout:draft.layout}:b);const bounds=mapBounds(liveBlocks,heights);const worldWidth=Math.max(1450,bounds.right+220),worldHeight=Math.max(1000,bounds.bottom+220);
+ const activeTab=sheet.tabs.find(t=>t.id===sheet.activeTabId)||sheet.tabs[0];
+ const allBlocks=sheet.blocks, activeTabId=activeTab.id, connections=sheet.connections;
+ const blocks=useMemo(()=>allBlocks.filter(b=>b.tabId===activeTabId),[allBlocks,activeTabId]);
+ const resolve=createFieldResolver(sheet);
+ const fieldLabels=useMemo(()=>new Map(allBlocks.flatMap(b=>b.fields.map(f=>[f.id,f.label] as const))),[allBlocks]);
+ const selected=blocks.find(b=>b.id===selectedId);
+ const liveBlocks=useMemo(()=>{
+  if(preview)return connectedBlockLayouts(blocks,connections,heights);
+  return draft?blocks.map(b=>draft.id===b.id?{...b,layout:draft.layout}:b):blocks;
+ },[blocks,connections,draft,heights,preview]);
+ const bounds=useMemo(()=>mapBounds(liveBlocks,heights),[liveBlocks,heights]);
+ const worldWidth=Math.max(1450,bounds.right+220),worldHeight=Math.max(1000,bounds.bottom+220);
  const editedBlock=fieldEditor?sheet.blocks.find(b=>b.id===fieldEditor.blockId):undefined;const editedField=editedBlock?.fields.find(f=>f.id===fieldEditor?.fieldId);
  function updateBlock(id:string,fn:(b:Block)=>Block){onChange(s=>{const before=s.blocks.find(b=>b.id===id);if(!before)return s;const after=fn(before),next={...s,blocks:s.blocks.map(b=>b.id===id?after:b)};return before.layout!==after.layout||before.tabId!==after.tabId?refreshBlockConnections(next,id,heightsRef.current):next;});}
  function startConnection(id:string){setSelectedId(id);setHand(false);setConnecting(current=>current===id?null:id);}
