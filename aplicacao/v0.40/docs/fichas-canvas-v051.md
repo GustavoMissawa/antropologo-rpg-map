@@ -51,3 +51,9 @@ Os testes de interface rodaram em Chromium 158 com o build do Worker. O teste m�
 - **Desktop** — viewport de 1440 × 1000 px com arraste pelo mouse, setas no bloco, histórico pelo teclado, encaixe em grade e zoom. A interface mantém o inspector ao lado do mapa.
 
 A redução de espaço causada pelo teclado foi simulada via VisualViewport. A sessão não contou com aparelho físico Android ou iOS.
+
+## Correção do estado vazio na v0.51
+
+O posicionamento compacto aplicava margens laterais e herdava o deslocamento horizontal do desktop. Em 504 px, o aviso começava 184 px antes da borda do mapa. A centralização do modo compacto passou a usar margens automáticas dentro dos limites laterais.
+
+No Chromium, o aviso e o botão “Adicionar primeiro bloco” ficaram inteiros em 320, 390, 504, 760 e 1024 px. O botão abriu a seleção de tipos e o aviso saiu do mapa após a criação do bloco. Os 466 testes, o TypeScript e o build passaram.

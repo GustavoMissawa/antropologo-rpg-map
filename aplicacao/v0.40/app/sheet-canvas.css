@@ -115,7 +115,14 @@
   .map-compact .map-viewport-wrap { position: relative; height: 100%; padding-bottom: 62px; }
   .map-compact .map-viewport { height: 100%; max-height: none; min-height: 0; scrollbar-width: none; }
   .map-compact .map-viewport::-webkit-scrollbar { display: none; }
-  .map-compact .map-empty { inset-inline: 16px; padding: 16px; max-width: 25rem; }
+  .map-compact .map-empty {
+    inset-inline: 16px;
+    width: auto;
+    max-width: 25rem;
+    margin-inline: auto;
+    transform: none;
+    padding: 16px;
+  }
   .map-compact .map-empty h3 { margin: 8px 0 6px; font-size: 1.35rem; }
   .map-compact .map-empty p { margin-bottom: 16px; }
   .map-compact .map-empty .button { min-height: 44px; font-size: .9rem; }
