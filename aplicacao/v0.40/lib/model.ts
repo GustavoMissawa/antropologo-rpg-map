@@ -26,7 +26,7 @@ export function positionLayout(layout:BlockLayout,mode:PositionMode):BlockLayout
 }
 export function setPositionMode(sheet:Sheet,mode:PositionMode):Sheet{return {...sheet,positionMode:mode,blocks:mode==='grid'?sheet.blocks.map(b=>({...b,layout:positionLayout(b.layout,mode)})):sheet.blocks};}
 export function mapBounds(blocks:{id:string;layout:BlockLayout}[],heights:Record<string,number>={}){if(!blocks.length)return {left:0,top:0,right:1000,bottom:650};return {left:Math.min(...blocks.map(b=>b.layout.x)),top:Math.min(...blocks.map(b=>b.layout.y)),right:Math.max(...blocks.map(b=>b.layout.x+b.layout.width)),bottom:Math.max(...blocks.map(b=>b.layout.y+(heights[b.id]||260)))};}
-export function fitMapView(bounds:ReturnType<typeof mapBounds>,width:number,height:number){const zoom=Math.max(.1,Math.min(1,(width-64)/Math.max(1,bounds.right-bounds.left),(height-64)/Math.max(1,bounds.bottom-bounds.top)));return {zoom,left:Math.max(0,(bounds.left+bounds.right)/2*zoom-width/2),top:Math.max(0,(bounds.top+bounds.bottom)/2*zoom-height/2)};}
+export function fitMapView(bounds:ReturnType<typeof mapBounds>,width:number,height:number,minZoom=.1){const zoom=Math.max(minZoom,Math.min(1,(width-64)/Math.max(1,bounds.right-bounds.left),(height-64)/Math.max(1,bounds.bottom-bounds.top)));return {zoom,left:Math.max(0,(bounds.left+bounds.right)/2*zoom-width/2),top:Math.max(0,(bounds.top+bounds.bottom)/2*zoom-height/2)};}
 export type Rule = { id: string; title: string; content: string; document?:RuleDocument; status: 'draft'|'test'|'canon'; children: Rule[] };
 export type PDF = { url?: string; id: string; title: string; category: string; description: string; filename: string; size: number; createdAt: string };
 export const uid = () => {
