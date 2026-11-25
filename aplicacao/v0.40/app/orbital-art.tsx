@@ -2,6 +2,7 @@
 
 import {useEffect, useId, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
+import {pageOrbitalDisk} from '../lib/orbital-disk';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 import {startOrbitalFlow} from './orbital-flow';
@@ -20,7 +21,7 @@ function renderTextures(
   useWorker: boolean,
   onPaint: (painted: boolean) => void,
 ) {
-  const {size, colors, mode} = request;
+  const {size, colors, mode, variant} = request;
   let worker: Worker | undefined;
   let frame = 0;
 
@@ -57,7 +58,7 @@ function renderTextures(
     }
     frame = requestAnimationFrame(() => {
       setSize();
-      if (paintOrbitalLight(light, dust, colors, mode)) {
+      if (paintOrbitalLight(light, dust, colors, mode, variant)) {
         onPaint(true);
         return;
       }
@@ -125,7 +126,9 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
 
     const compact = matchMedia('(max-width: 740px)');
     const root = document.documentElement;
+    const variant = pageOrbitalDisk();
     const readRequest = (): OrbitalLightRequest => ({
+      variant,
       size: compact.matches ? 640 : 1024,
       mode: root.dataset.mode === 'dark' ? 'dark' : 'light',
       colors: {
@@ -138,6 +141,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
     const onPaint = (painted: boolean) => {
       cancelFlow?.();
       element.dataset.painted = String(painted);
+      if (painted) element.dataset.diskVariant = variant;
       cancelFlow = startOrbitalFlow(element, lightCanvas, dustCanvas, flowCanvas, clock, onDiskFrame);
     };
     let current = readRequest();
