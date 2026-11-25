@@ -32,7 +32,7 @@ function ImageUpload({block,busy,onUpload}:{block:Block;busy:boolean;onUpload:(f
 }
 export function BlockImageContent({block,preview,busy,onUpload}:{block:Block;preview:boolean;busy:boolean;onUpload:(file:File)=>void}){
  const [failedSrc,setFailedSrc]=useState('');const failed=!!block.image&&failedSrc===block.image.src;
- return <div className={'block-image-frame '+(block.image?'has-image':'')} style={{height:block.layout.height??260}}>
+ return <div className={'block-image-frame '+(block.image?'has-image':'')} style={{height:`var(--map-drag-height, ${block.layout.height??260}px)`}}>
   {block.image&&!failed?<img src={block.image.src} alt={block.title||'Imagem da ficha'} draggable={false} onError={()=>setFailedSrc(block.image!.src)} style={{objectFit:block.image.fit==='center'?'scale-down':block.image.fit}}/>:<div className="block-image-empty"><ImagePlus size={32}/><p>{failed?'Não foi possível exibir esta imagem. Substitua o arquivo no Modo edição.':preview?'Este bloco ainda não tem imagem.':'Retrato, mapa ou ilustração. O espaço é seu.'}</p>{!preview&&<ImageUpload block={block} busy={busy} onUpload={onUpload}/>}</div>}
  </div>;
 }
