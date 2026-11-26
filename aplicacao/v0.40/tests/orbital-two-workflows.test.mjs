@@ -183,3 +183,69 @@ test('Catálogo técnico abre a ficha diretamente e PDFs e Agenda conservam os c
     assert(ui.host.textContent.includes('Agenda de RPG'));
   } finally {await ui.close();await preferences({motionReduced:false});}
 });
+
+test('O fundo retorna do planeta e da lua pela rota do mapa, sem confundir gestos ou controles', async () => {
+  sessionStorage.clear();
+  await preferences({motionReduced:true});
+  const ui=await start('#regras/ab10');
+  const pointer=(target,type,{id=1,x=100,y=100,pointerType='mouse',primary=true}={})=>{
+    const event=new MouseEvent(type,{bubbles:true,cancelable:true,button:0,clientX:x,clientY:y});
+    Object.defineProperties(event,{pointerId:{value:id},pointerType:{value:pointerType},isPrimary:{value:primary}});
+    target.dispatchEvent(event);
+  };
+  try {
+    const scene=ui.host.querySelector('.orbital-system-scene');
+    const sky=scene.querySelector('.orbital-world-svg');
+    const body=id=>scene.querySelector('[data-world-body="'+id+'"] .orbital-body-hit');
+    const press=(start=sky,end=start,opts={})=>act(async()=>{
+      pointer(start,'pointerdown',opts);
+      pointer(end,'pointerup',opts);
+    });
+
+    await press();
+    assert.equal(window.location.hash,'#regras/ab10');
+    await selectBody(scene,'character');
+    const planetHash=window.location.hash;
+    for(const target of [body('character'),body('attributes'),scene.querySelector('.orbital-map-star circle'),
+      scene.querySelector('.orbital-system-caption h2'),scene.querySelector('.orbital-map-actions button'),
+      ui.host.querySelector('.rule-index button')]){
+      assert(target);
+      await press(target);
+      assert.equal(window.location.hash,planetHash);
+    }
+    await press(sky,body('attributes'));
+    await press(body('character'),sky);
+    await act(async()=>{
+      pointer(sky,'pointerdown');
+      pointer(sky,'pointermove',{x:140});
+      pointer(sky,'pointerup');
+    });
+    assert.equal(window.location.hash,planetHash);
+    await act(async()=>{
+      pointer(sky,'pointerdown',{pointerType:'touch'});
+      pointer(sky,'pointerdown',{id:2,pointerType:'touch',primary:false});
+      pointer(sky,'pointerup',{id:2,pointerType:'touch',primary:false});
+      pointer(sky,'pointerup',{pointerType:'touch'});
+    });
+    assert.equal(window.location.hash,planetHash);
+    await act(async()=>{
+      pointer(sky,'pointerdown',{pointerType:'touch'});
+      pointer(sky,'pointercancel',{pointerType:'touch'});
+      pointer(sky,'pointerup',{pointerType:'touch'});
+    });
+    assert.equal(window.location.hash,planetHash);
+
+    await press();
+    assert.equal(scene.dataset.sceneMode,'exploration');
+    assert.equal(window.location.hash,'#regras/ab10');
+    await act(async()=>window.history.back());
+    await waitFor(()=>window.location.hash===planetHash);
+    await waitFor(()=>scene.dataset.celestialBody==='character');
+    await selectBody(scene,'attributes');
+    await press(sky,sky,{pointerType:'touch'});
+    assert.equal(window.location.hash,'#regras/ab10');
+    assert.equal(scene.dataset.sceneMode,'exploration');
+    assert.equal(scene.querySelector('.orbital-system-viewport').dataset.cameraMotion,undefined);
+    await waitFor(()=>document.activeElement===scene.querySelector('h2'));
+  } finally {await ui.close();await preferences({motionReduced:false});}
+});

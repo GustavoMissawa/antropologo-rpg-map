@@ -22,3 +22,9 @@ A cena mostra até 10 planetas e 8 luas da órbita em foco. Um destino fora da a
 - Seleção por teclado, foco no planeta e na lua, leitura, URL direta e histórico.
 - Chromium em 390 px com 128 capítulos e 64 luas. Foram abertos o capítulo 128 e uma lua aninhada pelo índice. O grupo local ficou enquadrado e a página coube na largura disponível.
 - A suíte testa separação durante a rotação em 96 sistemas, preservação da árvore, enquadramento lunar e conflitos entre rótulos, além de movimento reduzido e regressões de navegação. O teste mobile foi feito em viewport emulado.
+
+## Retorno pela área vazia na v0.62
+
+Na visão de foco, um clique ou toque primário que começa e termina no fundo do mapa ativa a ação **Visão do sistema**. O reconhecimento ignora corpos, controles, gestos com mais de um ponteiro, movimentos acima de oito pixels e eventos cancelados. A mesma ação protege rascunhos, atualiza a URL e o histórico e restaura o foco de teclado no título do mapa. O percurso existente da câmera recupera a vista geral e respeita movimento reduzido.
+
+A interação foi verificada em Chromium no desktop e em uma área de 390 px. O teste automatizado cobre toque, multitoque, arraste que retorna ao ponto inicial, liberação sobre um corpo, cancelamento, histórico e movimento reduzido.

@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useMemo, useRef, type MouseEvent, type RefObject } from 'react';
+import { memo, useEffect, useMemo, useRef, type MouseEvent, type RefObject } from 'react';
 import { BookOpen, Orbit } from 'lucide-react';
 import type { Rulebook } from '../lib/model';
 import type { OrbitalView } from '../lib/orbital-camera';
@@ -45,6 +45,50 @@ export function OrbitalSystemScene({book, topicId, journey, view, headingRef, on
   const body = topic?.moon ?? topic?.planet;
   const arrival = journey?.from.page === 'home' && journey.to.page === 'rules' && journey.to.bookId === book.id;
   useOrbitalCamera({stage, svg, world, system, topic, topicId, planets, moons, view, arrival});
+
+  useEffect(() => {
+    if (!body || view !== 'focus') return;
+    const viewport = stage.current;
+    const sky = svg.current;
+    if (!viewport || !sky) return;
+    const isBackground = (target: EventTarget | null) => target === sky || target === viewport;
+    const isPlainPress = (event: PointerEvent) =>
+      event.button === 0 && event.isPrimary !== false && !event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey;
+    let press: {id: number; x: number; y: number} | null = null;
+    const cancel = () => { press = null; };
+    const moved = (event: PointerEvent, start: NonNullable<typeof press>) =>
+      Math.hypot(event.clientX - start.x, event.clientY - start.y) > 8;
+    const down = (event: PointerEvent) => {
+      press = !press && isPlainPress(event) && isBackground(event.target)
+        ? {id: event.pointerId, x: event.clientX, y: event.clientY} : null;
+    };
+    const move = (event: PointerEvent) => {
+      if (press?.id === event.pointerId && moved(event, press)) cancel();
+    };
+    const up = (event: PointerEvent) => {
+      if (!press || press.id !== event.pointerId) return;
+      const start = press;
+      cancel();
+      // A touch can implicitly capture its target even after leaving the background.
+      if (event.defaultPrevented || !isPlainPress(event) || moved(event, start) ||
+        !isBackground(event.target) || document.querySelector('dialog[open]')) return;
+      if (event.pointerType !== 'mouse' && typeof document.elementFromPoint === 'function' &&
+        !isBackground(document.elementFromPoint(event.clientX, event.clientY))) return;
+      onOverview();
+    };
+    document.addEventListener('pointerdown', down, true);
+    document.addEventListener('pointermove', move, true);
+    document.addEventListener('pointerup', up);
+    document.addEventListener('pointercancel', cancel);
+    window.addEventListener('blur', cancel);
+    return () => {
+      document.removeEventListener('pointerdown', down, true);
+      document.removeEventListener('pointermove', move, true);
+      document.removeEventListener('pointerup', up);
+      document.removeEventListener('pointercancel', cancel);
+      window.removeEventListener('blur', cancel);
+    };
+  }, [body, view, onOverview]);
 
   function select(event: MouseEvent<Element>, id: string) {
     if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;

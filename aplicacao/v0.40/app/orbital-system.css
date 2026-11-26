@@ -194,7 +194,7 @@
   color: var(--orbit-ink);
   overflow-wrap: anywhere;
 }
-.orbital-system-caption>div { min-width: 0; }
+.orbital-system-caption>div { min-width: 0; pointer-events: auto; }
 .orbital-system-caption p { margin-top: 5px; font-size: 13px; color: var(--orbit-muted); overflow-wrap: anywhere; }
 .orbital-map-actions { bottom: clamp(11px, 2vw, 24px); right: clamp(13px, 2vw, 24px); }
 .orbital-map-actions button { min-height: 44px; pointer-events: auto; }
