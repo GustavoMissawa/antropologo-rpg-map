@@ -1,5 +1,10 @@
 import type { Rule, Rulebook } from './model.ts';
 import { orbitalRandom, orbitalSeed } from './orbital-noise.ts';
+import {
+  createMassProfile, estimateMoon, estimatePlanet, estimateStar, planetOrbitBounds,
+  type Atmosphere, type LunarProperties, type PlanetaryArchitecture, type PlanetaryProperties,
+  type Rings, type StellarProperties, type Surface,
+} from './planetary-architecture.ts';
 
 const fullTurn = Math.PI * 2;
 const appearanceVersion = 'orbital-system-1';
@@ -7,13 +12,16 @@ const appearanceVersion = 'orbital-system-1';
 export type SpacePoint = { x: number; y: number };
 export type CelestialOrbit = { radius: number; angle: number };
 export type CelestialAppearance = {
-  type: 'star' | 'rock' | 'gas' | 'ice';
+  type: 'star' | Surface;
   light: string;
   base: string;
   shade: string;
   size: number;
   tilt: number;
-  rings: boolean;
+  rings: Rings;
+  atmosphere: Atmosphere;
+  cratering: number;
+  storm: boolean;
 };
 
 export type CelestialBody = {
@@ -22,37 +30,57 @@ export type CelestialBody = {
   seed: number;
   appearance: CelestialAppearance;
 };
-export type OrbitalMoon = CelestialBody & { planetId: string; orbit: CelestialOrbit };
-export type OrbitalPlanet = CelestialBody & { orbit: CelestialOrbit; moons: OrbitalMoon[] };
+export type OrbitalMoon = CelestialBody & { planetId: string; orbit: CelestialOrbit; physics: LunarProperties };
+export type OrbitalPlanet = CelestialBody & { orbit: CelestialOrbit; moons: OrbitalMoon[]; physics: PlanetaryProperties };
 export type OrbitalTopic = { planet: OrbitalPlanet; moon?: OrbitalMoon };
 export type PlanetarySystem = {
   id: string;
-  star: CelestialBody;
+  architecture: PlanetaryArchitecture;
+  star: CelestialBody & { physics: StellarProperties };
   planets: OrbitalPlanet[];
   topics: ReadonlyMap<string, OrbitalTopic>;
 };
 
-const starColors = [
-  ['#fff0cd', '#ffb16a', '#912f21'],
-  ['#fff9e4', '#ffdb89', '#9b5728'],
-  ['#edf7ff', '#a2c9ef', '#304b91'],
-] as const;
-const rockColors = [
-  ['#efcaaa', '#ab684c', '#382727'],
-  ['#e5d9ae', '#9e8461', '#383137'],
-  ['#cbd8cd', '#5e8c88', '#203641'],
-  ['#ded9da', '#807985', '#2d2a34'],
-] as const;
-const gasColors = [
-  ['#f5dbc1', '#c69265', '#51414f'],
-  ['#c6edee', '#6fa8b0', '#253d60'],
-  ['#eddfec', '#b494b9', '#463b64'],
-] as const;
-const iceColors = [
-  ['#e8f5fa', '#81a6c0', '#314361'],
-  ['#e3f2ea', '#9abbbf', '#324957'],
-  ['#efdde8', '#9a93b6', '#403c61'],
-] as const;
+const starColors = {
+  cool: ['#fff0cd', '#ffad6f', '#a24431'],
+  temperate: ['#fff9e4', '#ffdb89', '#9b5728'],
+  hot: ['#f1fbff', '#b1d9ff', '#4164ad'],
+} as const;
+const surfaceColors = {
+  rocky: [
+    ['#efcaaa', '#ab684c', '#382727'],
+    ['#ddd9dc', '#847e8e', '#2d2a34'],
+    ['#d5dad1', '#7c897b', '#303d3c'],
+  ],
+  desert: [
+    ['#f8dfae', '#c49658', '#5d4335'],
+    ['#eec1a0', '#bd7556', '#5c3231'],
+  ],
+  oceanic: [
+    ['#a3ece0', '#407d97', '#1d334f'],
+    ['#9cd4e7', '#4e739d', '#22355b'],
+    ['#cbddea', '#567f94', '#253759'],
+  ],
+  volcanic: [
+    ['#ffbd8b', '#9f4d42', '#331c26'],
+    ['#ffd3a8', '#b76137', '#402228'],
+  ],
+  icy: [
+    ['#e8f5fa', '#81a6c0', '#314361'],
+    ['#e3f2ea', '#9abbbf', '#324957'],
+    ['#efdde8', '#9a93b6', '#403c61'],
+  ],
+  'gas-giant': [
+    ['#f5dbc1', '#c69265', '#51414f'],
+    ['#ffddc5', '#bd7b64', '#5e3b4b'],
+    ['#eddfec', '#b494b9', '#463b64'],
+  ],
+  'ice-giant': [
+    ['#d2f0f0', '#66a9b3', '#26446a'],
+    ['#c8dfeb', '#738ebc', '#293d70'],
+    ['#c6e8dc', '#68a993', '#254d54'],
+  ],
+} as const;
 
 export function celestialSeed(...ids: string[]): number {
   const key = JSON.stringify([appearanceVersion, ...ids]);
@@ -61,15 +89,18 @@ export function celestialSeed(...ids: string[]): number {
   return orbitalSeed(hash);
 }
 
-function makeBody(id: string, title: string, kind: 'star' | 'planet' | 'moon', seed: number): CelestialBody {
+function describeGlobe(physics: PlanetaryProperties | LunarProperties, seed: number): CelestialAppearance {
   const random = orbitalRandom(seed);
-  const type = kind === 'star' ? 'star' : kind === 'moon'
-    ? random() < .78 ? 'rock' : 'ice'
-    : (['rock', 'gas', 'ice'] as const)[Math.floor(random() * 3)];
-  const colors = {star: starColors, rock: rockColors, gas: gasColors, ice: iceColors}[type];
+  const {surface, radiusEarth, atmosphere, cratering} = physics;
+  const colors = surfaceColors[surface];
   const [light, base, shade] = colors[Math.floor(random() * colors.length)];
-  const size = (kind === 'star' ? 1.45 : kind === 'moon' ? .3 : type === 'gas' ? .95 : .68) * (.88 + random() * .3);
-  return { id, title, seed, appearance: { type, light, base, shade, size, tilt: random() * 48 - 24, rings: type === 'gas' && random() < .58 } };
+  const isPlanet = 'rings' in physics;
+  // Compress physical sizes to keep small destinations readable and giant planets in view.
+  const size = isPlanet ? .46 + .24 * Math.log1p(radiusEarth) : .19 + .31 * Math.sqrt(radiusEarth);
+  return {
+    type: surface, light, base, shade, size, atmosphere, cratering,
+    tilt: 58 * random() - 29, rings: isPlanet ? physics.rings : null, storm: isPlanet && physics.storm,
+  };
 }
 
 function makeOrbit(seed: number, inner: number, outer: number): CelestialOrbit {
@@ -82,18 +113,39 @@ export function pointOnOrbit(orbit: CelestialOrbit): SpacePoint {
   return { x: orbit.radius * Math.cos(orbit.angle), y: orbit.radius * Math.sin(orbit.angle) };
 }
 
-/** Body identity comes from the saved IDs. Chapter order and visual preferences are absent. */
+/** Mass is a function of the body's own orbital distance and seed, with no rank across chapters. */
 export function createPlanetarySystem(book: Pick<Rulebook, 'id' | 'name' | 'chapters'>): PlanetarySystem {
+  const massProfile = createMassProfile(celestialSeed(book.id, 'architecture-1'));
+  const starSeed = celestialSeed(book.id, 'star');
+  const stellar = estimateStar(celestialSeed(book.id, 'stellar-physics'));
+  const [light, base, shade] = starColors[stellar.spectrum];
+  const star = {
+    id: book.id, title: book.name, seed: starSeed, physics: stellar,
+    appearance: {
+      type: 'star', light, base, shade, size: 1.02 + .43 * stellar.massSolar, tilt: -12,
+      rings: null, atmosphere: 'none', cratering: 0, storm: false,
+    } satisfies CelestialAppearance,
+  };
   const topics = new Map<string, OrbitalTopic>();
   const planets = book.chapters.map(chapter => {
-    const body = makeBody(chapter.id, chapter.title, 'planet', celestialSeed(book.id, 'planet', chapter.id));
-    const planet: OrbitalPlanet = { ...body, orbit: makeOrbit(body.seed, .28, .94), moons: [] };
+    const seed = celestialSeed(book.id, 'planet', chapter.id);
+    const orbit = makeOrbit(seed, planetOrbitBounds.inner, planetOrbitBounds.outer);
+    const physics = estimatePlanet(massProfile, stellar, orbit.radius, celestialSeed(book.id, 'planet-physics', chapter.id));
+    const planet: OrbitalPlanet = {
+      id: chapter.id, title: chapter.title, seed, orbit, physics, moons: [],
+      appearance: describeGlobe(physics, seed),
+    };
     topics.set(planet.id, { planet });
 
     function collectMoons(children: Rule[]) {
       for (const child of children) {
-        const body = makeBody(child.id, child.title, 'moon', celestialSeed(book.id, 'moon', child.id));
-        const moon = { ...body, planetId: planet.id, orbit: makeOrbit(body.seed, .32, .96) };
+        const seed = celestialSeed(book.id, 'moon', child.id);
+        const orbit = makeOrbit(seed, .32, .96);
+        const lunar = estimateMoon(physics, stellar, orbit.radius, celestialSeed(book.id, 'moon-physics', child.id));
+        const moon: OrbitalMoon = {
+          id: child.id, title: child.title, seed, planetId: planet.id, orbit, physics: lunar,
+          appearance: describeGlobe(lunar, seed),
+        };
         planet.moons.push(moon);
         topics.set(child.id, { planet, moon });
         collectMoons(child.children);
@@ -102,7 +154,22 @@ export function createPlanetarySystem(book: Pick<Rulebook, 'id' | 'name' | 'chap
     collectMoons(chapter.children);
     return planet;
   });
-  return { id: book.id, star: makeBody(book.id, book.name, 'star', celestialSeed(book.id, 'star')), planets, topics };
+  return { id: book.id, architecture: massProfile.kind, star, planets, topics };
+}
+
+/** Sample evenly through the orbits while keeping the active link available at any system size. */
+export function visibleOrbitalBodies<T extends OrbitalPlanet | OrbitalMoon>(all: T[], limit: number, selected?: T) {
+  if (all.length <= limit) return all;
+  const orbits = [...all].sort((a,b) => a.orbit.radius - b.orbit.radius);
+  const visible = Array.from({length: limit}, (_, i) => orbits[Math.floor((i + .5) * orbits.length / limit)]);
+  if (selected && !visible.includes(selected)) {
+    let nearest = 0;
+    for (let i = 1; i < limit; i++) {
+      if (Math.abs(visible[i].orbit.radius - selected.orbit.radius) < Math.abs(visible[nearest].orbit.radius - selected.orbit.radius)) nearest = i;
+    }
+    visible[nearest] = selected;
+  }
+  return visible;
 }
 
 export type SpaceLocation = {

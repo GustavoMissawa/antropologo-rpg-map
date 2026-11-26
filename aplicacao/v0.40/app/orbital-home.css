@@ -16,6 +16,11 @@
   --orbit-star: color-mix(in srgb, var(--orbit-sky-pigment) 42%, transparent);
   --orbit-star-faint: color-mix(in srgb, var(--orbit-star) 55%, transparent);
   --orbit-cloud-y: clamp(260px, 48svh, 452px);
+  --orbit-atmosphere:
+    radial-gradient(ellipse 52% 35% at 63% calc(var(--orbit-cloud-y) + 44px), var(--orbit-cloud-secondary), transparent 77%),
+    radial-gradient(ellipse 50% 52% at 25% 31%, var(--orbit-cloud-primary), transparent 79%),
+    radial-gradient(ellipse 51% 36% at 92% 78%, var(--orbit-cloud-faint), transparent 81%),
+    radial-gradient(ellipse 48% 42% at 87% 19%, var(--orbit-cloud-faint), transparent 78%);
   --orbit-ink: #e8edf0;
   --orbit-muted: color-mix(in srgb, #bdc9cf 88%, var(--orbit-sky-pigment));
   --orbit-control-accent: color-mix(in srgb, var(--orbit-ambient-base) 80%, #fff);
@@ -56,6 +61,11 @@
   --orbit-cloud-primary: color-mix(in srgb, var(--orbit-ambient-base) 54%, transparent);
   --orbit-cloud-secondary: color-mix(in srgb, var(--orbit-ambient-light) 61%, transparent);
   --orbit-cloud-faint: color-mix(in srgb, var(--orbit-ambient-light) 30%, transparent);
+  --orbit-atmosphere:
+    radial-gradient(ellipse 34% 28% at 47% calc(var(--orbit-cloud-y) - 125px), #fffc, transparent 80%),
+    radial-gradient(ellipse 46% 38% at 61% calc(var(--orbit-cloud-y) + 44px), var(--orbit-cloud-secondary), transparent 83%),
+    radial-gradient(ellipse 48% 48% at 18% 28%, var(--orbit-cloud-primary), transparent 80%),
+    radial-gradient(ellipse 39% 34% at 88% 67%, var(--orbit-cloud-faint), transparent 77%);
   --orbit-star: color-mix(in srgb, var(--orbit-node-accent) 27%, transparent);
   --orbit-ink: #172731;
   --orbit-muted: color-mix(in srgb, #344751 92%, var(--orbit-sky-pigment));
@@ -104,19 +114,7 @@
 }
 
 .app-shell.orbital-home-mode .main-wrap::before {
-  background:
-    radial-gradient(ellipse 52% 35% at 63% calc(var(--orbit-cloud-y) + 44px), var(--orbit-cloud-secondary), transparent 77%),
-    radial-gradient(ellipse 50% 52% at 25% 31%, var(--orbit-cloud-primary), transparent 79%),
-    radial-gradient(ellipse 51% 36% at 92% 78%, var(--orbit-cloud-faint), transparent 81%),
-    radial-gradient(ellipse 48% 42% at 87% 19%, var(--orbit-cloud-faint), transparent 78%);
-}
-
-:root[data-mode='light'] .app-shell.orbital-home-mode .main-wrap::before {
-  background:
-    radial-gradient(ellipse 34% 28% at 47% calc(var(--orbit-cloud-y) - 125px), #fffc, transparent 80%),
-    radial-gradient(ellipse 46% 38% at 61% calc(var(--orbit-cloud-y) + 44px), var(--orbit-cloud-secondary), transparent 83%),
-    radial-gradient(ellipse 48% 48% at 18% 28%, var(--orbit-cloud-primary), transparent 80%),
-    radial-gradient(ellipse 39% 34% at 88% 67%, var(--orbit-cloud-faint), transparent 77%);
+  background: var(--orbit-atmosphere);
 }
 
 .app-shell.orbital-home-mode .main-wrap::after {
