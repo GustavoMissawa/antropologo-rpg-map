@@ -183,6 +183,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
   return (
     <div ref={scene} className="orbital-scene" data-observing={active !== null}>
       <OrbitalArt slowDie={active !== null} cruising={pointerPreview || phase === 'destination'} activation={dieActivation}
+        cameraMoving={phase !== 'exploration' && phase !== 'destination'}
         onDiskFrame={drawOrbit} boostDisk={firstStepsCue === 'disk'} onDiskReturn={selected ? onDiskReturn : undefined} />
       <svg className="orbital-rail" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true" focusable="false">
         <defs>

@@ -256,11 +256,13 @@
 }
 
 /* Keep the shadow centered on the die at every viewport size and in both modes. */
+.orbital-disk-light { position: absolute; inset: 0; }
+
 .orbital-art::before,
 .orbital-plane {
   position: absolute;
   inset: 0;
-  transform: rotate(37deg) scaleY(.74);
+  transform: rotate(var(--orbital-disk-tilt)) scaleY(.74);
 }
 
 .orbital-art::before {
@@ -280,7 +282,7 @@
   position: absolute;
   inset: 7%;
   border-radius: 50%;
-  transform: rotate(37deg) scaleY(.74);
+  transform: rotate(var(--orbital-disk-tilt)) scaleY(.74);
   background:
     conic-gradient(from 45deg, var(--orbit-glow, #ffc87838), var(--orbit-glow-faint, #ffe3a21f),
       var(--orbit-glow-strong, #ffb557b5) 41%, var(--orbit-glow, #ffc87824) 58%,
@@ -727,66 +729,31 @@
   .orbital-connection-track { stroke: Highlight; }
 }
 
-.orbital-critical {
-  display: none;
+.orbital-jet {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  visibility: hidden;
   pointer-events: none;
 }
+.orbital-jet[data-painted='true'] { visibility: visible; }
 
-.orbital-d20[data-critical='true'] .orbital-critical {
-  display: inline;
-  opacity: .76;
+.orbital-critical-halo { display: none; }
+.orbital-art[data-cosmic-phase='still'] .orbital-critical-halo {
+  display: block;
+  position: absolute;
+  inset: 0;
+  transform: rotate(var(--orbital-disk-tilt));
+  background: radial-gradient(ellipse 22% 16% at center,
+    transparent 33%,
+    color-mix(in srgb, var(--orbit-wire) 48%, transparent) 50%,
+    color-mix(in srgb, var(--orbit-ambient-base) 18%, transparent) 70%, transparent 100%);
 }
-
-.orbital-critical-primary { color: var(--orbit-ambient-base); }
-.orbital-critical-secondary {
-  color: var(--orbit-ambient-light);
-  --critical-delay: -.55s;
-}
-
-.orbital-critical-edge,
-.orbital-critical-number {
-  fill: none;
-  stroke: currentColor;
-  stroke-linejoin: round;
-  filter: drop-shadow(0 0 1.25px currentColor);
-}
-
-.orbital-critical-edge {
-  stroke-width: 2.8;
-  --critical-band: 50px;
-  --critical-travel: -100px;
-}
-
-:is(.orbital-critical-edge, .orbital-critical-number) {
-  stroke-dasharray: var(--critical-band) var(--critical-band);
-  stroke-dashoffset: 0px;
-  animation: orbital-critical-flow 1.1s linear var(--critical-delay, 0s) infinite;
-}
-
-.orbital-critical-secondary .orbital-critical-edge,
-.orbital-critical-number.orbital-critical-secondary { stroke-dashoffset: var(--critical-band); }
-
-.orbital-critical-perimeter {
-  --critical-band: 25px;
-  --critical-travel: -50px;
-}
-
-.orbital-critical-number {
-  font-family: var(--font);
-  font-weight: 400;
-  font-variant-numeric: tabular-nums;
-  stroke-width: 4.2;
-  --critical-band: 26px;
-  --critical-travel: -52px;
-}
-
-@keyframes orbital-critical-flow {
-  from { stroke-dashoffset: 0px; }
-  to { stroke-dashoffset: var(--critical-travel); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .orbital-critical-edge, .orbital-critical-number { animation: none; }
+@media (prefers-reduced-motion: reduce), (forced-colors: active) {
+  .orbital-art .orbital-jet { visibility: hidden; }
+  .orbital-disk-light { filter: none !important; }
 }
 @media (forced-colors: active) {
-  .orbital-d20[data-critical='true'] .orbital-critical { display: none; }
+  .orbital-art[data-cosmic-phase='still'] .orbital-critical-halo { display: none; }
 }

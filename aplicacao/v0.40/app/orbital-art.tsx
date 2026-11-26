@@ -1,8 +1,11 @@
 'use client';
 
-import {useEffect, useId, useRef, type CSSProperties} from 'react';
+import {useEffect, useId, useLayoutEffect, useRef, type CSSProperties} from 'react';
 import {readOrbitalColors} from '../lib/appearance-colors';
+import type {OrbitalCriticalEvent, OrbitalCriticalFrame} from '../lib/orbital-critical';
 import {pageOrbitalScene} from '../lib/orbital-disk';
+import {ORBITAL_DISK_TILT_DEGREES} from '../lib/orbital-flow';
+import {createOrbitalJet} from '../lib/orbital-jet';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 import {startOrbitalFlow} from './orbital-flow';
@@ -101,28 +104,40 @@ function renderTextures(
   };
 }
 
-export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDisk, onDiskReturn}: {
+export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDisk, cameraMoving, onDiskReturn}: {
   slowDie: boolean;
   cruising: boolean;
   activation: number;
   onDiskFrame: (seconds: number) => void;
   boostDisk: boolean;
+  cameraMoving: boolean;
   onDiskReturn?: () => void;
 }) {
   const art = useRef<HTMLDivElement>(null);
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const flow = useRef<HTMLCanvasElement>(null);
+  const jet = useRef<HTMLCanvasElement>(null);
+  const diskLight = useRef<HTMLDivElement>(null);
+  const critical = useRef<OrbitalCriticalEvent | null>(null);
   const diskPress = useRef<{x: number; y: number} | null>(null);
-  const {die, control, result, announcement} = useOrbitalDie(art, slowDie, activation);
+  const {die, control, result, announcement} = useOrbitalDie(art, slowDie, activation, critical);
   const vertexEffectId = useId();
+
+  useLayoutEffect(() => {
+    if (!cameraMoving) return;
+    if (critical.current) critical.current.releasedAt ??= performance.now();
+    if (art.current?.dataset.cosmicPhase === 'still') delete art.current.dataset.cosmicPhase;
+  }, [cameraMoving]);
 
   useEffect(() => {
     const element = art.current;
     const lightCanvas = stream.current;
     const dustCanvas = dust.current;
     const flowCanvas = flow.current;
-    if (!element || !lightCanvas || !dustCanvas || !flowCanvas) return;
+    const jetCanvas = jet.current;
+    const diskLayer = diskLight.current;
+    if (!element || !lightCanvas || !dustCanvas || !flowCanvas || !jetCanvas || !diskLayer) return;
 
     const compact = matchMedia('(max-width: 740px)');
     const root = document.documentElement;
@@ -135,13 +150,26 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
       mode: root.dataset.mode === 'dark' ? 'dark' : 'light',
       colors: readOrbitalColors(root),
     });
+    let current = readRequest();
+    const paintJet = createOrbitalJet(jetCanvas, disk.seed);
+    let brightness = '';
+    const criticalFlow = {
+      event: critical,
+      paint(sample: OrbitalCriticalFrame | null, small: boolean) {
+        const next = sample && sample.light > .001 ? `brightness(${(1 + sample.light).toFixed(3)})` : '';
+        if (next !== brightness) {
+          diskLayer.style.filter = next;
+          brightness = next;
+        }
+        paintJet(sample, current.colors, current.mode, small);
+      },
+    };
     let cancelFlow: (() => void) | undefined;
     const onPaint = (painted: boolean) => {
       cancelFlow?.();
       element.dataset.painted = String(painted);
-      cancelFlow = startOrbitalFlow(element, lightCanvas, dustCanvas, flowCanvas, clock, onDiskFrame);
+      cancelFlow = startOrbitalFlow(element, lightCanvas, dustCanvas, flowCanvas, clock, onDiskFrame, criticalFlow);
     };
-    let current = readRequest();
     let cancelTextures = renderTextures(lightCanvas, dustCanvas, current, compact.matches, onPaint);
     let updateFrame = 0;
 
@@ -167,17 +195,23 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
       cancelAnimationFrame(updateFrame);
       cancelTextures();
       cancelFlow?.();
+      criticalFlow.paint(null, compact.matches);
     };
   }, [onDiskFrame]);
 
   return (
-    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie} data-disk-cruising={cruising} data-disk-boost={boostDisk} data-transforming="false">
-      <div className="orbital-disk-fallback" aria-hidden="true" />
-      <div className="orbital-plane" aria-hidden="true">
-        <canvas ref={dust} className="orbital-dust" />
-        <canvas ref={stream} className="orbital-stream" />
-        <canvas ref={flow} className="orbital-flow" />
+    <div className="orbital-art" ref={art} data-motion="paused" data-disk-selected={slowDie} data-disk-cruising={cruising} data-disk-boost={boostDisk}
+      data-transforming="false" data-camera-moving={cameraMoving} style={{'--orbital-disk-tilt': `${ORBITAL_DISK_TILT_DEGREES}deg`} as CSSProperties}>
+      <div className="orbital-disk-light" ref={diskLight} aria-hidden="true">
+        <div className="orbital-disk-fallback" />
+        <div className="orbital-plane">
+          <canvas ref={dust} className="orbital-dust" />
+          <canvas ref={stream} className="orbital-stream" />
+          <canvas ref={flow} className="orbital-flow" />
+        </div>
       </div>
+      <canvas ref={jet} className="orbital-jet" width={1} height={1} aria-hidden="true" />
+      <div className="orbital-critical-halo" aria-hidden="true" />
       {onDiskReturn && <button className="orbital-disk-return" type="button" aria-label="Voltar à Home Orbital"
         onPointerDown={event => {diskPress.current = {x: event.clientX, y: event.clientY};}}
         onPointerCancel={() => {diskPress.current = null;}}
@@ -208,12 +242,6 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
         </defs>
         <g clipPath={`url(#${vertexEffectId}-silhouette)`}>
           <circle className="orbital-vertex-glow" r="7" visibility="hidden" fill={`url(#${vertexEffectId}-glow)`} />
-        </g>
-        <g className="orbital-critical">
-          <g className="orbital-critical-primary" />
-          <g className="orbital-critical-secondary" />
-          <text className="orbital-critical-number orbital-critical-primary" textAnchor="middle" dominantBaseline="central" />
-          <text className="orbital-critical-number orbital-critical-secondary" textAnchor="middle" dominantBaseline="central" />
         </g>
         <text ref={result} className="orbital-die-result" textAnchor="middle" dominantBaseline="central" />
       </svg>

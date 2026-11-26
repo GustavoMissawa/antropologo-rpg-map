@@ -1,9 +1,9 @@
 import {orbitalAngleDistance, type OrbitalAnchor} from './orbital-disk.ts';
-import {ORBITAL_DISK_SCALE, orbitalFlowAngle} from './orbital-flow.ts';
+import {ORBITAL_DISK_SCALE, ORBITAL_DISK_TILT_DEGREES, orbitalFlowAngle} from './orbital-flow.ts';
 
 export type OrbitalPoint = {x: number; y: number};
 
-const tilt = 37 * Math.PI / 180;
+const tilt = ORBITAL_DISK_TILT_DEGREES * Math.PI / 180;
 const cosine = Math.cos(tilt);
 const sine = Math.sin(tilt);
 const flattening = .74;

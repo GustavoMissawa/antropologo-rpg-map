@@ -319,25 +319,61 @@ test('A revelação pulsa um vértice frontal, recorta o brilho e respeita movim
 
 test('O máximo ativa o crítico e a saída antecipada limpa o efeito', async t => {
   const ui = await setup(t);
+  const art = ui.host.querySelector('.orbital-art');
   const random = t.mock.method(Math, 'random', () => .999);
   ui.surface.click();
   assert.equal(ui.number.textContent, '20');
   assert.equal(ui.model.dataset.critical, 'true');
+  assert.equal(art.dataset.cosmicPhase, 'still');
+  assert.equal(ui.model.querySelector('.orbital-critical-edge, .orbital-critical-number'), null);
   assert.equal(ui.timers.size, 1);
   ui.surface.click();
   assert.equal(ui.model.dataset.critical, undefined);
+  assert.equal(art.dataset.cosmicPhase, undefined);
   assert.equal(ui.phase(), 'fading');
   ui.animations[0].finish();
   ui.surface.click();
   ui.advance(4999);
   assert.equal(ui.model.dataset.critical, 'true');
+  assert.equal(art.dataset.cosmicPhase, 'still');
   assert.equal(ui.phase(), 'visible');
   ui.advance(1);
   assert.equal(ui.model.dataset.critical, undefined);
+  assert.equal(art.dataset.cosmicPhase, undefined);
   assert.equal(ui.phase(), 'fading');
   ui.animations[1].finish();
   random.mock.mockImplementation(() => .2);
   ui.surface.click();
   assert.equal(ui.number.textContent, '5');
   assert.equal(ui.model.dataset.critical, undefined);
+  assert.equal(art.dataset.cosmicPhase, undefined);
+});
+
+test('Cada um dos seis dados dispara o evento somente na face máxima', async t => {
+  const ui = await setup(t);
+  const art = ui.host.querySelector('.orbital-art');
+  const menu = ui.host.querySelector('.global-top-nav');
+  const sections = ['Sistema', 'Ficha', 'PDFs', 'Agenda'];
+  const random = t.mock.method(Math, 'random', () => .99);
+  for (const [i, kind] of [20, 4, 6, 8, 10, 12].entries()) {
+    const previous = Number(ui.model.dataset.die);
+    if (previous !== kind) {
+      const choices = ORBITAL_DICE.filter(value => value !== previous);
+      random.mock.mockImplementation(() => (choices.indexOf(kind) + .5) / choices.length);
+      await clickButton(menu, sections[(i - 1) % sections.length]);
+      await waitFor(() => art.dataset.cameraMoving === 'false' && ui.model.dataset.die === String(kind));
+    }
+    random.mock.mockImplementation(() => .999);
+    ui.surface.click();
+    assert.equal(ui.number.textContent, String(kind));
+    assert.equal(art.dataset.cosmicPhase, 'still');
+    ui.surface.click();
+    ui.animations.at(-1).finish();
+    random.mock.mockImplementation(() => (kind - 1.5) / kind);
+    ui.surface.click();
+    assert.equal(ui.number.textContent, String(kind - 1));
+    assert.equal(art.dataset.cosmicPhase, undefined);
+    ui.surface.click();
+    ui.animations.at(-1).finish();
+  }
 });

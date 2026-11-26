@@ -3,6 +3,7 @@
 import {useEffect, useLayoutEffect, useRef, type RefObject} from 'react';
 import {advanceAmbientMotion, AMBIENT_MOTION_IDLE_MS, emptyAmbientMotion} from '../lib/ambient-interaction';
 import {projectOrbitalDie} from '../lib/hero-die-geometry';
+import type {OrbitalCriticalEvent} from '../lib/orbital-critical';
 import {orbitalDieMeshes, type OrbitalDieKind} from '../lib/orbital-die-geometry';
 import {
   createOrbitalRoll, ORBITAL_RESULT_AUTO_FADE_MS, ORBITAL_RESULT_DISPLAY_MS, ORBITAL_RESULT_INPUT_FADE_MS,
@@ -33,7 +34,9 @@ type SettlingRoll = {
 };
 type Roll = SettlingRoll | {phase: 'visible' | 'fading'};
 
-export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: boolean, activation: number) {
+export function useOrbitalDie(
+  art: RefObject<HTMLDivElement | null>, slowDie: boolean, activation: number, critical: RefObject<OrbitalCriticalEvent | null>,
+) {
   const die = useRef<SVGSVGElement>(null);
   const control = useRef<HTMLButtonElement>(null);
   const result = useRef<SVGTextElement>(null);
@@ -72,9 +75,8 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     const glow = vertexGlow;
     const clip = vertexClip;
     const faces = svg.querySelectorAll('polygon');
-    const criticalEdges = svg.querySelectorAll('.orbital-critical > g');
-    const criticalNumbers = svg.querySelectorAll('.orbital-critical-number');
     const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+    const contrast = matchMedia('(forced-colors: active)');
     const compact = matchMedia('(max-width: 740px)');
     const motion = createOrbitalDie();
     let kind: OrbitalDieKind = 20;
@@ -147,7 +149,6 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       }
       outline.setAttribute('d', next.edges);
       paintVertexPulse(next, now, reveal);
-      return next;
     }
 
     function showKind(next: OrbitalDieKind) {
@@ -235,8 +236,20 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       if (qualified && !idleTimer) idleTimer = window.setTimeout(waitForStop, AMBIENT_MOTION_IDLE_MS);
     }
 
-    function clearRoll() {
+    function clearCritical() {
+      critical.current = null;
+      delete backdrop.dataset.cosmicPhase;
+    }
+
+    function releaseCritical() {
+      if (model.dataset.critical !== 'true') return;
       delete model.dataset.critical;
+      if (critical.current) critical.current.releasedAt ??= performance.now();
+      else clearCritical();
+    }
+
+    function clearRoll() {
+      releaseCritical();
       window.clearTimeout(resultTimer);
       resultTimer = 0;
       roll = null;
@@ -252,58 +265,22 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
 
     function revealResult({result}: SettlingRoll) {
       motion.orientation = result.target;
-      const view = paint(performance.now(), true);
+      const now = performance.now();
+      paint(now, true);
       stop();
       number.setAttribute('x', String(result.x));
       number.setAttribute('y', String(result.y));
       number.setAttribute('font-size', String(result.fontSize));
       number.textContent = String(result.value);
       if (result.value === kind) {
-        const pairs = new Map<string, [string, string]>();
-        const borders = new Set<string>();
-        for (const face of view.faces) {
-          if (!face.visible) continue;
-          const points = face.points.split(' ');
-          points.forEach((start, i) => {
-            const end = points[(i + 1) % points.length];
-            const key = [start, end].sort().join('|');
-            if (pairs.has(key)) pairs.delete(key);
-            else pairs.set(key, [start, end]);
-          });
-        }
-        const boundary = new Map(pairs.values());
-        const first = boundary.keys().next().value;
-        const perimeter: string[] = [];
-        let point = first;
-        while (point !== undefined && boundary.has(point)) {
-          const next = boundary.get(point)!;
-          boundary.delete(point);
-          borders.add([point, next].sort().join('|'));
-          perimeter.push(point);
-          point = next;
-        }
-        const segments = (view.edges.match(/M[^M]+/g) ?? [])
-          .filter(segment => !borders.has(segment.slice(1).split('L').sort().join('|')));
-        const paths = perimeter.length && point === first
-          ? [`M${perimeter.join('L')}Z`, ...segments]
-          : view.edges.match(/M[^M]+/g) ?? [];
-        for (const layer of criticalEdges) {
-          layer.replaceChildren(...paths.map((segment, i) => {
-            const edge = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-            edge.setAttribute('class', 'orbital-critical-edge');
-            if (i === 0 && segment.endsWith('Z')) edge.classList.add('orbital-critical-perimeter');
-            edge.setAttribute('pathLength', '100');
-            edge.setAttribute('d', segment);
-            return edge;
-          }));
-        }
-        for (const digit of criticalNumbers) {
-          digit.setAttribute('x', String(result.x));
-          digit.setAttribute('y', String(result.y));
-          digit.setAttribute('font-size', String(result.fontSize));
-          digit.textContent = number.textContent;
-        }
         model.dataset.critical = 'true';
+        if (!contrast.matches && backdrop.dataset.cameraMoving !== 'true') {
+          if (reduced.matches) backdrop.dataset.cosmicPhase = 'still';
+          else {
+            critical.current = {startedAt: now};
+            backdrop.dataset.cosmicPhase = 'overload';
+          }
+        }
       }
       status.textContent = `Resultado do D${kind}: ${result.value}`;
       const visibleRoll = roll = {phase: 'visible'};
@@ -323,7 +300,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       if (roll?.phase !== 'visible') return;
       window.clearTimeout(resultTimer);
       resultTimer = 0;
-      delete model.dataset.critical;
+      releaseCritical();
       roll = {phase: 'fading'};
       model.dataset.rollPhase = roll.phase;
       if (!shown() || !number.animate) {
@@ -499,6 +476,13 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
           resetInput();
         }
       }
+      if (paused || contrast.matches) {
+        clearCritical();
+        if (shown() && reduced.matches && !contrast.matches && model.dataset.critical === 'true'
+          && backdrop.dataset.cameraMoving !== 'true') backdrop.dataset.cosmicPhase = 'still';
+      } else if (backdrop.dataset.cosmicPhase === 'still') {
+        clearCritical();
+      }
       schedule();
     }
 
@@ -519,6 +503,7 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
     observer?.observe(element);
     document.addEventListener('visibilitychange', updateMotion);
     reduced.addEventListener('change', updateMotion);
+    contrast.addEventListener('change', updateMotion);
     window.addEventListener('blur', resetInput);
     requestShift.current = startShift;
     updateMotion();
@@ -532,14 +517,16 @@ export function useOrbitalDie(art: RefObject<HTMLDivElement | null>, slowDie: bo
       abort.abort();
       clearVertexPulse();
       clearRoll();
+      clearCritical();
       resetInput();
       stop();
       observer?.disconnect();
       document.removeEventListener('visibilitychange', updateMotion);
       reduced.removeEventListener('change', updateMotion);
+      contrast.removeEventListener('change', updateMotion);
       window.removeEventListener('blur', resetInput);
     };
-  }, [art]);
+  }, [art, critical]);
 
   return {die, control, result, announcement};
 }

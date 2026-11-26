@@ -10,6 +10,7 @@ const bands = Array.from({length: 11}, (_, index) => {
 });
 export const EXPANDED_ORBITAL_SPEED = .18;
 export const ORBITAL_DISK_SCALE = .481;
+export const ORBITAL_DISK_TILT_DEGREES = 37;
 
 export type OrbitalFlowClock = {seconds: number; speed: number};
 
@@ -80,7 +81,7 @@ export function prepareOrbitalFlow(
     textures.push(texture);
   }
 
-  function paint(seconds: number) {
+  function paint(seconds: number, compression = 0) {
     if (!context) return;
     context.clearRect(0, 0, output.width, output.height);
     context.save();
@@ -90,6 +91,11 @@ export function prepareOrbitalFlow(
       const texture = textures[i];
       context.save();
       context.rotate(angle);
+      // The anchor stars live in bands 6 and 7. Keep their projection exact.
+      if (compression > 0 && i < 5) {
+        const scale = 1 - compression * (1 - i / 5);
+        context.scale(scale, scale);
+      }
       context.globalAlpha = intensity;
       context.drawImage(texture, -texture.width / 2, -texture.height / 2);
       context.restore();

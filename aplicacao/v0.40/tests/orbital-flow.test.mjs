@@ -11,6 +11,7 @@ function canvas(size = 1024) {
     save: () => {}, restore: () => {},
     translate: (...a) => calls.push(['center', ...a]),
     rotate: angle => calls.push(['rotate', angle]),
+    scale: (...a) => calls.push(['scale', ...a]),
     drawImage: (...a) => calls.push(['draw', ...a]),
     createRadialGradient: () => {
       const stops = [];
@@ -59,6 +60,10 @@ test('As texturas reutilizadas são mascaradas por raio e compõem onze faixas n
     const angles = output.calls.filter(x => x[0] === 'rotate').map(x => x[1]);
     assert.equal(new Set(angles).size, 11);
     assert.equal(textures.length, 11, 'texturas não são recriadas por quadro');
+    output.calls.length = 0;
+    flow.paint(3, .07);
+    assert.deepEqual(output.calls.filter(x => x[0] === 'rotate').map(x => x[1]), angles);
+    assert.equal(output.calls.filter(x => x[0] === 'scale').length, 5, 'as faixas das âncoras mantêm a projeção');
     flow.dispose();
     assert.ok(textures.every(t => t.width === 0 && t.height === 0));
     textures.length = 0;
@@ -90,9 +95,18 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
   const art = {dataset: {motion: 'paused'}};
   const clock = {seconds: 4, speed: 1};
   const observed = [];
+  const phases = new Set();
+  let painted = null;
+  const critical = {
+    event: {current: null},
+    paint: sample => {
+      painted = sample;
+      if (sample) phases.add(sample.phase);
+    },
+  };
   const runFrame = time => {const [id, fn] = frames.entries().next().value; frames.delete(id); fn(time);};
   try {
-    const stop = startOrbitalFlow(art, canvas(), canvas(), canvas(), clock, seconds => observed.push(seconds));
+    const stop = startOrbitalFlow(art, canvas(), canvas(), canvas(), clock, seconds => observed.push(seconds), critical);
     assert.equal(art.dataset.flowReady, 'true');
     assert.equal(frames.size, 0);
     art.dataset.motion = 'running'; notify();
@@ -136,6 +150,26 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
     runFrame(16530);
     assert.equal(art.dataset.diskMotion, 'resuming');
     assert.ok(clock.seconds > beforeReturn && clock.seconds - beforeReturn < .03);
+    art.dataset.diskSelected = 'true'; notify();
+    for (let time = 16560; frames.size && time <= 18000; time += 30) runFrame(time);
+    assert.equal(clock.speed, 0);
+    assert.equal(frames.size, 0);
+    const beforeCritical = clock.seconds;
+    critical.event.current = {startedAt: 18030};
+    art.dataset.cosmicPhase = 'overload';
+    notify();
+    for (let time = 18030; time <= 20100; time += 30) runFrame(time);
+    assert.ok(clock.speed > 2.7);
+    assert.equal(art.dataset.cosmicPhase, 'shock');
+    assert.ok(painted.jet > .95);
+    for (let time = 20130; frames.size && time <= 24000; time += 30) runFrame(time);
+    assert.equal(clock.speed, 0);
+    assert.ok(clock.seconds > beforeCritical);
+    assert.equal(observed.at(-1), clock.seconds);
+    assert.equal(critical.event.current, null);
+    assert.equal(painted, null);
+    assert.equal(art.dataset.cosmicPhase, undefined);
+    assert.deepEqual([...phases], ['overload', 'focus', 'jet', 'shock', 'dissipating']);
     document.hidden = true; callbacks.get('visibilitychange')();
     assert.equal(frames.size, 0);
     assert.equal(art.dataset.diskMotion, 'paused');

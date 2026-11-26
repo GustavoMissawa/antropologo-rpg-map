@@ -75,3 +75,17 @@
 }
 @media (prefers-reduced-motion: reduce) { .orbital-sky-star[data-twinkle='true'] { animation: none; } }
 @media (forced-colors: active) { .orbital-backdrop { display: none; } }
+
+@media (prefers-reduced-motion: no-preference) and (forced-colors: none) {
+  .orbital-backdrop :is(.orbital-nebulae, .orbital-starfield) { transition: filter 900ms ease-out; }
+  .orbital-home:has(.orbital-art[data-cosmic-phase]:not([data-cosmic-phase='still'], [data-cosmic-phase='dissipating'])) {
+    --orbital-star-exposure: brightness(1.26);
+    --orbital-gas-exposure: brightness(1.12);
+  }
+  :root[data-mode='light'] .orbital-home:has(.orbital-art[data-cosmic-phase]:not([data-cosmic-phase='still'], [data-cosmic-phase='dissipating'])) {
+    --orbital-star-exposure: brightness(.84);
+    --orbital-gas-exposure: brightness(.95);
+  }
+  .orbital-starfield { filter: var(--orbital-star-exposure, none); }
+  .orbital-nebulae { filter: var(--orbital-gas-exposure, none); }
+}
