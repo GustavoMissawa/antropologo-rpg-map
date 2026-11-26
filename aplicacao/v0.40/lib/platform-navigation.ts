@@ -3,7 +3,7 @@ import type {PlatformPage} from './platform-context.ts';
 import {orbitalDestinationFromHash, orbitalHref, type OrbitalDestination} from './orbital-navigation.ts';
 
 export type SheetRoute = {kind: 'character' | 'template'; id: string};
-export type RulesRoute = {page: 'rules'; bookId?: string; topicId?: string; anchorId?: string};
+export type RulesRoute = {page: 'rules'; bookId?: string; topicId?: string; anchorId?: string; view?: 'orbit'};
 export type PlatformRoute =
   | {page: 'home'; destination?: OrbitalDestination}
   | RulesRoute
@@ -22,7 +22,8 @@ export function platformHref(route: PlatformRoute): string {
     const book = '#regras/' + encodeId(route.bookId);
     if (route.topicId === undefined) return book;
     const topic = book + '/topico/' + encodeId(route.topicId);
-    return route.anchorId === undefined ? topic : topic + '/secao/' + encodeId(route.anchorId);
+    if (route.anchorId !== undefined) return topic + '/secao/' + encodeId(route.anchorId);
+    return route.view === 'orbit' ? topic + '/orbita' : topic;
   }
   if (route.page === 'sheet' && route.editor) {
     const kind = route.editor.kind === 'template' ? 'modelo' : 'personagem';
@@ -63,6 +64,7 @@ export function parsePlatformHash(hash: string): PlatformRoute | null {
     const topicId = readId(topic);
     if (topicId === undefined) return null;
     if (sectionMarker === undefined) return {page, bookId, topicId};
+    if (sectionMarker === 'orbita' && section === undefined) return {page, bookId, topicId, view:'orbit'};
     if (sectionMarker !== 'secao' || !section) return null;
     const anchorId = readId(section);
     return anchorId === undefined ? null : {page, bookId, topicId, anchorId};

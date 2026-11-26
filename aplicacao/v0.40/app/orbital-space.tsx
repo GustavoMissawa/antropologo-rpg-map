@@ -44,7 +44,16 @@ export function CelestialGlobe({body, x, y, radius, detail = false}: {
           t${size*.75} ${-size*.18} q${size*.72} ${size*.36} ${size*.4} ${size*.67}
           t${-size*1.2} ${size*.3} q${-size*.52} ${-size*.33} ${-size*.68} ${-size*.37}Z`}/>;
     });
-    if (star) return terrain;
+    if (star) {
+      const filaments = Array.from({length: detail ? 40 : 12}, (_, i) => {
+        const x = random() * 192 - 96, y = random() * 192 - 96;
+        const span = 3 + random() * 16;
+        return <path key={'filament-' + i} d={`M${x} ${y} q${span*.6} ${-span*.55} ${span} ${span*.1}`}
+          stroke={i%3===0 ? shade : light} strokeWidth={1 + random()*2.3} strokeLinecap="round"
+          opacity={.20 + random()*.30} fill="none"/>;
+      });
+      return [...terrain,...filaments];
+    }
     const markings = Array.from({length: detail ? 17 : 4}, (_, i) => {
       const x = random() * 176 - 88, y = random() * 176 - 88, r = 2 + random() ** 2 * 13;
       return type === 'ice'

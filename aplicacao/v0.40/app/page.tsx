@@ -15,6 +15,7 @@ import {pdfsResponse,mergePdfCatalog} from '../lib/api-responses';
 import { HomeDiceBackground } from './home-dice-background';
 import {PlatformHome,CharacterLibrary} from './platform-home';
 import {OrbitalHome} from './orbital-home';
+import {useSystemApproach} from './use-system-approach';
 import {OrbitalComet} from './orbital-comet';
 import {useOrbitalFirstSteps} from './use-orbital-first-steps';
 import type {FirstStepsZone} from '../lib/orbital-first-steps';
@@ -53,6 +54,7 @@ function PlatformApp(){
   const appearance=useAppearance();
   const style=appearance.value.interfaceStyle;
   const orbital=style==='orbital';
+  const {homeLayer,departure,trackApproach}=useSystemApproach(orbital);
   const [route,setRoute]=useState<PlatformRoute>({page:'home'});
   const locationRoute=useRef<PlatformRoute>(route);
   const [journey,setJourney]=useState<PlatformJourney|null>(null);
@@ -62,6 +64,7 @@ function PlatformApp(){
   const activeRulebookId=displayedRoute.page==='rules'?displayedRoute.bookId??null:null;
   const topicId=displayedRoute.page==='rules'?displayedRoute.topicId:undefined;
   const anchorId=displayedRoute.page==='rules'?displayedRoute.anchorId:undefined;
+  const ruleView=displayedRoute.page==='rules'?displayedRoute.view:undefined;
   const sheetView=displayedRoute.page==='sheet'?displayedRoute.editor:undefined;
   const historyHash=useRef<string|null>(null);
   const historyDocument=useRef('');
@@ -102,13 +105,14 @@ function PlatformApp(){
     timer.current=setTimeout(()=>setToast(''),4500);
   },[]);
   const applyRoute=useCallback((next:PlatformRoute, animate:boolean, activate=false)=>{
+    trackApproach(locationRoute.current,next,animate);
     setJourney(animate?{from:locationRoute.current,to:next}:null);
     locationRoute.current=next;
     setReceipt('');
     setViewingPdf(null);
     setDieActivation(activate?++activationCount.current:0);
     setRoute(next);
-  },[]);
+  },[trackApproach]);
   const navigate=useCallback((next:PlatformRoute, activate=false, replace=false)=>{
     const hash=platformHref(next);
     if(hash===historyHash.current)return true;
@@ -221,9 +225,9 @@ function PlatformApp(){
     return()=>window.removeEventListener('beforeunload',warn);
   },[rulesHaveDraft,templateDirty]);
   function selectSystem(id:string|null){return navigate({page:'rules',bookId:id??undefined});}
-  function selectTopic(topicId?:string,anchorId?:string,replace=false){
+  function selectTopic(topicId?:string,anchorId?:string,replace=false,view?:'orbit'){
     if(activeRulebookId===null)return false;
-    return navigate({page:'rules',bookId:activeRulebookId,topicId,anchorId},false,replace);
+    return navigate({page:'rules',bookId:activeRulebookId,topicId,anchorId,view},false,replace);
   }
   function browseSystems(create=false){if(selectSystem(null)&&create)setCreateSystemRequested(true);}
   function openCharacter(value:Sheet){
@@ -341,15 +345,18 @@ function PlatformApp(){
         }}/><span className="private-badge"><Sparkles size={12}/> VERSÃO DE TESTE · v{SITE_VERSION}</span><ProfileControl entrySignal={firstSteps.cue==='entry'} onRegistered={orbital?()=>setSettings('registration'):undefined} onOpenAgenda={()=>navigate({page:'agenda'})}/></div>
       </header>
       <main ref={mainRef} id="main" tabIndex={-1} data-workspace={page} onDragOver={page==='sheet'?contentDragOver:undefined} onDrop={page==='sheet'?e=>contentDrop(e,file=>{void importSheet(file);},notify):undefined}>
-      {orbital&&page!=='home'&&<WorkspaceTrail section={areaNames[area]} onMap={()=>selectDestination(null)} onSection={()=>selectSection(area)}/>}
+      {orbital&&page!=='home'&&!(page==='rules'&&activeRulebookId)&&<WorkspaceTrail section={areaNames[area]} onMap={()=>selectDestination(null)} onSection={()=>selectSection(area)}/>}
       {page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
 
-      {page==='home'&&(orbitalHome?
-        <OrbitalHome {...homeActions} destination={destination} dieActivation={dieActivation} onSelectDestination={selectDestination} firstStepsCue={firstSteps.cue} onFirstStepsZone={setFirstStepsZone} onDiskReturn={firstSteps.diskUsed}/>:
-        <PlatformHome {...homeActions} context={selectedContext}/>)}
+      {(orbitalHome||departure)&&<div ref={homeLayer} className={departure?'orbital-home-departure':undefined}
+        inert={!!departure} aria-hidden={!!departure||undefined} style={departure?.bounds}>
+        <OrbitalHome {...homeActions} destination={departure?departure.destination??null:destination} dieActivation={dieActivation}
+          onSelectDestination={selectDestination} firstStepsCue={departure?null:firstSteps.cue} onFirstStepsZone={setFirstStepsZone} onDiskReturn={firstSteps.diskUsed}/>
+      </div>}
+      {page==='home'&&!orbitalHome&&<PlatformHome {...homeActions} context={selectedContext}/>}
       {orbitalHome&&<TestNotice/>}
 
-      {page==='rules'&&<RulesLibrary orbital={orbital} journey={journey} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} topicId={topicId} anchorId={anchorId} onTopicChange={selectTopic} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
+      {page==='rules'&&<RulesLibrary orbital={orbital} journey={journey} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} topicId={topicId} anchorId={anchorId} view={ruleView} onTopicChange={selectTopic} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
 
       {page==='pdfs'&&<>
         {orbital?<WorkspaceHeading area="pdfs" title="Biblioteca de PDFs" description="Organize manuais, aventuras e referências da sua mesa." actions={addPdfButton}/>:<>

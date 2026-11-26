@@ -1,6 +1,6 @@
 'use client';
 import { useEffect,useRef,useState,type ReactNode } from 'react';
-import { ArrowDown,ArrowLeft,ArrowRight,ArrowUp,BookOpen,ChevronRight,Dices,Download,FileText,FolderOpen,Info,Layers3,ListTree,LockKeyhole,Pencil,Plus,Search,Trash2,X } from 'lucide-react';
+import { ArrowDown,ArrowLeft,ArrowRight,ArrowUp,BookOpen,ChevronRight,Dices,Download,FileText,FolderOpen,Info,Layers3,ListTree,LockKeyhole,Orbit,Pencil,Plus,Search,Trash2,X } from 'lucide-react';
 import { AB10_RULEBOOK_ID,MAX_RULEBOOKS,MAX_RULE_DEPTH,MAX_RULE_TOPICS,addRulebook,countRules,filterRules,findRule,makeRulebook,mapRules,moveRule,removeCustomRulebook,ruleLocation,serializeRulebook,uid,updateCustomRulebook,type Rule,type Rulebook,type Sheet } from '../lib/model';
 import { ContentExportDialog } from './content-export';
 import { ContentImportReceipt,contentDragOver,contentDrop } from './content-import';
@@ -17,16 +17,17 @@ import { RulesIndex } from './rules-index';
 import { WorkspaceHeading } from './orbital-workspace';
 import { OrbitalSystemScene } from './orbital-system-scene';
 import type { PlatformJourney } from '../lib/platform-navigation';
+import type { OrbitalView } from '../lib/orbital-camera';
 
 const RuleTopicEditor = deferEditor(() => import('./rule-topic-editor.tsx').then(module => module.RuleTopicEditor), 'o editor de regras');
 
-type Props={orbital?:boolean;journey?:PlatformJourney|null;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;topicId?:string;anchorId?:string;onTopicChange:(topicId?:string,anchorId?:string,replace?:boolean)=>boolean;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
+type Props={orbital?:boolean;journey?:PlatformJourney|null;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;topicId?:string;anchorId?:string;view?:'orbit';onTopicChange:(topicId?:string,anchorId?:string,replace?:boolean,view?:'orbit')=>boolean;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
 const statuses={draft:'Rascunho',test:'Em teste',canon:'Canônico'};
 function RulesetVisual({book}:{book:Rulebook}){const [broken,setBroken]=useState(false);return <span className="ruleset-cover-title ruleset-visual">{book.id===AB10_RULEBOOK_ID?<AB10Logo/>:book.logo&&!broken?<img src={book.logo} alt={'Logo de '+book.name} onError={()=>setBroken(true)}/>:<span className="ruleset-name-fallback">{book.name}</span>}</span>;}
 function Tool({label,children,...props}:{label:string;children:ReactNode;disabled?:boolean;onClick:()=>void}){return <button type="button" className="icon-button" title={label} aria-label={label} {...props}>{children}</button>;}
 
-export function RulesLibrary({orbital=false,journey=null,createRequested,onCreateRequestHandled,books,onChange,activeId,onActiveChange,topicId,anchorId,onTopicChange,notify,characters,onEditTemplate,onLinkTemplate,onCreateCharacter,onImportCharacter,unsavedTemplateBookId,onEditorDirtyChange}:Props){
- const fileInput=useRef<HTMLInputElement>(null),article=useRef<HTMLElement>(null),indexTrigger=useRef<HTMLButtonElement>(null),importRequest=useRef(0);
+export function RulesLibrary({orbital=false,journey=null,createRequested,onCreateRequestHandled,books,onChange,activeId,onActiveChange,topicId,anchorId,view,onTopicChange,notify,characters,onEditTemplate,onLinkTemplate,onCreateCharacter,onImportCharacter,unsavedTemplateBookId,onEditorDirtyChange}:Props){
+ const fileInput=useRef<HTMLInputElement>(null),article=useRef<HTMLElement>(null),sceneHeading=useRef<HTMLHeadingElement>(null),indexTrigger=useRef<HTMLButtonElement>(null),importRequest=useRef(0);
  useEffect(()=>()=>{importRequest.current++;},[]);
  const [mobile,setMobile]=useState(false),[indexOpen,setIndexOpen]=useState(false);
  useEffect(()=>{const media=window.matchMedia('(max-width:790px)'),update=()=>{setMobile(media.matches);if(!media.matches)setIndexOpen(false);};update();media.addEventListener('change',update);return()=>media.removeEventListener('change',update);},[]);
@@ -50,6 +51,8 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
  const selected=requested||book?.chapters[0],location=book&&selected?ruleLocation(book.chapters,selected.id):undefined;
  const missingTopic=!!book&&topicId!==undefined&&!requested;
  const selectedAnchor=anchorId&&requested&&ruleDocumentHeadings(requested.document).some(h=>h.id===anchorId)?anchorId:undefined;
+ const sceneView:OrbitalView=(!orbital||editor||anchorId||topicId!==undefined&&view!=='orbit')?'reading':requested?'focus':'exploration';
+ const indexSelection=editor?.id??(orbital&&sceneView==='exploration'?undefined:selected?.id);
  const total=book?countRules(book.chapters):0,canAdd=!!book&&!fixed&&total<MAX_RULE_TOPICS,filtered=book?filterRules(book.chapters,query):[];
  function guarded(action:()=>void){if(editor&&editorDirty){setPending(()=>action);return;}setEditor(null);markEditorDirty(false);setPending(null);action();}
  function openBook(id:string){guarded(()=>{setIndexOpen(false);onActiveChange(id);setQuery('');setImportError('');});}
@@ -68,14 +71,30 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
   setIndexOpen(false);
   if(mobile&&editor&&editorDirty)requestAnimationFrame(()=>focusArticle(true));
   guarded(()=>{
-   if(!onTopicChange(id,anchor))return;
+   const focusInOrbit=orbital&&!anchor&&!fromLink&&(fromMap||sceneView!=='reading');
+   if(!onTopicChange(id,anchor,false,focusInOrbit?'orbit':undefined))return;
    if(anchor&&id===topicId&&anchor===selectedAnchor){
     const heading=document.getElementById(ruleAnchorId(id,anchor));
     heading?.scrollIntoView({behavior:'instant',block:'start'});
     heading?.focus({preventScroll:true});
-   }else if(!anchor&&!fromMap){
+   }else if(focusInOrbit&&!fromMap){
+    requestAnimationFrame(()=>sceneHeading.current?.focus({preventScroll:true}));
+   }else if(!anchor&&!focusInOrbit){
     requestAnimationFrame(()=>focusArticle(mobile||fromLink));
    }
+  });
+ }
+ function readFromOrbit(){
+  if(!requested)return;
+  guarded(()=>{
+   if(onTopicChange(requested.id))requestAnimationFrame(()=>focusArticle(mobile));
+  });
+ }
+ function returnToOrbit(){
+  guarded(()=>{
+   if(!onTopicChange(requested?.id,undefined,false,requested?'orbit':undefined))return;
+   window.scrollTo({top:0,behavior:'instant'});
+   requestAnimationFrame(()=>sceneHeading.current?.focus({preventScroll:true}));
   });
  }
  function closeIndex(){setIndexOpen(false);requestAnimationFrame(()=>indexTrigger.current?.focus({preventScroll:true}));}
@@ -95,7 +114,7 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
  function removeBook(target:Rulebook){if(target.id===AB10_RULEBOOK_ID)return;setConfirmation({title:'Remover conjunto desta página?',text:`Salve uma cópia de “${target.name}” se quiser carregá-lo depois. Seus capítulos e subseções serão removidos desta página.`,action:()=>{onChange(all=>removeCustomRulebook(all,target.id));if(activeId===target.id)onActiveChange(null);notify('Conjunto removido desta página.');}});}
  function removeChapter(){if(!book||!selected||fixed)return;const target=selected;setConfirmation({title:'Remover tópico?',text:`“${target.title}” e suas ${countRules(target.children)} subseções serão removidos deste conjunto.`,action:()=>{const remove=(tree:Rule[]):Rule[]=>tree.filter(r=>r.id!==target.id).map(r=>({...r,children:remove(r.children)}));apply({...book,chapters:remove(book.chapters)});onTopicChange(undefined,undefined,true);notify('Tópico removido.');}});}
  function reorder(delta:-1|1){if(!book||!selected||fixed)return;try{apply({...book,chapters:moveRule(book.chapters,selected.id,delta)});notify('Ordem dos tópicos atualizada.');}catch(e){notify((e as Error).message);}}
- function tree(items:Rule[]):ReactNode{return items.map(r=><div className="rule-node" key={r.id}>{r.children.length?<details open key={r.id+':'+query}><summary><ChevronRight size={14}/><button type="button" className={(editor?.id||selected?.id)===r.id?'active':''} aria-current={(editor?.id||selected?.id)===r.id?'page':undefined} onClick={e=>{e.preventDefault();choose(r.id);}}>{r.title}</button></summary><div className="rule-children">{tree(r.children)}</div></details>:<button type="button" className={'rule-link '+((editor?.id||selected?.id)===r.id?'active':'')} aria-current={(editor?.id||selected?.id)===r.id?'page':undefined} onClick={()=>choose(r.id)}><span className="tiny-dot"/>{r.title}</button>}</div>);}
+ function tree(items:Rule[]):ReactNode{return items.map(r=><div className="rule-node" key={r.id}>{r.children.length?<details open key={r.id+':'+query}><summary><ChevronRight size={14}/><button type="button" className={indexSelection===r.id?'active':''} aria-current={indexSelection===r.id?'page':undefined} onClick={e=>{e.preventDefault();choose(r.id);}}>{r.title}</button></summary><div className="rule-children">{tree(r.children)}</div></details>:<button type="button" className={'rule-link '+(indexSelection===r.id?'active':'')} aria-current={indexSelection===r.id?'page':undefined} onClick={()=>choose(r.id)}><span className="tiny-dot"/>{r.title}</button>}</div>);}
  const canCreate=!loading&&customCount<MAX_RULEBOOKS;
  const importButton=<button type="button" className="button secondary" disabled={!canCreate} onClick={()=>fileInput.current?.click()}><FolderOpen size={17}/>{loading?'Carregando…':'Carregar regras'}</button>;
  const createBook=()=>setMetadata({name:'',description:''});
@@ -106,7 +125,7 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
  </>;
  const visibleBooks=books.filter(item=>(item.name+' '+item.description).toLocaleLowerCase('pt-BR').includes(libraryQuery.trim().toLocaleLowerCase('pt-BR')));
  const readerActions=book&&<><button type="button" className="button secondary ruleset-save" onClick={()=>download(book)}><Download size={17}/> Salvar regras</button>{!fixed&&<button type="button" className="button primary ruleset-add" disabled={!canAdd} onClick={()=>startChapter()}><Plus size={17}/> Novo capítulo</button>}</>;
- return <section className={"rules-library"+(book?" rules-reader":"")} aria-label="Biblioteca de conjuntos de regras" onDragOver={contentDragOver} onDrop={e=>contentDrop(e,file=>{void importFile(file);},notify)}>
+ return <section className={"rules-library"+(book?" rules-reader"+(orbital?" rules-orbital":""):"")} aria-label="Biblioteca de conjuntos de regras" onDragOver={contentDragOver} onDrop={e=>contentDrop(e,file=>{void importFile(file);},notify)}>
   {receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
   {exporting&&<ContentExportDialog content={exporting} onClose={()=>setExporting(null)} notify={notify}/>}
   <input ref={fileInput} type="file" accept={RULEBOOK_FILE_ACCEPT} aria-label="Arquivo de conjunto de regras" hidden onChange={e=>importFile(e.target.files?.[0])}/>
@@ -148,11 +167,15 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
    {importError&&<p className="ruleset-import-error" role="alert">{importError}</p>}
    {missingTopic&&<p className="orbital-list-empty" role="status">O tópico deste link não está neste sistema. O índice continua disponível.</p>}
    {anchorId&&!selectedAnchor&&!missingTopic&&<p className="orbital-list-empty" role="status">A seção deste link não está no tópico. O conteúdo disponível está abaixo.</p>}
-   {orbital&&<OrbitalSystemScene book={book} books={books} topicId={requested?.id} journey={journey}
-     onTopic={id=>choose(id,undefined,false,true)} onRead={()=>focusArticle(true)}
-     onOverview={()=>guarded(()=>{if(onTopicChange())window.scrollTo({top:0,behavior:'instant'});})}/>}
    <div className={"rules-layout"+(!total?" rules-without-index":"")}>{total>0&&<RulesIndex mobile={mobile} open={indexOpen} total={total} onClose={closeIndex}><div className="index-head">ÍNDICE DO SISTEMA <span>{total}</span></div><label className="search small-search"><Search size={16}/><input aria-label="Buscar neste conjunto" placeholder="Buscar neste conjunto…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<Tool label="Limpar busca de regras" onClick={()=>setQuery('')}><X size={15}/></Tool>}</label><nav className="rule-tree" aria-label={'Capítulos de '+book.name}>{tree(filtered)}{!filtered.length&&<p className="muted empty-search">{query?'Nenhum tópico encontrado.':'Os capítulos aparecerão aqui.'}</p>}</nav><div className="index-foot"><Layers3 size={15}/><span>{fixed?'Os capítulos do AB10 ficam sempre disponíveis.':'Crie capítulos e subdivida os assuntos em subseções.'}</span></div></RulesIndex>}
-    <article ref={article} tabIndex={-1} className="rule-article" id={selected?ruleAnchorId(selected.id):undefined} aria-label={editor?'Editor do tópico':'Leitura do tópico'}>
+    <div className="rules-content" data-orbital-view={orbital?sceneView:undefined}>
+     {orbital&&<OrbitalSystemScene key={book.id} book={book} topicId={requested?.id} journey={journey}
+      view={sceneView} headingRef={sceneHeading} onTopic={id=>choose(id,undefined,false,true)} onRead={readFromOrbit}
+      onOverview={()=>guarded(()=>{if(onTopicChange())requestAnimationFrame(()=>sceneHeading.current?.focus({preventScroll:true}));})}/>}
+    <article ref={article} inert={orbital&&sceneView!=='reading'} aria-hidden={orbital&&sceneView!=='reading'||undefined} tabIndex={-1} className="rule-article" id={selected?ruleAnchorId(selected.id):undefined} aria-label={editor?'Editor do tópico':'Leitura do tópico'}>
+     {orbital&&!editor&&<div className="orbital-reading-toolbar">
+      <button type="button" className="text-button" onClick={returnToOrbit}><Orbit size={17} aria-hidden="true"/> {requested?'Voltar à órbita':'Mapa do sistema'}</button>
+     </div>}
      {pending&&<div className="rule-unsaved-notice" role="alert">Há alterações neste tópico. Salve ou cancele antes de navegar.<div><button type="button" className="button secondary" onClick={()=>setPending(null)}>Continuar edição</button><button type="button" className="button secondary" onClick={()=>{const action=pending;cancelTopic();action();}}>Descartar e seguir</button></div></div>}
      {editor&&!fixed?<RuleTopicEditor key={editor.id} initial={editor} book={book} onSave={saveTopic} onCancel={cancelTopic} onDirtyChange={markEditorDirty}/>:selected?<><div className="article-top"><span className={'status '+selected.status}><span/>{statuses[selected.status]}</span>{!fixed&&<div className="action-group"><Tool label="Mover tópico para cima" disabled={location?.index===0} onClick={()=>reorder(-1)}><ArrowUp size={17}/></Tool><Tool label="Mover tópico para baixo" disabled={location?.index===(location?.count||0)-1} onClick={()=>reorder(1)}><ArrowDown size={17}/></Tool><Tool label="Editar tópico" onClick={startEdit}><Pencil size={17}/></Tool><Tool label="Remover tópico" onClick={removeChapter}><Trash2 size={17}/></Tool></div>}</div>
       <nav className="ruleset-chapter-path" aria-label="Caminho do tópico">{location?.trail.map((item,i)=><span key={item.id}>{i>0&&<ChevronRight size={12}/>}<button type="button" onClick={()=>choose(item.id)} aria-current={item.id===selected.id?'page':undefined}>{item.title}</button></span>)}</nav><h2>{selected.title}</h2><div className="article-divider"/>{selected.content||selected.document?.content?.some(n=>n.type!=='paragraph')?<RuleTopicContent topic={selected} book={book} onNavigate={(id,anchor)=>choose(id,anchor,true)}/>:<div className="reserved"><BookOpen size={29}/><h3>{fixed?'Conteúdo em preparação.':'Este capítulo está pronto para crescer.'}</h3><p>{fixed?'Este espaço está reservado para o conteúdo do AB10, o conjunto fixo do site.':'Escreva as regras deste assunto e crie subseções para organizar os detalhes.'}</p>{!fixed&&<button type="button" className="button secondary" onClick={startEdit}><Pencil size={16}/> Escrever conteúdo</button>}</div>}
@@ -160,6 +183,7 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
       {!fixed&&<><button type="button" className="add-subsection" disabled={!canAdd||(location?.depth||0)>=MAX_RULE_DEPTH-1} onClick={()=>startChapter(selected.id)}><Plus size={17}/> Adicionar subseção</button>{(location?.depth||0)>=MAX_RULE_DEPTH-1&&<p className="ruleset-limit-note">Este tópico chegou ao limite de 12 níveis de subdivisão.</p>}</>}
      </>:<div className="ruleset-empty-book"><span><BookOpen size={34}/></span><h2>O primeiro capítulo é seu.</h2><p>{fixed?'Este conjunto ainda não possui capítulos.':<>Use <strong>Novo capítulo</strong> para começar pela apresentação do sistema, criação de personagens ou outro assunto.</>}</p></div>}
     </article>
+    </div>
    </div><p className="ruleset-draft-note">{fixed?'Para escrever seu próprio sistema, volte aos conjuntos e escolha Suas regras.':'Rascunho temporário · use Salvar regras para guardar capítulos, textos, ordem, subseções e a ficha-modelo vinculada.'}</p>
   </>}
   {metadata&&<RulebookMetadataDialog key={metadata.id||'new'} initial={metadata} book={books.find(b=>b.id===metadata.id)} onClose={()=>setMetadata(null)} initialCustomizing={metadata.id?customizationViews[metadata.id]:undefined} onSave={(value,customizing)=>{const {name,description,logo,dice,visuals}=value;if(value.id){const current=books.find(b=>b.id===value.id);if(!current||current.id===AB10_RULEBOOK_ID)return;apply({...current,name,description,logo,dice,visuals});setCustomizationViews(all=>({...all,[current.id]:customizing}));notify('Conjunto atualizado.');}else{const next={...makeRulebook(name,description,logo),...(dice?{dice}:{}),...(visuals?{visuals}:{})};addRulebook(books,next);onChange(all=>addRulebook(all,next));setCustomizationViews(all=>({...all,[next.id]:customizing}));openBook(next.id);notify('Conjunto criado. Adicione seu primeiro capítulo.');}setMetadata(null);}}/>}

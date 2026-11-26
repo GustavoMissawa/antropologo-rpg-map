@@ -31,28 +31,51 @@ async function prepareBook() {
   return book;
 }
 
-test('Mapa do AB10, passeio e histórico mudam o tópico sem etapa intermediária', async () => {
+function selectBody(scene,id){
+  const link=scene.querySelector('[data-world-body="'+id+'"]');
+  assert(link,'Corpo esperado na cena: '+id);
+  return act(async()=>link.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})));
+}
+
+test('Exploração, foco e leitura do AB10 conservam a cena e o histórico', async () => {
   sessionStorage.clear();
   await preferences({motionReduced:true});
   const ui = await start('#regras/ab10');
   try {
-    const map=ui.host.querySelector('.planetary-scene');
+    const map=ui.host.querySelector('.orbital-system-scene');
+    const world=map.querySelector('.orbital-world-svg');
+    const article=ui.host.querySelector('.rule-article');
+    assert.equal(map.dataset.sceneMode,'exploration');
     assert.equal(map.dataset.planetCount,'5');
     assert.equal(map.dataset.moonCount,'3');
-    assert.equal(map.querySelectorAll('.planetary-hit-map a').length,5);
-    await act(async()=>map.querySelector('nav [href="#regras/ab10/topico/character"]').click());
-    await act(async()=>map.querySelector('nav [href="#regras/ab10/topico/attributes"]').click());
-    assert.equal(window.location.hash,'#regras/ab10/topico/attributes');
-    assert.equal(ui.host.querySelector('.rule-article h2').textContent,'Atributos');
-    assert.equal(map.querySelector('[aria-label="Luas"] [aria-current]').textContent,'Atributos');
-    assert.equal(map.querySelector('.orbital-space').dataset.flight,undefined);
-    assert.equal(map.querySelector('.orbital-space').getAttribute('aria-hidden'),'true');
-    await act(async()=>window.history.back());
-    await waitFor(()=>map.dataset.celestialBody==='character');
-    await act(async()=>window.history.forward());
-    await waitFor(()=>map.dataset.celestialBody==='attributes');
+    assert.equal(world.querySelectorAll('[data-body-kind="planet"]').length,5);
+    assert(ui.host.querySelector('.rules-layout > .rule-index'));
+    assert(article.hasAttribute('inert'));
+    await selectBody(map,'character');
+    const planet=map.querySelector('[data-world-body="character"]');
+    await selectBody(map,'attributes');
+    assert.equal(window.location.hash,'#regras/ab10/topico/attributes/orbita');
+    assert.equal(map.dataset.sceneMode,'focus');
+    assert.equal(planet,map.querySelector('[data-world-body="character"]'));
+    assert.equal(world,map.querySelector('.orbital-world-svg'));
+    assert.equal(map.querySelector('[data-body-kind="moon"][aria-current]').dataset.worldBody,'attributes');
+    assert.equal(map.querySelector('.orbital-system-viewport').dataset.cameraMotion,undefined);
+    assert.equal(ui.host.querySelector('.rule-tree [aria-current="page"]').textContent,'Atributos');
     await clickButton(map,'Ler tópico');
-    assert.equal(document.activeElement,ui.host.querySelector('.rule-article'));
+    assert.equal(window.location.hash,'#regras/ab10/topico/attributes');
+    assert.equal(article.querySelector('h2').textContent,'Atributos');
+    assert(!article.hasAttribute('inert'));
+    assert(map.hasAttribute('inert'));
+    await waitFor(()=>document.activeElement===article);
+
+    await act(async()=>window.history.back());
+    await waitFor(()=>map.dataset.sceneMode==='focus');
+    assert.equal(map.dataset.celestialBody,'attributes');
+    await act(async()=>window.history.forward());
+    await waitFor(()=>map.dataset.sceneMode==='reading');
+    await clickButton(article,'Voltar à órbita');
+    assert.equal(map.dataset.sceneMode,'focus');
+    assert.equal(map.dataset.celestialBody,'attributes');
   } finally {await ui.close();await preferences({motionReduced:false});}
 });
 
@@ -66,37 +89,43 @@ test('Âncoras profundas, links e índice hierárquico funcionam no modo Clássi
     assert.equal(window.location.hash,ruleRoute(book.id,'neto','dados-finais'));
     assert.equal(document.activeElement?.getAttribute('data-rule-anchor'),'dados-finais');
     assert.equal(ui.host.querySelectorAll('.ruleset-chapter-path button').length,3);
-    assert.equal(ui.host.querySelector('.planetary-scene'),null);
+    assert.equal(ui.host.querySelector('.orbital-system-scene'),null);
   } finally {await ui.close();}
 });
 
-test('Trocar a preferência de movimento durante um salto limpa a câmera e mantém a rota', async () => {
+test('Movimento reduzido ou aba oculta encerram o percurso sem alterar a rota', async () => {
   sessionStorage.clear();
   await preferences({motionReduced:false});
-  const previous=HTMLElement.prototype.animate;
-  const motions=[];
-  HTMLElement.prototype.animate=function(){
-    const animation={cancelled:false,cancel(){this.cancelled=true;}};
-    motions.push(animation);
-    return animation;
-  };
-  const ui=await start('#regras/ab10/topico/character');
+  const descriptor=Object.getOwnPropertyDescriptor(HTMLElement.prototype,'clientWidth');
+  const visibility=Object.getOwnPropertyDescriptor(document,'hidden');
+  Object.defineProperty(HTMLElement.prototype,'clientWidth',{configurable:true,get(){
+    return this.classList.contains('orbital-system-viewport')?900:0;
+  }});
+  const ui=await start('#regras/ab10/topico/character/orbita');
   try {
-    await act(async()=>ui.host.querySelector('nav a[href="#regras/ab10/topico/welcome"]').click());
-    const scene=ui.host.querySelector('.planetary-sky');
-    assert.equal(scene.dataset.flight,'jump');
-    assert(motions.length>=2);
+    const map=ui.host.querySelector('.orbital-system-scene');
+    await selectBody(map,'welcome');
+    const viewport=map.querySelector('.orbital-system-viewport');
+    assert.equal(viewport.dataset.cameraMotion,'jump');
     await preferences({motionReduced:true});
-    assert(motions.every(animation=>animation.cancelled));
-    assert.equal(scene.querySelector('.orbital-space-departure'),null);
-    assert.equal(scene.dataset.flight,undefined);
-    assert.equal(window.location.hash,'#regras/ab10/topico/welcome');
+    assert.equal(viewport.dataset.cameraMotion,undefined);
+    assert.equal(map.dataset.celestialBody,'welcome');
+    assert.equal(window.location.hash,'#regras/ab10/topico/welcome/orbita');
     await preferences({motionReduced:false});
-    assert.equal(scene.dataset.flight,undefined);
+    assert.equal(viewport.dataset.cameraMotion,undefined);
+    await selectBody(map,'character');
+    assert.equal(viewport.dataset.cameraMotion,'jump');
+    Object.defineProperty(document,'hidden',{configurable:true,value:true});
+    await act(async()=>document.dispatchEvent(new Event('visibilitychange')));
+    assert.equal(viewport.dataset.cameraMotion,undefined);
+    assert.equal(map.dataset.celestialBody,'character');
+    assert.equal(window.location.hash,'#regras/ab10/topico/character/orbita');
   } finally {
     await ui.close();
-    if(previous)HTMLElement.prototype.animate=previous;
-    else delete HTMLElement.prototype.animate;
+    if(visibility)Object.defineProperty(document,'hidden',visibility);
+    else delete document.hidden;
+    if(descriptor)Object.defineProperty(HTMLElement.prototype,'clientWidth',descriptor);
+    else delete HTMLElement.prototype.clientWidth;
   }
 });
 
