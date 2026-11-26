@@ -16,9 +16,13 @@
 }
 
 .orbital-nebulae, .orbital-starfield { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orbital-starfield { z-index: 1; }
 .orbital-nebulae {
+  z-index: 0;
+  --nebula-max: 1060px;
   mask-image: radial-gradient(ellipse 34% 41% at 52% 49%, transparent 36%, #0002 57%, #000 100%);
 }
+.orbital-backdrop[data-nebula-count='1'] .orbital-nebulae { --nebula-max: 1690px; }
 .orbital-home[data-expanded='true'] .orbital-nebulae { opacity: .64; }
 
 .cosmic-nebula {
@@ -28,7 +32,7 @@
   position: absolute;
   left: calc(var(--nebula-left) + var(--nebula-x));
   top: calc(var(--nebula-top) + var(--nebula-y));
-  width: clamp(275px, calc(var(--nebula-span) * var(--nebula-scale)), 1060px);
+  width: clamp(160px, calc(var(--nebula-span) * var(--nebula-scale)), var(--nebula-max));
   height: auto;
   aspect-ratio: var(--nebula-aspect);
   object-fit: fill;

@@ -1,6 +1,6 @@
 import type {OrbitalColors} from './appearance-colors.ts';
 import type {AppearanceMode} from './appearance.ts';
-import type {NebulaComposition} from './nebula-composition.ts';
+import type {NebulaFormation} from './nebula-composition.ts';
 import {clampUnit, createOrbitalNoise, orbitalRandom, smoothUnit} from './orbital-noise.ts';
 
 type Random = () => number;
@@ -111,7 +111,7 @@ function ridge(value: number, center: number, width: number) {
 }
 
 /** Stores emission, extinction and color balance for the same geometry in both themes. */
-export function createNebulaMaterial(composition: NebulaComposition, width: number): NebulaMaterial {
+export function createNebulaMaterial(composition: NebulaFormation, width: number): NebulaMaterial {
   const {family, accent, seed} = composition;
   const height = Math.round(width * .75);
   const channels = new Uint8Array(width * height * 3);
@@ -188,7 +188,7 @@ function blend(from: RGB, to: RGB, amount: number): RGB {
   return [0, 1, 2].map(i => from[i] + (to[i] - from[i]) * amount) as RGB;
 }
 
-/** Front dust absorbs light from the emissive layer and the SVG stars behind it. */
+/** Dust absorbs light within the gas. The starfield is composited in front. */
 export function tintNebulaPixels(material: NebulaMaterial, colors: OrbitalColors, mode: AppearanceMode, pixels: Uint8ClampedArray) {
   const day = mode === 'light';
   const primary = rgb(colors.primary), secondary = rgb(colors.secondary);

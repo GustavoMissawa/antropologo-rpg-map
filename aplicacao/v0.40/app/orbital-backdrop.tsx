@@ -3,19 +3,21 @@
 import {useEffect, useRef, useState, type CSSProperties} from 'react';
 import {createOrbitalStars} from '../lib/orbital-sky';
 
-import {pageNebulaComposition, type NebulaComposition} from '../lib/nebula-composition';
+import {pageNebulaComposition, type NebulaFormation} from '../lib/nebula-composition';
 
-import {mountOrbitalNebula} from './orbital-nebula';
+import {mountOrbitalNebulae} from './orbital-nebula';
 
 const stars = createOrbitalStars();
 
 export function OrbitalBackdrop() {
   const backdrop = useRef<HTMLDivElement>(null);
-  const nebula = useRef<HTMLCanvasElement>(null);
-  const [composition, setComposition] = useState<NebulaComposition | null>();
+  const nebulae = useRef<HTMLDivElement>(null);
+  const [composition, setComposition] = useState<readonly NebulaFormation[]>();
   useEffect(() => {setComposition(pageNebulaComposition());}, []);
   useEffect(() => {
-    if (composition && nebula.current) return mountOrbitalNebula(nebula.current, composition);
+    if (composition?.length && nebulae.current) {
+      return mountOrbitalNebulae([...nebulae.current.querySelectorAll('canvas')], composition);
+    }
   }, [composition]);
   useEffect(() => {
     const element = backdrop.current;
@@ -36,18 +38,18 @@ export function OrbitalBackdrop() {
   }, []);
 
   return <div ref={backdrop} className="orbital-backdrop" data-motion="paused"
-    data-nebula={composition?.family ?? (composition === null ? 'none' : undefined)} aria-hidden="true">
+    data-nebula-count={composition?.length} aria-hidden="true">
+    {!!composition?.length && <div ref={nebulae} className="orbital-nebulae">
+      {composition.map(formation => <canvas key={formation.seed} className="cosmic-nebula" data-anchor={formation.anchor}
+        data-seed={formation.seed} data-family={formation.family} data-accent={formation.accent ?? undefined}
+        style={{
+          '--nebula-x': `${formation.x}%`, '--nebula-y': `${formation.y}%`,
+          '--nebula-tilt': `${formation.tilt}deg`, '--nebula-scale': formation.scale,
+          '--nebula-aspect': formation.aspect, '--nebula-strength': formation.opacity,
+        } as CSSProperties} />)}
+    </div>}
     <svg className="orbital-starfield" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" focusable="false">
       {stars.map((star, index) => <circle key={index} className="orbital-sky-star" cx={star.x} cy={star.y} r={star.radius} opacity={star.opacity} data-tint={star.tint} data-twinkle={star.twinkle} style={star.twinkle ? {'--star-period': `${8 + index % 6}s`, '--star-delay': `${-index % 13}s`} as CSSProperties : undefined}/>)}
     </svg>
-    {composition && <div className="orbital-nebulae">
-      <canvas ref={nebula} className="cosmic-nebula" data-anchor={composition.anchor}
-        data-seed={composition.seed} data-family={composition.family} data-accent={composition.accent ?? undefined}
-        style={{
-          '--nebula-x': `${composition.x}%`, '--nebula-y': `${composition.y}%`,
-          '--nebula-tilt': `${composition.tilt}deg`, '--nebula-scale': composition.scale,
-          '--nebula-aspect': composition.aspect, '--nebula-strength': composition.opacity,
-        } as CSSProperties} />
-    </div>}
   </div>;
 }

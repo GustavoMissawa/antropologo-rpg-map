@@ -1,18 +1,18 @@
 import {readOrbitalColors} from '../lib/appearance-colors';
-import type {NebulaComposition} from '../lib/nebula-composition';
+import type {NebulaFormation} from '../lib/nebula-composition';
 import {
   COMPACT_NEBULA_WIDTH, createNebulaMaterial, paintNebula, WIDE_NEBULA_WIDTH, type NebulaMaterial,
 } from '../lib/nebula-material';
 
-let cachedSeed: number | undefined;
-const materials = new Map<number, NebulaMaterial>();
+let cachedComposition: readonly NebulaFormation[] | undefined;
+const materials = new Map<number, NebulaMaterial[]>();
 
-/** Render at most two resolutions for this document and recolor the same material. */
-export function mountOrbitalNebula(canvas: HTMLCanvasElement, composition: NebulaComposition) {
+/** Cache both responsive resolutions for the document's composition. */
+export function mountOrbitalNebulae(canvases: HTMLCanvasElement[], composition: readonly NebulaFormation[]) {
   if (typeof CanvasRenderingContext2D === 'undefined') return;
-  if (cachedSeed !== composition.seed) {
+  if (cachedComposition !== composition) {
     materials.clear();
-    cachedSeed = composition.seed;
+    cachedComposition = composition;
   }
 
   const root = document.documentElement;
@@ -38,18 +38,18 @@ export function mountOrbitalNebula(canvas: HTMLCanvasElement, composition: Nebul
     };
     const job = {width, stop};
     pending = job;
-    const finish = (material: NebulaMaterial) => {
+    const finish = (batch: NebulaMaterial[]) => {
       if (pending !== job) return;
       stop();
       pending = undefined;
-      materials.set(width, material);
+      materials.set(width, batch);
       refresh();
     };
     const fallback = () => {
       if (pending !== job) return;
       stop();
       const draw = () => {
-        if (pending === job) finish(createNebulaMaterial(composition, width));
+        if (pending === job) finish(composition.map(formation => createNebulaMaterial(formation, width)));
       };
       if (typeof requestIdleCallback === 'function') idle = requestIdleCallback(draw, {timeout: 250});
       else timer = window.setTimeout(draw, 0);
@@ -60,7 +60,7 @@ export function mountOrbitalNebula(canvas: HTMLCanvasElement, composition: Nebul
     }
     try {
       worker = new Worker(new URL('./orbital-nebula.worker.ts', import.meta.url), {type: 'module'});
-      worker.onmessage = (event: MessageEvent<NebulaMaterial>) => finish(event.data);
+      worker.onmessage = (event: MessageEvent<NebulaMaterial[]>) => finish(event.data);
       worker.onerror = event => {
         event.preventDefault();
         fallback();
@@ -83,18 +83,19 @@ export function mountOrbitalNebula(canvas: HTMLCanvasElement, composition: Nebul
       pending.stop();
       pending = undefined;
     }
-    const material = materials.get(width);
-    if (!material) {
+    const batch = materials.get(width);
+    if (!batch) {
       if (!pending) prepare(width);
       return;
     }
     const colors = readOrbitalColors(root);
     const mode = root.dataset.mode === 'dark' ? 'dark' : 'light';
     const key = `${width}/${mode}/${colors.primary}/${colors.secondary}`;
-    if (painted !== key && paintNebula(canvas, material, colors, mode)) {
-      painted = key;
-      canvas.dataset.ready = 'true';
-    }
+    if (painted === key) return;
+    canvases.forEach((canvas, index) => {
+      if (paintNebula(canvas, batch[index], colors, mode)) canvas.dataset.ready = 'true';
+    });
+    painted = key;
   }
 
   const schedule = () => {
