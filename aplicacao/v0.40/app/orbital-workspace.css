@@ -250,21 +250,6 @@
 .orbital-collection-empty .button { margin-top: 6px; }
 
 .orbital-character-list { grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); }
-.orbital-character-list .character-discovery-card {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto;
-  width: 100%;
-  min-height: 88px;
-  padding: 12px;
-  border-color: var(--workspace-border);
-  border-radius: 10px;
-  background: var(--workspace-paper);
-  box-shadow: none;
-  color: var(--orbit-ink);
-}
-.orbital-character-list .character-discovery-card :is(.discovery-portrait, .character-card-symbol) { width: 50px; height: 50px; border-radius: 8px; }
-.orbital-character-list .character-card-copy small { color: var(--workspace-label); letter-spacing: 0; }
-
 .orbital-pdf-layout .pdf-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 9px; }
 .orbital-pdf-layout .pdf-card {
   display: grid;
@@ -366,7 +351,7 @@
 }
 
 @media (hover: hover) and (pointer: fine) {
-  .orbital-system-open:hover, .orbital-character-list .character-discovery-card:hover { background: var(--workspace-raised); }
+  .orbital-system-open:hover { background: var(--workspace-raised); }
 }
 
 @media (prefers-reduced-motion: no-preference) {

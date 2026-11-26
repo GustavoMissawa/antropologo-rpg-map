@@ -6,6 +6,7 @@ import {themeMediaSource} from '../lib/system-visuals';
 import {HeroDie} from './hero-die';
 import type {OrbitalHomeProps} from './orbital-home';
 import {AB10Logo} from './platform-brand';
+import {OrbitalCharacterRecord} from './orbital-character-record';
 
 export function ContentRail({title,description,onAll,children}:{title:string;description:string;onAll:()=>void;children:ReactNode}){
  const ref=useRef<HTMLDivElement>(null),[edges,setEdges]=useState({left:false,right:false});
@@ -26,7 +27,7 @@ export function CharacterLibrary({sheets,onCreate,onOpen,orbital=false}:{sheets:
    <p>{sheets.length} {sheets.length===1?'ficha':'fichas'} nesta sessão</p>
    <label className="form-label">Buscar personagens<input type="search" value={query} onChange={event=>setQuery(event.target.value)} placeholder="Nome, jogador ou sistema"/></label>
   </aside>
-  {results.length>0?<div className="orbital-character-list">{results.map(sheet=><CharacterCard key={sheet.id} sheet={sheet} onOpen={()=>onOpen(sheet)}/>)}</div>:
+  {results.length>0?<ul className="orbital-character-list">{results.map(sheet=><li key={sheet.id}><OrbitalCharacterRecord sheet={sheet} onOpen={()=>onOpen(sheet)}/></li>)}</ul>:
    <div className="orbital-collection-empty"><UserRound size={32} strokeWidth={1.4} aria-hidden="true"/><h2>{sheets.length?'Nenhum personagem encontrado':'Nenhum personagem nesta sessão'}</h2><p>{sheets.length?'Busque por outro nome, jogador ou sistema.':'Crie uma ficha ou carregue uma cópia para abrir o mapa do personagem.'}</p><button type="button" className="button secondary" onClick={sheets.length?()=>setQuery(''):onCreate}>{sheets.length?'Limpar busca':'Criar personagem'}</button></div>}
  </section>;
  return <section className="character-library" aria-label="Biblioteca de fichas"><p className="library-session-note">Todas as fichas desta página, sem alterar seus vínculos.</p><div className="character-library-grid"><NewCard title="Criar personagem" description="Uma nova história, do seu jeito." onClick={onCreate}/>{sheets.map(s=><CharacterCard key={s.id} sheet={s} onOpen={()=>onOpen(s)}/>)}</div></section>;

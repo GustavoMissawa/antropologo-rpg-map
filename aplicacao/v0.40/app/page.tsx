@@ -8,13 +8,14 @@ import { ContentExportDialog } from './content-export';
 import { ContentImportReceipt,contentDragOver,contentDrop } from './content-import';
 import { readContentFile,importReceipt,SHEET_FILE_ACCEPT,type ImportedContent } from '../lib/content-file';
 import type {OrbitalDestination} from '../lib/orbital-navigation';
-import {parsePlatformHash, platformHref, routeArea, routeForStyle, sectionRoute, type PlatformRoute} from '../lib/platform-navigation';
+import {orbitalEntryRoute, parsePlatformHash, platformHistoryEntry, platformHref, routeArea, routeForStyle, sectionRoute, type PlatformJourney, type PlatformRoute} from '../lib/platform-navigation';
 import { SITE_VERSION } from '../lib/site-version';
 import {requestJson} from '../lib/browser-request';
 import {pdfsResponse,mergePdfCatalog} from '../lib/api-responses';
 import { HomeDiceBackground } from './home-dice-background';
 import {PlatformHome,CharacterLibrary} from './platform-home';
 import {OrbitalHome} from './orbital-home';
+import {OrbitalComet} from './orbital-comet';
 import {useOrbitalFirstSteps} from './use-orbital-first-steps';
 import type {FirstStepsZone} from '../lib/orbital-first-steps';
 import {WorkspaceHeading, WorkspaceTrail} from './orbital-workspace';
@@ -53,18 +54,27 @@ function PlatformApp(){
   const style=appearance.value.interfaceStyle;
   const orbital=style==='orbital';
   const [route,setRoute]=useState<PlatformRoute>({page:'home'});
+  const locationRoute=useRef<PlatformRoute>(route);
+  const [journey,setJourney]=useState<PlatformJourney|null>(null);
   const displayedRoute=routeForStyle(route,style);
   const page=displayedRoute.page;
   const area=routeArea(displayedRoute);
   const activeRulebookId=displayedRoute.page==='rules'?displayedRoute.bookId??null:null;
+  const topicId=displayedRoute.page==='rules'?displayedRoute.topicId:undefined;
+  const anchorId=displayedRoute.page==='rules'?displayedRoute.anchorId:undefined;
   const sheetView=displayedRoute.page==='sheet'?displayedRoute.editor:undefined;
   const historyHash=useRef<string|null>(null);
+  const historyDocument=useRef('');
+  const historyIndex=useRef(0);
+  const restoringHistory=useRef(false);
   const [dieActivation,setDieActivation]=useState(0);
   const activationCount=useRef(0);
   const [createSystemRequested,setCreateSystemRequested]=useState(false);
   const [sheet,setSheet]=useState<Sheet|null>(null);const [recent,setRecent]=useState<Sheet[]>([]);
   const [templateDraft,setTemplateDraft]=useState<TemplateWorkspace|null>(null),[pendingEditorAction,setPendingEditorAction]=useState<(()=>void)|null>(null),[newSystemId,setNewSystemId]=useState('');
-  const ruleEditorDirty=useRef(false),reportRuleEditorDirty=useCallback((dirty:boolean)=>{ruleEditorDirty.current=dirty;},[]);
+  const ruleEditorDirty=useRef(false);
+  const [rulesHaveDraft,setRulesHaveDraft]=useState(false);
+  const reportRuleEditorDirty=useCallback((dirty:boolean)=>{ruleEditorDirty.current=dirty;setRulesHaveDraft(dirty);},[]);
   const [rulebooks,setRulebooks]=useState<Rulebook[]>(()=>[makeAB10Rulebook()]);
   const [contextId,setContextId]=useState<string|null>(null),[sessionReady,setSessionReady]=useState(false),[sessionError,setSessionError]=useState('');
   const sessionCache=useRef<Awaited<ReturnType<typeof openPlatformSession>>|null>(null);
@@ -91,22 +101,33 @@ function PlatformApp(){
     if(timer.current)clearTimeout(timer.current);
     timer.current=setTimeout(()=>setToast(''),4500);
   },[]);
-  const navigate=useCallback((next:PlatformRoute, activate=false, replace=false)=>{
-    const hash=platformHref(next);
-    if(hash===historyHash.current)return true;
-    if(ruleEditorDirty.current){notify(editorWarning);return false;}
-    if(replace)window.history.replaceState(window.history.state,'',hash);
-    else window.history.pushState(window.history.state,'',hash);
-    historyHash.current=hash;
+  const applyRoute=useCallback((next:PlatformRoute, animate:boolean, activate=false)=>{
+    setJourney(animate?{from:locationRoute.current,to:next}:null);
+    locationRoute.current=next;
     setReceipt('');
     setViewingPdf(null);
     setDieActivation(activate?++activationCount.current:0);
     setRoute(next);
-    if(!replace)window.scrollTo({top:0,behavior:'instant'});
+  },[]);
+  const navigate=useCallback((next:PlatformRoute, activate=false, replace=false)=>{
+    const hash=platformHref(next);
+    if(hash===historyHash.current)return true;
+    if(ruleEditorDirty.current){notify(editorWarning);return false;}
+    historyDocument.current ||= uid();
+    const index=replace?historyIndex.current:++historyIndex.current;
+    const state={...window.history.state,antropologoRoute:{document:historyDocument.current,index}};
+    if(replace)window.history.replaceState(state,'',hash);
+    else window.history.pushState(state,'',hash);
+    historyHash.current=hash;
+    const previous=locationRoute.current;
+    applyRoute(next,!replace,activate);
+    const inBook=previous.page==='rules'&&next.page==='rules'&&previous.bookId&&previous.bookId===next.bookId;
+    if(!replace&&!inBook)window.scrollTo({top:0,behavior:'instant'});
     return true;
-  },[notify]);
+  },[applyRoute,notify]);
   const selectDestination=useCallback((destination:OrbitalDestination|null)=>{
-    navigate({page:'home',destination:destination??undefined},destination!==null);
+    const target=orbitalEntryRoute(destination);
+    navigate(target,target.page==='home'&&!!target.destination);
   },[navigate]);
   function selectSection(next:Page){
     if(!orbital&&next==='rules'){selectSystem(contextId);return;}
@@ -155,17 +176,31 @@ function PlatformApp(){
   useEffect(()=>{
     const sync=()=>{
       const hash=window.location.hash;
-      if(historyHash.current===null||hash===historyHash.current)return;
+      if(restoringHistory.current){
+        if(hash===historyHash.current)restoringHistory.current=false;
+        return;
+      }
+      if(historyHash.current===null)return;
+      const entry=platformHistoryEntry(window.history.state,historyDocument.current);
+      if(hash===historyHash.current){
+        if(entry)historyIndex.current=entry.index;
+        return;
+      }
       if(ruleEditorDirty.current){
-        window.history.replaceState(window.history.state,'',historyHash.current);
+        if(entry&&entry.index!==historyIndex.current){
+          restoringHistory.current=true;
+          window.history.go(historyIndex.current-entry.index);
+        }else{
+          const index=entry?.index??++historyIndex.current;
+          window.history.replaceState({...window.history.state,antropologoRoute:{document:historyDocument.current,index}},'',historyHash.current);
+        }
         notify(editorWarning);
         return;
       }
       historyHash.current=hash;
-      setRoute(parsePlatformHash(hash)??{page:'home'});
-      setReceipt('');
-      setViewingPdf(null);
-      setDieActivation(0);
+      if(entry)historyIndex.current=entry.index;
+      else window.history.replaceState({...window.history.state,antropologoRoute:{document:historyDocument.current,index:++historyIndex.current}},'',hash);
+      applyRoute(parsePlatformHash(hash)??{page:'home'},false);
     };
     window.addEventListener('hashchange',sync);
     window.addEventListener('popstate',sync);
@@ -174,8 +209,22 @@ function PlatformApp(){
       window.removeEventListener('popstate',sync);
       if(timer.current)clearTimeout(timer.current);
     };
-  },[notify]);
+  },[applyRoute,notify]);
+  useEffect(()=>{
+    if(!rulesHaveDraft&&!templateDirty)return;
+    const warn=(event:BeforeUnloadEvent)=>{
+      if(!ruleEditorDirty.current&&!templateDirty)return;
+      event.preventDefault();
+      event.returnValue='';
+    };
+    window.addEventListener('beforeunload',warn);
+    return()=>window.removeEventListener('beforeunload',warn);
+  },[rulesHaveDraft,templateDirty]);
   function selectSystem(id:string|null){return navigate({page:'rules',bookId:id??undefined});}
+  function selectTopic(topicId?:string,anchorId?:string,replace=false){
+    if(activeRulebookId===null)return false;
+    return navigate({page:'rules',bookId:activeRulebookId,topicId,anchorId},false,replace);
+  }
   function browseSystems(create=false){if(selectSystem(null)&&create)setCreateSystemRequested(true);}
   function openCharacter(value:Sheet){
     replaceTemplateWorkspace(()=>{
@@ -194,7 +243,6 @@ function PlatformApp(){
     const draft=bindSheetToRulebook(copySheet(book.sheetTemplate),book);
     setTemplateDraft({bookId:book.id,bookName:book.name,sheet:draft,baseline:JSON.stringify(draft)});
   },[templateDraft,sheetView,rulebooks]);
-  useEffect(()=>{if(!templateDirty)return;const warn=(e:BeforeUnloadEvent)=>{e.preventDefault();e.returnValue='';};window.addEventListener('beforeunload',warn);return()=>window.removeEventListener('beforeunload',warn);},[templateDirty]);
   async function loadPdfs(){setPdfLoading(true);setPdfError('');try{const remote=pdfsResponse(await requestJson('/api/library'));setPdfs(current=>mergePdfCatalog(remote,current));}catch{setPdfError('Não foi possível carregar a biblioteca. Tente novamente.');}finally{setPdfLoading(false);}}
   useEffect(()=>{loadPdfs();},[]);
   function updateEditorSheet(fn:(s:Sheet)=>Sheet){
@@ -301,12 +349,13 @@ function PlatformApp(){
         <PlatformHome {...homeActions} context={selectedContext}/>)}
       {orbitalHome&&<TestNotice/>}
 
-      {page==='rules'&&<RulesLibrary orbital={orbital} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
+      {page==='rules'&&<RulesLibrary orbital={orbital} journey={journey} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} topicId={topicId} anchorId={anchorId} onTopicChange={selectTopic} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
 
       {page==='pdfs'&&<>
         {orbital?<WorkspaceHeading area="pdfs" title="Biblioteca de PDFs" description="Organize manuais, aventuras e referências da sua mesa." actions={addPdfButton}/>:<>
           <div className="page-eyebrow">SEUS MATERIAIS DE JOGO</div><div className="page-title-row"><div><h1>Biblioteca de PDFs<span className="accent">.</span></h1><p>Manuais, referências e aventuras sempre à mão.</p></div>{addPdfButton}</div>
         </>}
+        {orbital&&<OrbitalComet journey={journey}/>}
         <div className={orbital?'orbital-pdf-layout':undefined}>
         {orbital?<aside className="orbital-collection-sidebar"><h2>Filtrar biblioteca</h2>{pdfSearch}{pdfCategories}</aside>:<><div className="library-toolbar">{pdfSearch}{pdfCount}</div>{pdfCategories}</>}
         <section className="pdf-results" aria-label="Documentos">

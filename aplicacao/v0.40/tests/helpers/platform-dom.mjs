@@ -26,6 +26,7 @@ export async function mountPlatform(){const host=document.createElement('div');d
 export async function clickButton(host,label){const el=[...host.querySelectorAll('button')].find(b=>b.getAttribute('aria-label')===label||b.textContent.trim()===label);if(!el||el.disabled)throw Error('Botão indisponível: '+label);await act(async()=>el.click());}
 export async function openOrbitalArea(host,label,action){
  await clickButton(host.querySelector('.global-top-nav'),label);
+ if(!action)return;
  await waitFor(()=>host.querySelector('.orbital-destination-panel:not([inert]) .orbital-destination-content[data-ready="true"]'));
  await clickButton(host.querySelector('.orbital-destination-panel'),action);
 }

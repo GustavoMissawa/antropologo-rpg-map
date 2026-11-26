@@ -29,6 +29,7 @@ import "./orbital-backdrop.css";
 import "./orbital-destination.css";
 import "./orbital-first-steps.css";
 import "./orbital-workspace.css";
+import "./orbital-space.css";
 import "./sheet-canvas.css";
 import { appearanceBootstrap, paletteCSS } from '../lib/appearance';
 

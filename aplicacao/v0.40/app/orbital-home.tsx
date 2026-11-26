@@ -5,9 +5,11 @@ import {ArrowUpRight, CalendarDays, CirclePlus, FileText, Layers3, UserRound} fr
 import {countRules, type Rulebook, type Sheet, type PDF} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
 import {OrbitalBackdrop} from './orbital-backdrop';
+import {OrbitalCharacterRecord} from './orbital-character-record';
 import {chooseOrbitalAnchor, orbitalConnection} from '../lib/orbital-connection';
 import {pageOrbitalScene, type OrbitalAnchor} from '../lib/orbital-disk';
-import {orbitalHref, type OrbitalDestination, type OrbitalNavigation} from '../lib/orbital-navigation';
+import type {OrbitalDestination, OrbitalNavigation} from '../lib/orbital-navigation';
+import {orbitalEntryRoute, platformHref} from '../lib/platform-navigation';
 import type {FirstStepsCue, FirstStepsZone} from '../lib/orbital-first-steps';
 import {useOrbitalNavigation} from './use-orbital-navigation';
 
@@ -246,8 +248,8 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
               data-active={active === id}
               data-selected={selected === id}
               aria-label={label}
-              aria-expanded={selected === id}
-              aria-controls="orbital-destination-panel"
+              aria-expanded={id === 'agenda' ? undefined : selected === id}
+              aria-controls={id === 'agenda' ? undefined : 'orbital-destination-panel'}
               aria-hidden={!!selected && selected !== id || undefined}
               tabIndex={selected && selected !== id ? -1 : undefined}
               style={{'--node-x': `${point.x / 10}%`, '--node-y': `${point.y / 10}%`} as CSSProperties}
@@ -400,7 +402,7 @@ function OrbitalDestinationPanel(props: OrbitalHomeProps & {destination: Destina
   const Icon = current.icon;
   return <section className="orbital-destination-panel" id="orbital-destination-panel" inert={props.returning} aria-hidden={props.returning || undefined} aria-label={`Destino ${current.label}`}>
     <nav className="orbital-destination-switcher" aria-label="Trocar destino">
-      {DESTINATIONS.map(item => <a key={item.id} href={orbitalHref(item.id)} aria-current={item.id === destination ? 'location' : undefined} onClick={event => {
+      {DESTINATIONS.map(item => <a key={item.id} href={platformHref(orbitalEntryRoute(item.id))} aria-current={item.id === destination ? 'location' : undefined} onClick={event => {
         if (!event.ctrlKey && !event.metaKey && !event.shiftKey && !event.altKey && event.button === 0) {event.preventDefault(); props.onSelect(item.id);}
       }}>{item.label}</a>)}
     </nav>
@@ -414,7 +416,7 @@ function OrbitalDestinationPanel(props: OrbitalHomeProps & {destination: Destina
       </>}
       {destination === 'sheets' && <>
         <p>{sheets.length ? 'Personagens disponíveis nesta sessão.' : 'Sua próxima história começa com um personagem.'}</p>
-        <ul>{sheets.map(sheet => <li key={sheet.id}><button className="orbital-context-item" onClick={() => props.onOpenCharacter(sheet)}><UserRound size={19} aria-hidden="true" /><span><strong>{sheet.name || 'Sem nome'}</strong><small>{sheet.system?.name || 'Sem sistema vinculado'}</small></span><ArrowUpRight size={17} aria-hidden="true" /></button></li>)}</ul>
+        <ul>{sheets.map(sheet => <li key={sheet.id}><OrbitalCharacterRecord sheet={sheet} onOpen={() => props.onOpenCharacter(sheet)}/></li>)}</ul>
         {!sheets.length && <p className="orbital-context-empty">Nenhuma ficha aberta nesta página.</p>}
         <button className="orbital-context-action" onClick={props.onCreateCharacter}><CirclePlus size={18} aria-hidden="true" />Criar personagem</button>
         <button className="orbital-context-action" onClick={props.onAllCharacters}>Ver todas as fichas<ArrowUpRight size={16} aria-hidden="true" /></button>

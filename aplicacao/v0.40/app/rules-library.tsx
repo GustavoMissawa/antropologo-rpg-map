@@ -15,25 +15,27 @@ import { RulebookMetadataDialog,type RulebookMetadata } from './rulebook-metadat
 import { RulebookSheetLink } from './rulebook-sheet-link';
 import { RulesIndex } from './rules-index';
 import { WorkspaceHeading } from './orbital-workspace';
+import { OrbitalSystemScene } from './orbital-system-scene';
+import type { PlatformJourney } from '../lib/platform-navigation';
 
 const RuleTopicEditor = deferEditor(() => import('./rule-topic-editor.tsx').then(module => module.RuleTopicEditor), 'o editor de regras');
 
-type Props={orbital?:boolean;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
+type Props={orbital?:boolean;journey?:PlatformJourney|null;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;topicId?:string;anchorId?:string;onTopicChange:(topicId?:string,anchorId?:string,replace?:boolean)=>boolean;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
 const statuses={draft:'Rascunho',test:'Em teste',canon:'Canônico'};
 function RulesetVisual({book}:{book:Rulebook}){const [broken,setBroken]=useState(false);return <span className="ruleset-cover-title ruleset-visual">{book.id===AB10_RULEBOOK_ID?<AB10Logo/>:book.logo&&!broken?<img src={book.logo} alt={'Logo de '+book.name} onError={()=>setBroken(true)}/>:<span className="ruleset-name-fallback">{book.name}</span>}</span>;}
 function Tool({label,children,...props}:{label:string;children:ReactNode;disabled?:boolean;onClick:()=>void}){return <button type="button" className="icon-button" title={label} aria-label={label} {...props}>{children}</button>;}
 
-export function RulesLibrary({orbital=false,createRequested,onCreateRequestHandled,books,onChange,activeId,onActiveChange,notify,characters,onEditTemplate,onLinkTemplate,onCreateCharacter,onImportCharacter,unsavedTemplateBookId,onEditorDirtyChange}:Props){
+export function RulesLibrary({orbital=false,journey=null,createRequested,onCreateRequestHandled,books,onChange,activeId,onActiveChange,topicId,anchorId,onTopicChange,notify,characters,onEditTemplate,onLinkTemplate,onCreateCharacter,onImportCharacter,unsavedTemplateBookId,onEditorDirtyChange}:Props){
  const fileInput=useRef<HTMLInputElement>(null),article=useRef<HTMLElement>(null),indexTrigger=useRef<HTMLButtonElement>(null),importRequest=useRef(0);
  useEffect(()=>()=>{importRequest.current++;},[]);
  const [mobile,setMobile]=useState(false),[indexOpen,setIndexOpen]=useState(false);
  useEffect(()=>{const media=window.matchMedia('(max-width:790px)'),update=()=>{setMobile(media.matches);if(!media.matches)setIndexOpen(false);};update();media.addEventListener('change',update);return()=>media.removeEventListener('change',update);},[]);
  const [exporting,setExporting]=useState<Rulebook|null>(null),[receipt,setReceipt]=useState('');
  const [libraryQuery,setLibraryQuery]=useState('');
- const [chosen,setChosen]=useState<Record<string,string>>({}),[query,setQuery]=useState(''),[editor,setEditor]=useState<RuleTopicDraft|null>(null),[metadata,setMetadata]=useState<RulebookMetadata|null>(null),[importError,setImportError]=useState(''),[loading,setLoading]=useState(false),[confirmation,setConfirmation]=useState<{title:string;text:string;action:()=>void}|null>(null);
+ const [query,setQuery]=useState(''),[editor,setEditor]=useState<RuleTopicDraft|null>(null),[metadata,setMetadata]=useState<RulebookMetadata|null>(null),[importError,setImportError]=useState(''),[loading,setLoading]=useState(false),[confirmation,setConfirmation]=useState<{title:string;text:string;action:()=>void}|null>(null);
  useEffect(()=>{if(createRequested){setMetadata({name:'',description:''});onCreateRequestHandled?.();}},[createRequested,onCreateRequestHandled]);
  const [customizationViews,setCustomizationViews]=useState<Record<string,boolean>>({});
- const [editorDirty,setEditorDirty]=useState(false),[pending,setPending]=useState<(()=>void)|null>(null),[jump,setJump]=useState<{topicId:string;anchorId?:string;nonce:number}|null>(null);
+ const [editorDirty,setEditorDirty]=useState(false),[pending,setPending]=useState<(()=>void)|null>(null);
  function markEditorDirty(value:boolean){setEditorDirty(value);onEditorDirtyChange?.(value);}
  useEffect(()=>()=>onEditorDirtyChange?.(false),[onEditorDirtyChange]);
  useEffect(()=>{
@@ -42,25 +44,56 @@ export function RulesLibrary({orbital=false,createRequested,onCreateRequestHandl
   setPending(null);
   setIndexOpen(false);
   onEditorDirtyChange?.(false);
- },[activeId,onEditorDirtyChange]);
+ },[activeId,topicId,anchorId,onEditorDirtyChange]);
  const book=books.find(b=>b.id===activeId),fixed=book?.id===AB10_RULEBOOK_ID,customCount=books.filter(b=>b.id!==AB10_RULEBOOK_ID).length;
- const selected=book?(findRule(book.chapters,chosen[book.id]||'')||book.chapters[0]):undefined,location=book&&selected?ruleLocation(book.chapters,selected.id):undefined;
+ const requested=book&&topicId!==undefined?findRule(book.chapters,topicId):undefined;
+ const selected=requested||book?.chapters[0],location=book&&selected?ruleLocation(book.chapters,selected.id):undefined;
+ const missingTopic=!!book&&topicId!==undefined&&!requested;
+ const selectedAnchor=anchorId&&requested&&ruleDocumentHeadings(requested.document).some(h=>h.id===anchorId)?anchorId:undefined;
  const total=book?countRules(book.chapters):0,canAdd=!!book&&!fixed&&total<MAX_RULE_TOPICS,filtered=book?filterRules(book.chapters,query):[];
  function guarded(action:()=>void){if(editor&&editorDirty){setPending(()=>action);return;}setEditor(null);markEditorDirty(false);setPending(null);action();}
- function openBook(id:string){guarded(()=>{setIndexOpen(false);onActiveChange(id);setQuery('');setImportError('');setJump(null);window.scrollTo({top:0,behavior:'smooth'});});}
- function back(){guarded(()=>{setIndexOpen(false);onActiveChange(null);setQuery('');setJump(null);window.scrollTo({top:0,behavior:'smooth'});});}
- function choose(id:string,anchorId?:string,fromLink=false){if(!book)return;const target=findRule(book.chapters,id);if(!target||anchorId&&!ruleDocumentHeadings(target.document).some(h=>h.id===anchorId)){notify('O destino deste link não está mais disponível.');return;}setIndexOpen(false);if(mobile&&editor&&editorDirty)requestAnimationFrame(()=>article.current?.scrollIntoView({behavior:'smooth',block:'start'}));guarded(()=>{setChosen(all=>({...all,[book.id]:id}));if(fromLink||anchorId)setJump({topicId:id,anchorId,nonce:Date.now()});else{setJump(null);if(mobile)requestAnimationFrame(()=>{article.current?.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});article.current?.focus({preventScroll:true});});}});}
+ function openBook(id:string){guarded(()=>{setIndexOpen(false);onActiveChange(id);setQuery('');setImportError('');});}
+ function back(){guarded(()=>{setIndexOpen(false);onActiveChange(null);setQuery('');});}
+ function focusArticle(scroll:boolean){
+  if(scroll)article.current?.scrollIntoView({behavior:'instant',block:'start'});
+  article.current?.focus({preventScroll:true});
+ }
+ function choose(id:string,anchor?:string,fromLink=false,fromMap=false){
+  if(!book)return;
+  const target=findRule(book.chapters,id);
+  if(!target||anchor&&!ruleDocumentHeadings(target.document).some(h=>h.id===anchor)){
+   notify('O destino deste link não está mais disponível.');
+   return;
+  }
+  setIndexOpen(false);
+  if(mobile&&editor&&editorDirty)requestAnimationFrame(()=>focusArticle(true));
+  guarded(()=>{
+   if(!onTopicChange(id,anchor))return;
+   if(anchor&&id===topicId&&anchor===selectedAnchor){
+    const heading=document.getElementById(ruleAnchorId(id,anchor));
+    heading?.scrollIntoView({behavior:'instant',block:'start'});
+    heading?.focus({preventScroll:true});
+   }else if(!anchor&&!fromMap){
+    requestAnimationFrame(()=>focusArticle(mobile||fromLink));
+   }
+  });
+ }
  function closeIndex(){setIndexOpen(false);requestAnimationFrame(()=>indexTrigger.current?.focus({preventScroll:true}));}
- useEffect(()=>{if(!jump||!book||editor||selected?.id!==jump.topicId)return;const el=jump.anchorId?document.getElementById(ruleAnchorId(jump.topicId,jump.anchorId)):article.current;if(el){el.scrollIntoView({behavior:window.matchMedia('(prefers-reduced-motion:reduce)').matches?'auto':'smooth',block:'start'});el.focus({preventScroll:true});}},[jump,book?.id,selected?.id,editor]);
+ useEffect(()=>{
+  if(!selectedAnchor||topicId===undefined)return;
+  const heading=document.getElementById(ruleAnchorId(topicId,selectedAnchor));
+  heading?.scrollIntoView({behavior:'instant',block:'start'});
+  heading?.focus({preventScroll:true});
+ },[activeId,topicId,selectedAnchor]);
  function apply(next:Rulebook){const updated={...next,updatedAt:new Date().toISOString()};serializeRulebook(updated);onChange(all=>updateCustomRulebook(all,updated));}
  function startChapter(parent?:string){if(!canAdd)return;guarded(()=>{markEditorDirty(false);setEditor({id:uid(),parent,isNew:true,title:'',content:'',status:'draft'});requestAnimationFrame(()=>article.current?.scrollIntoView({behavior:'smooth',block:'start'}));});}
  function startEdit(){if(!selected||fixed)return;markEditorDirty(false);setPending(null);setEditor({...selected});}
- function saveTopic(draft:RuleTopicDraft){if(!book||fixed)throw new Error('Este conjunto é somente para consulta.');const item:Rule={id:draft.id,title:draft.title,content:draft.content,document:draft.document,status:draft.status,children:draft.isNew?[]:findRule(book.chapters,draft.id)?.children||[]};const chapters=draft.isNew?(draft.parent?mapRules(book.chapters,draft.parent,r=>({...r,children:[...r.children,item]})):[...book.chapters,item]):mapRules(book.chapters,item.id,()=>item);apply({...book,chapters});setChosen(all=>({...all,[book.id]:item.id}));setEditor(null);markEditorDirty(false);setPending(null);setJump(null);notify('Tópico salvo no conjunto. Use Salvar regras para baixar sua cópia.');}
+ function saveTopic(draft:RuleTopicDraft){if(!book||fixed)throw new Error('Este conjunto é somente para consulta.');const item:Rule={id:draft.id,title:draft.title,content:draft.content,document:draft.document,status:draft.status,children:draft.isNew?[]:findRule(book.chapters,draft.id)?.children||[]};const chapters=draft.isNew?(draft.parent?mapRules(book.chapters,draft.parent,r=>({...r,children:[...r.children,item]})):[...book.chapters,item]):mapRules(book.chapters,item.id,()=>item);apply({...book,chapters});setEditor(null);markEditorDirty(false);setPending(null);onTopicChange(item.id,undefined,true);notify('Tópico salvo no conjunto. Use Salvar regras para baixar sua cópia.');}
  function cancelTopic(){setEditor(null);markEditorDirty(false);setPending(null);}
  function download(book:Rulebook){if(editor||book.id===unsavedTemplateBookId){notify(book.id===unsavedTemplateBookId?'Salve ou descarte as alterações da ficha-modelo no editor antes de baixar este conjunto.':'Salve ou cancele a edição do tópico antes de baixar o conjunto.');return;}setExporting(book);}
- async function importFile(file?:File){if(!file)return;const request=++importRequest.current;setImportError('');setLoading(true);try{const result=await readContentFile(file);if(request!==importRequest.current)return;if(result.kind==='ruleset')addRulebook(books,result.content);guarded(()=>{if(request!==importRequest.current)return;if(result.kind==='character'){onImportCharacter(result);return;}onChange(all=>addRulebook(all,result.content));onActiveChange(result.content.id);setQuery('');setImportError('');setJump(null);window.scrollTo({top:0,behavior:'smooth'});const message=importReceipt(result);setReceipt(result.source==='super-png'?message:'');notify(message);});}catch(e){if(request===importRequest.current){const message=(e as Error).message;setImportError(message);notify(message);}}finally{if(request===importRequest.current){setLoading(false);if(fileInput.current)fileInput.current.value='';}}}
+ async function importFile(file?:File){if(!file)return;const request=++importRequest.current;setImportError('');setLoading(true);try{const result=await readContentFile(file);if(request!==importRequest.current)return;if(result.kind==='ruleset')addRulebook(books,result.content);guarded(()=>{if(request!==importRequest.current)return;if(result.kind==='character'){onImportCharacter(result);return;}onChange(all=>addRulebook(all,result.content));onActiveChange(result.content.id);setQuery('');setImportError('');const message=importReceipt(result);setReceipt(result.source==='super-png'?message:'');notify(message);});}catch(e){if(request===importRequest.current){const message=(e as Error).message;setImportError(message);notify(message);}}finally{if(request===importRequest.current){setLoading(false);if(fileInput.current)fileInput.current.value='';}}}
  function removeBook(target:Rulebook){if(target.id===AB10_RULEBOOK_ID)return;setConfirmation({title:'Remover conjunto desta página?',text:`Salve uma cópia de “${target.name}” se quiser carregá-lo depois. Seus capítulos e subseções serão removidos desta página.`,action:()=>{onChange(all=>removeCustomRulebook(all,target.id));if(activeId===target.id)onActiveChange(null);notify('Conjunto removido desta página.');}});}
- function removeChapter(){if(!book||!selected||fixed)return;const target=selected;setConfirmation({title:'Remover tópico?',text:`“${target.title}” e suas ${countRules(target.children)} subseções serão removidos deste conjunto.`,action:()=>{const remove=(tree:Rule[]):Rule[]=>tree.filter(r=>r.id!==target.id).map(r=>({...r,children:remove(r.children)}));apply({...book,chapters:remove(book.chapters)});setChosen(all=>({...all,[book.id]:''}));notify('Tópico removido.');}});}
+ function removeChapter(){if(!book||!selected||fixed)return;const target=selected;setConfirmation({title:'Remover tópico?',text:`“${target.title}” e suas ${countRules(target.children)} subseções serão removidos deste conjunto.`,action:()=>{const remove=(tree:Rule[]):Rule[]=>tree.filter(r=>r.id!==target.id).map(r=>({...r,children:remove(r.children)}));apply({...book,chapters:remove(book.chapters)});onTopicChange(undefined,undefined,true);notify('Tópico removido.');}});}
  function reorder(delta:-1|1){if(!book||!selected||fixed)return;try{apply({...book,chapters:moveRule(book.chapters,selected.id,delta)});notify('Ordem dos tópicos atualizada.');}catch(e){notify((e as Error).message);}}
  function tree(items:Rule[]):ReactNode{return items.map(r=><div className="rule-node" key={r.id}>{r.children.length?<details open key={r.id+':'+query}><summary><ChevronRight size={14}/><button type="button" className={(editor?.id||selected?.id)===r.id?'active':''} aria-current={(editor?.id||selected?.id)===r.id?'page':undefined} onClick={e=>{e.preventDefault();choose(r.id);}}>{r.title}</button></summary><div className="rule-children">{tree(r.children)}</div></details>:<button type="button" className={'rule-link '+((editor?.id||selected?.id)===r.id?'active':'')} aria-current={(editor?.id||selected?.id)===r.id?'page':undefined} onClick={()=>choose(r.id)}><span className="tiny-dot"/>{r.title}</button>}</div>);}
  const canCreate=!loading&&customCount<MAX_RULEBOOKS;
@@ -113,6 +146,11 @@ export function RulesLibrary({orbital=false,createRequested,onCreateRequestHandl
    </div><button ref={indexTrigger} type="button" className="button secondary ruleset-index-trigger" disabled={!total} aria-haspopup="dialog" aria-expanded={indexOpen} onClick={()=>setIndexOpen(true)}><ListTree size={18}/> Índice <span>{total}</span></button>
    </div>
    {importError&&<p className="ruleset-import-error" role="alert">{importError}</p>}
+   {missingTopic&&<p className="orbital-list-empty" role="status">O tópico deste link não está neste sistema. O índice continua disponível.</p>}
+   {anchorId&&!selectedAnchor&&!missingTopic&&<p className="orbital-list-empty" role="status">A seção deste link não está no tópico. O conteúdo disponível está abaixo.</p>}
+   {orbital&&<OrbitalSystemScene book={book} books={books} topicId={requested?.id} journey={journey}
+     onTopic={id=>choose(id,undefined,false,true)} onRead={()=>focusArticle(true)}
+     onOverview={()=>guarded(()=>{if(onTopicChange())window.scrollTo({top:0,behavior:'instant'});})}/>}
    <div className={"rules-layout"+(!total?" rules-without-index":"")}>{total>0&&<RulesIndex mobile={mobile} open={indexOpen} total={total} onClose={closeIndex}><div className="index-head">ÍNDICE DO SISTEMA <span>{total}</span></div><label className="search small-search"><Search size={16}/><input aria-label="Buscar neste conjunto" placeholder="Buscar neste conjunto…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<Tool label="Limpar busca de regras" onClick={()=>setQuery('')}><X size={15}/></Tool>}</label><nav className="rule-tree" aria-label={'Capítulos de '+book.name}>{tree(filtered)}{!filtered.length&&<p className="muted empty-search">{query?'Nenhum tópico encontrado.':'Os capítulos aparecerão aqui.'}</p>}</nav><div className="index-foot"><Layers3 size={15}/><span>{fixed?'Os capítulos do AB10 ficam sempre disponíveis.':'Crie capítulos e subdivida os assuntos em subseções.'}</span></div></RulesIndex>}
     <article ref={article} tabIndex={-1} className="rule-article" id={selected?ruleAnchorId(selected.id):undefined} aria-label={editor?'Editor do tópico':'Leitura do tópico'}>
      {pending&&<div className="rule-unsaved-notice" role="alert">Há alterações neste tópico. Salve ou cancele antes de navegar.<div><button type="button" className="button secondary" onClick={()=>setPending(null)}>Continuar edição</button><button type="button" className="button secondary" onClick={()=>{const action=pending;cancelTopic();action();}}>Descartar e seguir</button></div></div>}

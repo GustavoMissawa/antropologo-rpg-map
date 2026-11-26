@@ -111,7 +111,6 @@ test('O interruptor persiste sem recriar estrelas, dado ou disco e sobrevive a c
     assert.equal(dialog.querySelector('input[role="switch"]').checked,true);
     await clickButton(dialog,'Pronto');
     await clickButton(ui.host.querySelector('.orbital-navigation'),'Agenda');
-    await clickButton(ui.host.querySelector('.orbital-destination-panel'),'Abrir Agenda');
     assert.equal(window.location.hash,'#agenda');
     assert.equal(ui.host.querySelector('.orbital-backdrop'),null,'efeitos encerrados ao sair da Home');
   } finally {

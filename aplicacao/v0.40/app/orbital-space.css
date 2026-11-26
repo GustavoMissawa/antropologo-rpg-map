@@ -1,0 +1,193 @@
+.planetary-scene {
+  margin: 0 0 clamp(19px, 3vw, 36px);
+  overflow: hidden;
+  border: 1px solid var(--workspace-border);
+  border-radius: 14px;
+  background: var(--workspace-paper);
+}
+
+.planetary-scene-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  padding: 14px clamp(14px, 2.3vw, 25px);
+}
+
+.planetary-scene-heading h2 {
+  color: var(--orbit-ink);
+  font: 700 clamp(17px, 2vw, 22px)/1.32 var(--heading);
+  overflow-wrap: anywhere;
+}
+
+.planetary-scene-heading p { color: var(--orbit-muted); font-size: 13px; }
+.planetary-scene-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 18px; }
+.planetary-scene-actions button { display: inline-flex; align-items: center; gap: 7px; min-height: 44px; padding-inline: 2px; }
+
+.orbital-space {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  pointer-events: none;
+  background: radial-gradient(ellipse at 53% 44%, #1b2740, #0b1220 50%, #070b12 87%);
+}
+
+.planetary-sky { height: clamp(185px, 23vw, 340px); }
+.planetary-scene[data-scene-mode='reading'] .planetary-sky { height: clamp(136px, 13vw, 193px); }
+.planetary-scene[data-scene-mode='reading'] .orbital-space-camera { opacity: .86; }
+.planetary-scene[data-scene-mode='reading'] .orbital-space[data-flight] .orbital-space-camera { opacity: 1; }
+.orbital-space-camera, .orbital-space-departure, .orbital-space-streaks { position: absolute; inset: 0; }
+.orbital-space-camera { z-index: 1; }
+.orbital-space-departure { opacity: 0; background: inherit; }
+.orbital-space-streaks {
+  z-index: 2;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse 9% .6px at 20% 13%, #87b5e6, transparent),
+    radial-gradient(ellipse 10% 1px at 67% 19%, #eef4ff, transparent),
+    radial-gradient(ellipse 5% .7px at 43% 31%, #b1d5f0, transparent),
+    radial-gradient(ellipse 8% .9px at 83% 42%, #b1d5f0, transparent),
+    radial-gradient(ellipse 12% 1px at 50% 54%, #94afd8, transparent),
+    radial-gradient(ellipse 7% .8px at 28% 69%, #deeaff, transparent),
+    radial-gradient(ellipse 9% .9px at 72% 80%, #eaf0ff, transparent),
+    radial-gradient(ellipse 4% .7px at 35% 88%, #b1d5f0, transparent);
+}
+.orbital-space-view { width: 100%; height: 100%; }
+.planetary-viewport { position: relative; }
+.planetary-hit-map { position: absolute; inset: 0; pointer-events: none; }
+.planetary-hit-map a { pointer-events: auto; }
+.planetary-hit-map circle { fill: transparent; stroke: transparent; stroke-width: 1.25; }
+.planetary-hit-map a:focus-visible circle { stroke: #ecf4ff; }
+.planetary-viewport:has([data-flight]) .planetary-hit-map a { pointer-events: none; }
+
+.planetary-destinations {
+  display: grid;
+  grid-template-columns: 70px minmax(0, 1fr);
+  align-items: start;
+  gap: 4px 14px;
+  padding: 5px clamp(14px, 2.3vw, 25px);
+}
+.planetary-destinations + .planetary-destinations { border-top: 1px solid var(--workspace-border); }
+.planetary-destinations > span {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--orbit-muted);
+}
+.planetary-destinations ul {
+  display: flex;
+  gap: 4px 10px;
+  flex-wrap: wrap;
+  max-height: 163px;
+  overflow: auto;
+  list-style: none;
+  margin: 0;
+  padding: 2px;
+}
+.planetary-destinations li { min-width: 0; max-width: 100%; }
+.planetary-destinations a {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 6px 10px;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--orbit-ink);
+  font-size: 13px;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.planetary-destinations a[aria-current='location'] { border-color: var(--workspace-border); background: var(--workspace-raised); }
+.planetary-destinations a:focus-visible { outline-offset: -2px; }
+.planetary-marker {
+  width: 11px;
+  height: 11px;
+  flex: 0 0 auto;
+  border: 1px solid #455265;
+  border-radius: 50%;
+  box-shadow: inset -2px -2px 3px #18213685;
+}
+
+.comet-scene {
+  height: clamp(132px, 15vw, 220px);
+  margin-bottom: clamp(16px, 2.8vw, 32px);
+  border: 1px solid var(--workspace-border);
+  border-radius: 12px;
+  background: radial-gradient(ellipse at 55% 46%, #182d42, #101825 53%, #090e16 89%);
+}
+.comet-sky-track {
+  position: absolute;
+  inset: 0 auto 0 0;
+  display: flex;
+  width: 200%;
+  animation: comet-sky-pass 33s linear infinite;
+  animation-play-state: paused;
+}
+.comet-sky-track svg { width: 50%; height: 100%; flex: 0 0 50%; }
+.comet-scene[data-running='true'] .comet-sky-track { animation-play-state: running; }
+.comet-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #090e16 0, transparent 17%, transparent 83%, #090e16 100%);
+}
+.comet-nucleus { position: absolute; inset: 0; }
+@keyframes comet-sky-pass { to { transform: translateX(-50%); } }
+
+.orbital-character-list {
+  align-content: start;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.orbital-character-record {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 62px;
+  padding: 8px 13px;
+  border: 1px solid var(--workspace-border, var(--orbit-control-line));
+  border-radius: 9px;
+  background: var(--workspace-paper, var(--orbit-node-bg));
+  color: var(--orbit-ink);
+  text-align: left;
+}
+.orbital-record-portrait {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--workspace-raised, var(--orbit-node-bg));
+  color: var(--workspace-label, var(--orbit-node-accent));
+}
+.orbital-record-portrait img { width: 100%; height: 100%; object-fit: cover; }
+.orbital-record-copy { display: grid; gap: 2px; min-width: 0; overflow-wrap: anywhere; }
+.orbital-record-copy strong { font: 700 15px/1.35 var(--heading); }
+.orbital-record-copy > span { color: var(--orbit-muted); font-size: 13px; line-height: 1.35; }
+.orbital-character-record > svg { color: var(--workspace-label, var(--orbit-node-accent)); }
+
+@media (hover: hover) and (pointer: fine) {
+  .planetary-destinations a:hover { background: var(--workspace-raised); text-decoration: underline; text-underline-offset: 3px; }
+  .planetary-hit-map a:hover circle { stroke: #b8d4ea; }
+  .orbital-character-record:hover { background: var(--workspace-raised, var(--orbit-node-bg)); }
+}
+
+@media (max-width: 560px) {
+  .planetary-scene-heading { padding: 12px 13px 9px; }
+  .planetary-scene-actions .text-button { font-size: 13px; }
+  .planetary-destinations { grid-template-columns: minmax(0, 1fr); padding: 4px 9px; gap: 0; }
+  .planetary-destinations > span { min-height: 25px; padding: 0 5px; }
+  .planetary-destinations ul { gap: 2px 1px; max-height: 142px; }
+  .planetary-sky { height: 178px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .comet-sky-track { animation: none; }
+}

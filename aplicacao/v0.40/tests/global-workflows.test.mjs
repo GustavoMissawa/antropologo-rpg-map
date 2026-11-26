@@ -6,7 +6,7 @@ test('Verificar a mesma conta por foco não descarta uma sessão que estava send
  sessionStorage.clear();const native=globalThis.fetch,expiresAt=Date.now()+7200000;let ui,resolveSave;
  const stableFetch=(path,options)=>String(path)==='/api/auth/session'?Promise.resolve({ok:true,status:200,json:async()=>({user:{handle:'teste_simulado',expiresAt}})}):native(path,options);globalThis.fetch=stableFetch;
  try{
-  ui=await mountPlatform();await openOrbitalArea(ui.host,'Agenda','Abrir Agenda');await clickButton(ui.host,'Nova sessão');
+  ui=await mountPlatform();await openOrbitalArea(ui.host,'Agenda');await clickButton(ui.host,'Nova sessão');
   globalThis.fetch=async(path,options)=>String(path)==='/api/sessions'&&options?.method==='POST'?new Promise(resolve=>{resolveSave=resolve;}):stableFetch(path,options);
   const form=ui.host.querySelector('.player-dialog[open] form');form.querySelector('[name=title]').value='Sessão durante foco';
   await act(async()=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
@@ -20,7 +20,7 @@ test('Uma resposta antiga da Agenda não entra na conta que foi trocada durante 
  sessionStorage.clear();const native=globalThis.fetch,expiresAt=Date.now()+7200000;let ui,resolveSave,handle='conta_inicial';
  globalThis.fetch=(path,options)=>String(path)==='/api/auth/session'?Promise.resolve({ok:true,status:200,json:async()=>({user:{handle,expiresAt}})}):String(path)==='/api/sessions'&&options?.method==='POST'?new Promise(resolve=>{resolveSave=resolve;}):native(path,options);
  try{
-  ui=await mountPlatform();await openOrbitalArea(ui.host,'Agenda','Abrir Agenda');await clickButton(ui.host,'Nova sessão');
+  ui=await mountPlatform();await openOrbitalArea(ui.host,'Agenda');await clickButton(ui.host,'Nova sessão');
   const form=ui.host.querySelector('.player-dialog[open] form'),date=form.querySelector('[name=date]').value;form.querySelector('[name=title]').value='Sessão da primeira conta';
   await act(async()=>form.dispatchEvent(new Event('submit',{bubbles:true,cancelable:true})));
   handle='outra_conta';await act(async()=>window.dispatchEvent(new Event('focus')));
@@ -32,7 +32,7 @@ test('Uma resposta antiga da Agenda não entra na conta que foi trocada durante 
 test('A última ficha escolhida permanece aberta quando uma importação anterior termina atrasada',async()=>{
  sessionStorage.clear();const nativeResize=globalThis.ResizeObserver;globalThis.ResizeObserver=class{observe(){}disconnect(){}};const ui=await mountPlatform();let resolveFirst;
  try{
-  await openOrbitalArea(ui.host,'Ficha','Ver todas as fichas');const input=ui.host.querySelector('input[aria-label="Selecionar arquivo de ficha"]'),first=makeSheet('Primeira importação atrasada',''),last=makeSheet('Última ficha escolhida',''),bytes=new TextEncoder().encode(JSON.stringify(first));
+  await openOrbitalArea(ui.host,'Ficha');const input=ui.host.querySelector('input[aria-label="Selecionar arquivo de ficha"]'),first=makeSheet('Primeira importação atrasada',''),last=makeSheet('Última ficha escolhida',''),bytes=new TextEncoder().encode(JSON.stringify(first));
   const slow={name:'primeira.json',size:bytes.length,arrayBuffer:()=>new Promise(resolve=>{resolveFirst=()=>resolve(bytes.buffer);})},fast=new File([JSON.stringify(last)],'ultima.json',{type:'application/json'});
   for(const file of [slow,fast]){Object.defineProperty(input,'files',{configurable:true,value:[file]});await act(async()=>input.dispatchEvent(new Event('change',{bubbles:true})));}
   await waitFor(()=>ui.host.textContent.includes(last.name));await act(async()=>resolveFirst());
@@ -54,7 +54,7 @@ test('A última importação de regras prevalece e uma falha anterior não apaga
 test('Abrir uma ficha não depende da disponibilidade de ResizeObserver',async()=>{
  sessionStorage.clear();const nativeResize=globalThis.ResizeObserver;delete globalThis.ResizeObserver;const ui=await mountPlatform();
  try{
-  await openOrbitalArea(ui.host,'Ficha','Ver todas as fichas');const input=ui.host.querySelector('input[aria-label="Selecionar arquivo de ficha"]'),sheet=makeSheet('Ficha sem observador','');
+  await openOrbitalArea(ui.host,'Ficha');const input=ui.host.querySelector('input[aria-label="Selecionar arquivo de ficha"]'),sheet=makeSheet('Ficha sem observador','');
   Object.defineProperty(input,'files',{configurable:true,value:[new File([JSON.stringify(sheet)],'sem-observador.json',{type:'application/json'})]});
   await act(async()=>input.dispatchEvent(new Event('change',{bubbles:true})));await waitFor(()=>ui.host.querySelector('.sheet-map'));
   assert(ui.host.querySelector('.map-character-name')?.textContent.includes(sheet.name));

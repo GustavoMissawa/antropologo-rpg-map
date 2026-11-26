@@ -352,15 +352,17 @@ test('O máximo ativa o crítico e a saída antecipada limpa o efeito', async t 
 test('Cada um dos seis dados dispara o evento somente na face máxima', async t => {
   const ui = await setup(t);
   const art = ui.host.querySelector('.orbital-art');
-  const menu = ui.host.querySelector('.global-top-nav');
-  const sections = ['Sistema', 'Ficha', 'PDFs', 'Agenda'];
+  const destinations = ['sistemas', 'fichas', 'pdfs'];
   const random = t.mock.method(Math, 'random', () => .99);
   for (const [i, kind] of [20, 4, 6, 8, 10, 12].entries()) {
     const previous = Number(ui.model.dataset.die);
     if (previous !== kind) {
       const choices = ORBITAL_DICE.filter(value => value !== previous);
       random.mock.mockImplementation(() => (choices.indexOf(kind) + .5) / choices.length);
-      await clickButton(menu, sections[(i - 1) % sections.length]);
+      const destination=destinations[(i - 1) % destinations.length];
+      const link=ui.host.querySelector(`.orbital-destination-switcher a[href="#inicio/${destination}"]`);
+      if (link) await act(async () => link.click());
+      else await clickButton(ui.host.querySelector('.orbital-navigation'), 'Sistemas');
       await waitFor(() => art.dataset.cameraMoving === 'false' && ui.model.dataset.die === String(kind));
     }
     random.mock.mockImplementation(() => .999);
