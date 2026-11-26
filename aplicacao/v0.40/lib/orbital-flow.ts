@@ -1,10 +1,15 @@
 const TAU = Math.PI * 2;
-const bandCount = 11;
 const firstRadius = .245;
 const bandWidth = .071;
 const feather = .022;
+const bands = Array.from({length: 11}, (_, index) => {
+  const inner = firstRadius + index * bandWidth;
+  const outer = inner + bandWidth;
+  const radius = (inner + outer) / 2;
+  return {inner, outer, radius, velocity: .62 * Math.pow(.3 / radius, 1.35)};
+});
 export const EXPANDED_ORBITAL_SPEED = .18;
-export const ORBITAL_MARKER_BAND = 7;
+export const ORBITAL_DISK_SCALE = .481;
 
 export type OrbitalFlowClock = {seconds: number; speed: number};
 
@@ -18,16 +23,16 @@ export function advanceOrbitalFlow(clock: OrbitalFlowClock, seconds: number, tar
 
 /** Radii use the same unit disk as the procedural filament textures. */
 export function orbitalFlowBand(index: number) {
-  const inner = firstRadius + index * bandWidth;
-  const outer = inner + bandWidth;
-  const radius = (inner + outer) / 2;
-  return {inner, outer, radius, velocity: .62 * Math.pow(.3 / radius, 1.35)};
+  return bands[index];
+}
+
+export function orbitalFlowAngle(index: number, seconds: number) {
+  return ((-seconds * bands[index].velocity) % TAU + TAU) % TAU;
 }
 
 export function orbitalFlowPose(index: number, seconds: number) {
-  const band = orbitalFlowBand(index);
   return {
-    angle: ((-seconds * band.velocity) % TAU + TAU) % TAU,
+    angle: orbitalFlowAngle(index, seconds),
     intensity: .96 + .04 * Math.sin(seconds * .53 + index * 1.71),
   };
 }
@@ -41,19 +46,18 @@ export function prepareOrbitalFlow(
   const context = output.getContext('2d');
   if (!context) return null;
   output.width = output.height = Math.min(stream.width, 768);
-  const sourceRadius = stream.width * .481;
-  const radius = output.width * .481;
-  const bands: HTMLCanvasElement[] = [];
+  const sourceRadius = stream.width * ORBITAL_DISK_SCALE;
+  const radius = output.width * ORBITAL_DISK_SCALE;
+  const textures: HTMLCanvasElement[] = [];
 
-  for (let index = 0; index < bandCount; index++) {
-    const {inner, outer} = orbitalFlowBand(index);
+  for (const {inner, outer} of bands) {
     const extent = (outer + feather) * radius;
     const texture = document.createElement('canvas');
     texture.width = texture.height = Math.ceil(extent * 2);
     const layer = texture.getContext('2d');
     if (!layer) {
       texture.width = texture.height = 0;
-      for (const allocated of bands) allocated.width = allocated.height = 0;
+      for (const allocated of textures) allocated.width = allocated.height = 0;
       return null;
     }
     const sourceExtent = (outer + feather) * sourceRadius;
@@ -73,7 +77,7 @@ export function prepareOrbitalFlow(
     ] as const) mask.addColorStop(stop, color);
     layer.fillStyle = mask;
     layer.fillRect(0, 0, texture.width, texture.height);
-    bands.push(texture);
+    textures.push(texture);
   }
 
   function paint(seconds: number) {
@@ -81,9 +85,9 @@ export function prepareOrbitalFlow(
     context.clearRect(0, 0, output.width, output.height);
     context.save();
     context.translate(output.width / 2, output.height / 2);
-    for (let i = 0; i < bands.length; i++) {
+    for (let i = 0; i < textures.length; i++) {
       const {angle, intensity} = orbitalFlowPose(i, seconds);
-      const texture = bands[i];
+      const texture = textures[i];
       context.save();
       context.rotate(angle);
       context.globalAlpha = intensity;
@@ -94,7 +98,7 @@ export function prepareOrbitalFlow(
   }
 
   function dispose() {
-    for (const texture of bands) texture.width = texture.height = 0;
+    for (const texture of textures) texture.width = texture.height = 0;
   }
 
   return {paint, dispose};

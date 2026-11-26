@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { runInNewContext } from 'node:vm';
 import { appearanceBootstrap, applyOrbitalColors, defaultAppearance, palettes, parseAppearance, recommendedSecondary, secondaryPalettes } from '../lib/appearance.ts';
 import { paintOrbitalLight } from '../lib/orbital-light.ts';
+import { createOrbitalDisk } from '../lib/orbital-disk.ts';
 import { SITE_RELEASE } from '../lib/site-version.ts';
 const luminance = hex => {
  const rgb = hex.slice(1).match(/../g).map(v => parseInt(v,16)/255).map(v=>v<=.04045?v/12.92:((v+.055)/1.055)**2.4);
@@ -81,17 +82,18 @@ test('As cores e o modo recolorem os filamentos preservando sua geometria', () =
  }
  const originalStream = texture(), originalDust = texture();
  const changedStream = texture(), changedDust = texture();
- paintOrbitalLight(originalStream, originalDust);
- paintOrbitalLight(changedStream, changedDust, {primary:'#29afff', secondary:'#f2c780'});
+ const disk = createOrbitalDisk('spiral', 401738);
+ paintOrbitalLight(originalStream, originalDust, disk);
+ paintOrbitalLight(changedStream, changedDust, disk, {primary:'#29afff', secondary:'#f2c780'});
  assert.ok(originalStream.pigments.has('#ffc66b'));
  assert.deepEqual(originalStream.pigments, changedStream.pigments);
  assert.notDeepEqual(originalDust.pigments, changedDust.pigments);
  const recolored = texture();
- paintOrbitalLight(recolored, texture(), {primary:'#29afff', secondary:'#8e4ee8'});
+ paintOrbitalLight(recolored, texture(), disk, {primary:'#29afff', secondary:'#8e4ee8'});
  assert.notDeepEqual(originalStream.pigments, recolored.pigments);
  assert.deepEqual(recolored.strokes, originalStream.strokes);
  const daylight = texture();
- paintOrbitalLight(daylight, texture(), {primary:'#29afff', secondary:'#8e4ee8'}, 'light');
+ paintOrbitalLight(daylight, texture(), disk, {primary:'#29afff', secondary:'#8e4ee8'}, 'light');
  assert.notDeepEqual(daylight.pigments, recolored.pigments);
  assert.deepEqual(daylight.strokes, recolored.strokes);
  assert.deepEqual(originalStream.exposures, recolored.exposures);

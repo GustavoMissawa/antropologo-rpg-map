@@ -5,7 +5,8 @@ import {ArrowUpRight, CalendarDays, CirclePlus, FileText, Layers3, UserRound} fr
 import {countRules, type Rulebook, type Sheet, type PDF} from '../lib/model';
 import {OrbitalArt} from './orbital-art';
 import {OrbitalBackdrop} from './orbital-backdrop';
-import {advanceOrbitalMarker, orbitalConnection, orbitalMarkerStart} from '../lib/orbital-connection';
+import {chooseOrbitalAnchor, orbitalConnection} from '../lib/orbital-connection';
+import {pageOrbitalScene, type OrbitalAnchor} from '../lib/orbital-disk';
 import {orbitalHref, type OrbitalDestination, type OrbitalNavigation} from '../lib/orbital-navigation';
 import type {FirstStepsCue, FirstStepsZone} from '../lib/orbital-first-steps';
 import {useOrbitalNavigation} from './use-orbital-navigation';
@@ -36,6 +37,8 @@ const DESTINATIONS = [
 
 type Destination = OrbitalDestination;
 type Point = {x: number; y: number};
+type SceneLayout = {center: Point; width: number; targets: Partial<Record<Destination, Point>>};
+type Beam = {id: Destination; activation: number; anchor: OrbitalAnchor};
 type NodeInteraction = {
   pointer: Destination | null;
   focus: Destination | null;
@@ -61,35 +64,31 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
   onDiskReturn: () => void;
 }) {
   const scene = useRef<HTMLDivElement>(null);
-  const [layout, setLayout] = useState<{center: Point; width: number; targets: Partial<Record<Destination, Point>>}>();
-  const [beam, setBeam] = useState<(ReturnType<typeof orbitalConnection> & {id: Destination; activation: number}) | null>(null);
+  const [layout, setLayout] = useState<SceneLayout>();
+  const geometry = useRef<SceneLayout>(undefined);
+  const [beam, setBeam] = useState<Beam | null>(null);
   const [beamVisible, setBeamVisible] = useState(false);
   const track = useRef<SVGPathElement>(null);
   const pulse = useRef<SVGPathElement>(null);
   const marker = useRef<SVGGElement>(null);
-  const orbit = useRef<{angle: number; seconds: number} | null>(null);
-  const diskSeconds = useRef(0);
-  const tether = useRef<{center: Point; width: number; target: Point; activation: number} | null>(null);
-  const activation = useRef<{id: Destination | null; count: number; displayed: Destination | null}>({id: null, count: 0, displayed: null});
+  const tether = useRef<{center: Point; width: number; target: Point; beam: Beam} | null>(null);
+  const activation = useRef({count: 0, visible: false, fadeUntil: 0});
   const [interaction, setInteraction] = useState<NodeInteraction>({pointer: null, focus: null, last: null});
   const selected = destination;
   const active = selected ?? (phase === 'exploration' ? activeNode(interaction) : null);
   const pointerPreview = active !== null && selected === null && interaction.pointer === active;
-  const movingMarker = pointerPreview || selected !== null;
+  const layoutReady = !!layout;
 
   useLayoutEffect(() => {
     if (phase === 'returning') setInteraction({pointer: null, focus: null, last: null});
   }, [phase]);
 
   const drawOrbit = useCallback((seconds: number) => {
-    diskSeconds.current = seconds;
-    const motion = orbit.current;
-    if (!motion) return;
-    motion.angle = advanceOrbitalMarker(motion.angle, Math.max(0, seconds - motion.seconds));
-    motion.seconds = seconds;
     const link = tether.current;
     if (!link || !marker.current) return;
-    const {origin, path, depth} = orbitalConnection(link.center, link.target, link.width, link.activation, motion.angle);
+    if (!activation.current.visible && performance.now() >= activation.current.fadeUntil) return;
+    const {beam, center, target, width} = link;
+    const {origin, path, depth} = orbitalConnection(center, target, width, beam.activation, beam.anchor, seconds);
     track.current?.setAttribute('d', path);
     pulse.current?.setAttribute('d', path);
     marker.current.setAttribute('transform', `translate(${origin.x} ${origin.y})`);
@@ -128,7 +127,9 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
           y: (target.top - rootRect.top + target.height / 2) / scale,
         };
       }
-      setLayout({center, width: artRect.width / scale, targets});
+      const next = {center, width: artRect.width / scale, targets};
+      geometry.current = next;
+      setLayout(next);
     };
     updateGeometry();
     const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(updateGeometry);
@@ -143,43 +144,37 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
 
   useLayoutEffect(() => {
     const state = activation.current;
-    if (!movingMarker) orbit.current = null;
-    const target = active && layout?.targets[active];
-    if (!active || !layout || !target) {
-      state.id = null;
+    if (state.visible) {
+      state.visible = false;
+      state.fadeUntil = performance.now() + 120;
       setBeamVisible(false);
-      return;
     }
-    const fresh = state.id !== active;
-    if (fresh) {
-      state.id = active;
-      state.count++;
-    }
-    if (movingMarker && !orbit.current) {
-      orbit.current = {angle: orbitalMarkerStart(layout.center, target, state.count), seconds: diskSeconds.current};
-    }
+    if (!active || !layoutReady) return;
+
     const show = () => {
-      state.displayed = active;
-      setBeam({
-        ...orbitalConnection(layout.center, target, layout.width, state.count, orbit.current?.angle),
-        id: active,
-        activation: state.count,
-      });
+      const current = geometry.current;
+      const target = current?.targets[active];
+      if (!current || !target) return;
+      const {disk, clock} = pageOrbitalScene();
+      const anchor = chooseOrbitalAnchor(disk.anchors, current.center, target, current.width, clock.seconds);
+      state.visible = true;
+      setBeam({id: active, activation: ++state.count, anchor});
       setBeamVisible(true);
     };
-    if ((!fresh && state.displayed === active) || !state.displayed || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const remaining = state.fadeUntil - performance.now();
+    if (remaining <= 0 || matchMedia('(prefers-reduced-motion: reduce)').matches) {
       show();
       return;
     }
-    setBeamVisible(false);
-    const timer = setTimeout(show, 120);
+    // Finish fading the old star and wire before picking a source for the new destination.
+    const timer = setTimeout(show, remaining);
     return () => clearTimeout(timer);
-  }, [active, layout, movingMarker]);
+  }, [active, layoutReady]);
 
   useLayoutEffect(() => {
     const target = beam && layout?.targets[beam.id];
-    tether.current = beam && layout && target ? {center: layout.center, width: layout.width, target, activation: beam.activation} : null;
-    drawOrbit(diskSeconds.current);
+    tether.current = beam && layout && target ? {center: layout.center, width: layout.width, target, beam} : null;
+    if (tether.current) drawOrbit(pageOrbitalScene().clock.seconds);
   }, [beam, layout, drawOrbit]);
 
   const arcStart = orbitPoint(-1.50);
@@ -226,10 +221,10 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
         {beam && (
           <g key={beam.activation} className="orbital-connection-shape">
             <g mask={layout ? 'url(#orbit-wire-mask)' : undefined}>
-              <path ref={track} d={beam.path} className="orbital-connection-track" pathLength="1" />
-              <path ref={pulse} d={beam.path} className="orbital-connection-pulse" pathLength="1" />
+              <path ref={track} className="orbital-connection-track" pathLength="1" />
+              <path ref={pulse} className="orbital-connection-pulse" pathLength="1" />
             </g>
-            <g ref={marker} className="orbital-source-star" opacity={movingMarker ? .77 + .23 * beam.depth : 1} transform={`translate(${beam.origin.x} ${beam.origin.y})`}>
+            <g ref={marker} className="orbital-source-star">
               <circle r="12" fill="url(#orbit-source-halo)" className="orbital-source-halo" />
               <g className="orbital-source-flare">
                 <circle r="3" />

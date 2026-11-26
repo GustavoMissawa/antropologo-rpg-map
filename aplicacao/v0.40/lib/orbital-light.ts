@@ -1,41 +1,24 @@
 import {orbitalPigment, originalOrbitalColors, type OrbitalColors} from './appearance-colors.ts';
 import type { AppearanceMode } from './appearance.ts';
-import type { OrbitalDiskVariant } from './orbital-disk.ts';
+import {orbitalArmAngle, orbitalArmRadius, orbitalDensity, orbitalRandom, orbitalRingLight, type OrbitalDisk} from './orbital-disk.ts';
+import {ORBITAL_DISK_SCALE} from './orbital-flow.ts';
 
 const TAU = Math.PI * 2;
-
 type LightContext = CanvasRenderingContext2D | OffscreenCanvasRenderingContext2D;
 type Tint = (color: string) => string;
+type Spiral = Exclude<OrbitalDisk['profile'], {variant: 'rings'}>;
+type Arm = Spiral['arms'][number];
 
-function randomStream(seed: number) {
-  let state = seed >>> 0;
-  return () => {
-    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-}
+type Filament = {phase: number; drift: number; ripple: number};
 
-type Filament = {
-  phase: number;
-  drift: number;
-  ripple: number;
-};
-
-const spiralProfiles = {
-  spiral: {arms: [0.26, 2.64, 4.68], winding: 8.7, dispersion: 1, outerLight: 1, innerLight: 1, glowAngle: 0},
-  'twin-arms': {arms: [0.61, 0.61 + Math.PI], winding: 4.7, dispersion: 0.74, outerLight: 1.36, innerLight: 0.58, glowAngle: 0.64},
-  crescent: {arms: [1.18], winding: 5.8, dispersion: 1.38, outerLight: 0.54, innerLight: 1.12, glowAngle: -0.72},
-};
-
-function traceFilament(ctx: LightContext, strand: Filament, winding: number, start: number, end: number) {
-  const segments = Math.max(6, Math.ceil((end - start) * 90));
+function traceFilament(ctx: LightContext, arm: Arm, strand: Filament, start: number, end: number) {
+  const segments = Math.max(6, Math.ceil((end - start) * 84));
   ctx.beginPath();
   for (let step = 0; step <= segments; step++) {
     const progress = start + (end - start) * step / segments;
-    const angle = strand.phase + progress * winding;
+    const angle = orbitalArmAngle(arm, progress) + strand.phase;
     const radialDrift = strand.drift * (0.52 + 0.48 * Math.sin(progress * 2.2));
-    const radius = 0.278 + 0.66 * Math.pow(progress, 1.24)
-      + radialDrift + strand.ripple * Math.sin(angle * 2.4 + strand.phase);
+    const radius = orbitalArmRadius(progress) + radialDrift + strand.ripple * Math.sin(angle * 2.4 + arm.angle);
     const x = Math.cos(angle) * radius;
     const y = Math.sin(angle) * radius;
     if (step) ctx.lineTo(x, y);
@@ -44,38 +27,42 @@ function traceFilament(ctx: LightContext, strand: Filament, winding: number, sta
   ctx.stroke();
 }
 
-function paintAccretionGlow(ctx: LightContext, random: () => number, tint: Tint, exposure: number, offset: number) {
+function paintAccretionGlow(ctx: LightContext, random: () => number, tint: Tint, exposure: number, glow: Spiral['glow'], density: Float32Array) {
   const hot = tint('#ffc66b');
   const whiteHot = tint('#fff5cb');
-  // A hotter inner crescent gives the spiral a bright side and a shadowed side.
-  for (let i = 0; i < 575; i++) {
-    const radius = 0.311 + Math.pow(random(), 2.15) * 0.34;
+  for (let i = 0; i < 540; i++) {
+    const radius = glow.inner + Math.pow(random(), 2.15) * glow.width;
     const turn = random();
-    const angle = 1.60 + turn * 2.03 + offset;
+    const angle = glow.angle + (turn - .5) * glow.span;
     const length = 0.04 + Math.pow(random(), 2.30) * 0.52;
     const energy = Math.pow(Math.sin(turn * Math.PI), 1.10) * (1.24 - radius);
+    const local = orbitalDensity(density, radius, angle);
     ctx.beginPath();
-    ctx.ellipse(0, 0, radius, radius * (0.88 + 0.09 * random()), -0.18, angle, angle + length);
+    ctx.ellipse(0, 0, radius, radius * (.94 + .05 * random()), -.08, angle, angle + length);
     ctx.strokeStyle = i % 4 ? hot : whiteHot;
-    ctx.lineWidth = 0.00065 + Math.pow(random(), 3) * 0.004;
-    ctx.globalAlpha = Math.min(1, (0.25 + 0.69 * random()) * energy * exposure);
+    ctx.lineWidth = 0.00065 + Math.pow(random(), 3) * 0.004 * (glow.width / .34);
+    ctx.globalAlpha = Math.min(1, (.25 + .69 * random()) * energy * exposure * (.76 + .30 * local));
     ctx.stroke();
   }
 
   const flareColors = ['#ffedb2dc', '#ffe19fc3', '#faaa4473', '#f0953325', '#dc771700'].map(tint);
-  for (const [angle, radius, size, strength] of [[1.96, 0.37, 0.11, 0.74], [2.52, 0.35, 0.14, 1], [2.82, 0.36, 0.16, 1], [3.19, 0.37, 0.13, 0.88], [3.57, 0.41, 0.10, 0.62], [5.45, 0.69, 0.064, 0.78]]) {
-    const x = Math.cos(angle + offset) * radius;
-    const y = Math.sin(angle + offset) * radius;
+  for (const offset of [-.36, -.19, -.03, .15, .33]) {
+    const angle = glow.angle + (offset + .025 * (random() - .5)) * glow.span;
+    const radius = glow.inner + (.12 + random() * .13) * glow.width;
+    const size = .066 + .064 * random();
+    const local = orbitalDensity(density, radius, angle);
+    const x = Math.cos(angle) * radius;
+    const y = Math.sin(angle) * radius;
     const flare = ctx.createRadialGradient(x, y, 0, x, y, size);
-    [0, 0.14, 0.35, 0.64, 1].forEach((stop, i) => flare.addColorStop(stop, flareColors[i]));
-    ctx.globalAlpha = Math.min(1, strength * exposure);
+    [0, .14, .35, .64, 1].forEach((stop, i) => flare.addColorStop(stop, flareColors[i]));
+    ctx.globalAlpha = Math.min(1, (.23 + .72 * local) * exposure);
     ctx.fillStyle = flare;
     ctx.fillRect(x - size, y - size, size * 2, size * 2);
   }
 }
 
-function paintStream(ctx: LightContext, random: () => number, tint: Tint, exposure: number, profile: typeof spiralProfiles.spiral) {
-  const {arms, winding, dispersion, outerLight, innerLight, glowAngle} = profile;
+function paintStream(ctx: LightContext, random: () => number, tint: Tint, exposure: number, profile: Spiral, density: Float32Array) {
+  const {arms, outerLight, glow} = profile;
   const streamExposure = exposure * outerLight;
   const filaments = ['#ffac4c', '#ffd078', '#ffe3a5', '#fff2cb'].map(tint);
   const base = tint('#f39238');
@@ -83,131 +70,140 @@ function paintStream(ctx: LightContext, random: () => number, tint: Tint, exposu
   const bright = tint('#ffe5a6');
   const peak = tint('#fff8de');
 
-  // Seed the diffuse body and hot strands for the radial flow compositor.
-  for (const phase of arms) {
-    const strand = {phase, drift: 0, ripple: 0.012};
+  for (const arm of arms) {
     ctx.strokeStyle = base;
-    ctx.globalAlpha = 0.085 * streamExposure;
-    ctx.lineWidth = 0.029;
+    ctx.globalAlpha = .085 * streamExposure * arm.strength;
+    ctx.lineWidth = .025 + .012 * arm.width;
     ctx.shadowColor = shadow;
     ctx.shadowBlur = 28 * ctx.canvas.width / 1024;
-    traceFilament(ctx, strand, winding, 0.04, 0.84);
+    traceFilament(ctx, arm, {phase: 0, drift: 0, ripple: .012}, .04, arm.reach - .10);
     ctx.shadowBlur = 0;
   }
-  for (let i = 0; i < 960; i++) {
-    const phase = arms[i % arms.length] + (random() - 0.5) * (i % 5 ? 0.49 : 1.8) * dispersion;
-    const start = Math.pow(random(), 1.17) * 0.95;
-    const end = Math.min(0.99, start + 0.025 + Math.pow(random(), 1.85) * 0.32);
+  for (let i = 0; i < 920; i++) {
+    const arm = arms[i % arms.length];
+    const phase = (random() - .5) * arm.width * (i % 5 ? 1.33 : 4.5);
+    const start = Math.pow(random(), 1.17) * (arm.reach - .02);
+    const end = Math.min(arm.reach, start + .025 + Math.pow(random(), 1.85) * .32);
     const distance = Math.pow(start, 1.6);
-    const spread = 0.037 + distance * 0.075;
-    const middleAngle = phase + (start + end) * winding / 2;
-    const warmth = (0.65 + 0.35 * Math.cos(middleAngle - 2.7)) * (1 - distance * 0.57);
+    const spread = (.037 + distance * .075) * (.76 + arm.width * .63);
+    const mid = (start + end) / 2;
+    const angle = orbitalArmAngle(arm, mid) + phase;
+    const local = orbitalDensity(density, orbitalArmRadius(mid), angle);
+    const light = (.61 + .46 * local) * (1 - distance * .55);
     ctx.strokeStyle = filaments[Math.floor(random() * filaments.length)];
-    ctx.globalAlpha = Math.min(1, (0.075 + random() * 0.37) * warmth * streamExposure * (1 + .18 * Math.sin(start * Math.PI)));
-    ctx.lineWidth = 0.00055 + Math.pow(random(), 2.15) * 0.0021;
-    traceFilament(ctx, {
+    ctx.globalAlpha = Math.min(1, (.075 + random() * .41) * light * streamExposure * arm.strength);
+    ctx.lineWidth = .00055 + Math.pow(random(), 2.15) * .0021;
+    traceFilament(ctx, arm, {
       phase,
-      drift: (random() - 0.5) * spread * 2,
-      ripple: (random() - 0.5) * 0.034,
-    }, winding, start, end);
+      drift: (random() - .5) * spread * 2,
+      ripple: (random() - .5) * .034,
+    }, start, end);
   }
   for (let i = 0; i < 64; i++) {
-    const start = 0.025 + Math.pow(random(), 1.35) * 0.85;
+    const arm = arms[i % arms.length];
+    const start = .025 + Math.pow(random(), 1.35) * (arm.reach - .10);
     ctx.strokeStyle = i % 3 ? bright : peak;
-    ctx.globalAlpha = Math.min(1, (0.28 + 0.42 * random()) * streamExposure);
-    ctx.lineWidth = 0.0008 + random() * 0.0013;
-    traceFilament(ctx, {
-      phase: arms[i % arms.length] + (random() - 0.5) * 0.14,
-      drift: (random() - 0.5) * 0.046,
-      ripple: 0.012,
-    }, winding, start, Math.min(0.93, start + 0.013 + random() * 0.095));
+    ctx.globalAlpha = Math.min(1, (.28 + .42 * random()) * streamExposure * arm.strength);
+    ctx.lineWidth = .0008 + random() * .0013;
+    traceFilament(ctx, arm, {
+      phase: (random() - .5) * .14,
+      drift: (random() - .5) * .046,
+      ripple: .012,
+    }, start, Math.min(arm.reach, start + .013 + random() * .095));
   }
 
-  const heat = ctx.createRadialGradient(0, 0, 0.24, 0, 0, 0.94);
+  const heat = ctx.createRadialGradient(0, 0, .24, 0, 0, .94);
   heat.addColorStop(0, 'transparent');
-  heat.addColorStop(0.28, tint('#ec9a4022'));
-  heat.addColorStop(0.69, tint('#c6792920'));
+  heat.addColorStop(.28, tint('#ec9a4022'));
+  heat.addColorStop(.69, tint('#c6792920'));
   heat.addColorStop(1, 'transparent');
   ctx.globalAlpha = 1;
   ctx.fillStyle = heat;
   ctx.fillRect(-1, -1, 2, 2);
-  paintAccretionGlow(ctx, random, tint, exposure * innerLight, glowAngle);
+  paintAccretionGlow(ctx, random, tint, exposure * glow.strength, glow, density);
 }
 
-function paintRings(ctx: LightContext, random: () => number, tint: Tint, exposure: number) {
+function paintRings(ctx: LightContext, random: () => number, tint: Tint, exposure: number, rings: Extract<OrbitalDisk['profile'], {variant: 'rings'}>['rings'], density: Float32Array) {
   const filament = tint('#ffc16c');
   const spark = tint('#fff2cb');
   const vapor = tint('#f0a04826');
-  // Keep open lanes between three belts of finely spaced, uneven arcs.
-  for (const [center, width, strength, phase] of [[.35, .055, 1, 2.5], [.55, .065, .76, 4.9], [.76, .08, .58, 1.4]]) {
+  for (const ring of rings) {
+    const {radius: center, width, strength} = ring;
     const halo = ctx.createRadialGradient(0, 0, center - width, 0, 0, center + width);
     halo.addColorStop(0, 'transparent');
     halo.addColorStop(.42, vapor);
     halo.addColorStop(.61, vapor);
     halo.addColorStop(1, 'transparent');
     ctx.fillStyle = halo;
-    ctx.globalAlpha = strength;
+    ctx.globalAlpha = Math.min(1, strength);
     ctx.fillRect(-1, -1, 2, 2);
-    for (let i = 0; i < 335; i++) {
+    const traces = Math.round(190 + 170 * strength);
+    for (let i = 0; i < traces; i++) {
       const radius = center + (random() + random() - 1) * width;
       const angle = random() * TAU;
-      const energy = .42 + .58 * Math.pow((1 + Math.cos(angle - phase)) / 2, 1.5);
+      const local = orbitalDensity(density, radius, angle);
+      const energy = orbitalRingLight(ring, angle) * (.71 + .60 * local);
       ctx.beginPath();
       ctx.ellipse(0, 0, radius, radius * (.985 + random() * .021), 0, angle,
         angle + .04 + Math.pow(random(), 1.7) * 1.05);
       ctx.strokeStyle = i % 5 ? filament : spark;
       ctx.lineWidth = .0006 + Math.pow(random(), 2.3) * .0022;
-      ctx.globalAlpha = Math.min(1, strength * energy * (.10 + random() * .37) * exposure);
+      ctx.globalAlpha = Math.min(1, strength * energy * (.10 + random() * .39) * exposure);
       ctx.stroke();
     }
   }
 }
 
-function paintDust(ctx: LightContext, random: () => number, primary: Tint, secondary: Tint) {
+function paintDust(ctx: LightContext, random: () => number, primary: Tint, secondary: Tint, disk: OrbitalDisk) {
   const sweep = secondary('#f6b66d');
   const sweepAccent = primary('#75bcad');
-  const particle = secondary('#ffcf8c');
-  const particleAccent = primary('#91dacc');
-  for (let i = 0; i < 226; i++) {
-    const radius = 0.31 + random() * 0.68;
-    const start = random() * TAU;
+  const starPigments = {
+    secondary: secondary('#ffcf8c'),
+    primary: primary('#91dacc'),
+    highlight: secondary('#ffebbc'),
+  };
+  for (let i = 0; i < 192; i++) {
+    const radius = .31 + random() * .68;
+    const angle = random() * TAU;
+    const local = orbitalDensity(disk.density, radius, angle);
     ctx.beginPath();
-    ctx.ellipse(0, 0, radius, radius * (0.95 + random() * 0.06),
-      random() * 0.15, start, start + 0.05 + random() * 1.04);
-    ctx.globalAlpha = (0.04 + random() * 0.30) * (1 - radius * 0.51);
-    ctx.lineWidth = 0.0006 + random() * 0.0014;
+    ctx.ellipse(0, 0, radius, radius * (.95 + random() * .06),
+      random() * .15, angle, angle + .05 + random() * 1.04);
+    ctx.globalAlpha = (.04 + random() * .30) * (1 - radius * .51) * (.63 + .67 * local);
+    ctx.lineWidth = .0006 + random() * .0014;
     ctx.strokeStyle = i % 8 ? sweep : sweepAccent;
     ctx.stroke();
   }
-  for (let i = 0; i < 1900; i++) {
-    const angle = random() * TAU;
-    const radius = 0.32 + Math.pow(random(), 0.7) * 0.68;
-    const x = radius * Math.cos(angle);
-    const y = radius * Math.sin(angle);
-    const point = 0.00085 + Math.pow(random(), 4) * 0.0046;
-    ctx.globalAlpha = (0.16 + 0.73 * random()) * (1 - radius * 0.40);
-    ctx.fillStyle = i % 3 ? particle : particleAccent;
-    ctx.fillRect(x, y, point, point);
+  for (const star of disk.stars) {
+    ctx.globalAlpha = star.opacity;
+    ctx.fillStyle = starPigments[star.tint];
+    ctx.fillRect(star.x - star.size / 2, star.y - star.size / 2, star.size, star.size);
+  }
+
+  ctx.fillStyle = secondary('#ffedb2');
+  for (const {angle, radius, density} of disk.anchors) {
+    const size = .0024 + .0016 * density;
+    ctx.globalAlpha = .37 + .48 * density;
+    ctx.fillRect(radius * Math.cos(angle) - size / 2, radius * Math.sin(angle) - size / 2, size, size);
   }
 }
 
-/** Render bounded sources once for the differential radial flow. */
+/** Paint the cached composition once for the existing differential flow. */
 export function paintOrbitalLight(
   stream: HTMLCanvasElement | OffscreenCanvas,
   dust: HTMLCanvasElement | OffscreenCanvas,
+  disk: OrbitalDisk,
   colors: OrbitalColors = originalOrbitalColors,
   mode: AppearanceMode = 'dark',
-  variant: OrbitalDiskVariant = 'spiral',
 ) {
   const light = stream.getContext('2d');
   const particles = dust.getContext('2d');
   if (!light || !particles) return false;
 
-  const random = randomStream(401738);
   for (const ctx of [light, particles]) {
     const {width, height} = ctx.canvas;
     ctx.clearRect(0, 0, width, height);
-    const radius = Math.min(width, height) * 0.481;
+    const radius = Math.min(width, height) * ORBITAL_DISK_SCALE;
     ctx.save();
     ctx.setTransform(radius, 0, 0, radius, width / 2, height / 2);
     ctx.globalCompositeOperation = mode === 'dark' ? 'lighter' : 'source-over';
@@ -216,20 +212,22 @@ export function paintOrbitalLight(
   const primary = (value: string) => orbitalPigment(value, originalOrbitalColors.primary, colors.primary, mode);
   const secondary = (value: string) => orbitalPigment(value, originalOrbitalColors.secondary, colors.secondary, mode);
   const exposure = mode === 'light' ? 1.58 : 1;
-  if (variant === 'rings') paintRings(light, random, secondary, exposure);
-  else paintStream(light, random, secondary, exposure, spiralProfiles[variant]);
-  paintDust(particles, random, primary, secondary);
+  const {profile, density, seed} = disk;
+  const random = orbitalRandom(seed ^ 0x84be3fa7);
+  if (profile.variant === 'rings') paintRings(light, random, secondary, exposure, profile.rings, density);
+  else paintStream(light, random, secondary, exposure, profile, density);
+  paintDust(particles, orbitalRandom(seed ^ 0x2f243c29), primary, secondary, disk);
   light.restore();
   particles.restore();
   return true;
 }
 
 export type OrbitalBitmaps = [ImageBitmap, ImageBitmap];
-export type OrbitalLightRequest = { size: number; colors: OrbitalColors; mode: AppearanceMode; variant: OrbitalDiskVariant };
+export type OrbitalLightRequest = {size: number; colors: OrbitalColors; mode: AppearanceMode; disk: OrbitalDisk};
 
-export function paintOrbitalBitmaps({size, colors, mode, variant}: OrbitalLightRequest): OrbitalBitmaps | null {
+export function paintOrbitalBitmaps({size, colors, mode, disk}: OrbitalLightRequest): OrbitalBitmaps | null {
   const light = new OffscreenCanvas(size, size);
   const dust = new OffscreenCanvas(size, size);
-  if (!paintOrbitalLight(light, dust, colors, mode, variant)) return null;
+  if (!paintOrbitalLight(light, dust, disk, colors, mode)) return null;
   return [light.transferToImageBitmap(), dust.transferToImageBitmap()];
 }

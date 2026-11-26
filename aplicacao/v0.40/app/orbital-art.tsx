@@ -2,7 +2,7 @@
 
 import {useEffect, useId, useRef, type CSSProperties} from 'react';
 import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
-import {pageOrbitalDisk} from '../lib/orbital-disk';
+import {pageOrbitalScene} from '../lib/orbital-disk';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 import {startOrbitalFlow} from './orbital-flow';
@@ -21,7 +21,7 @@ function renderTextures(
   useWorker: boolean,
   onPaint: (painted: boolean) => void,
 ) {
-  const {size, colors, mode, variant} = request;
+  const {size, colors, mode, disk} = request;
   let worker: Worker | undefined;
   let frame = 0;
 
@@ -58,7 +58,7 @@ function renderTextures(
     }
     frame = requestAnimationFrame(() => {
       setSize();
-      if (paintOrbitalLight(light, dust, colors, mode, variant)) {
+      if (paintOrbitalLight(light, dust, disk, colors, mode)) {
         onPaint(true);
         return;
       }
@@ -126,9 +126,11 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
 
     const compact = matchMedia('(max-width: 740px)');
     const root = document.documentElement;
-    const variant = pageOrbitalDisk();
+    const {disk, clock} = pageOrbitalScene();
+    element.dataset.diskVariant = disk.profile.variant;
+    element.dataset.diskSeed = String(disk.seed);
     const readRequest = (): OrbitalLightRequest => ({
-      variant,
+      disk,
       size: compact.matches ? 640 : 1024,
       mode: root.dataset.mode === 'dark' ? 'dark' : 'light',
       colors: {
@@ -136,12 +138,10 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
         secondary: parseHexColor(root.dataset.orbitSecondary) ?? originalOrbitalColors.secondary,
       },
     });
-    const clock = {seconds: 0, speed: 1};
     let cancelFlow: (() => void) | undefined;
     const onPaint = (painted: boolean) => {
       cancelFlow?.();
       element.dataset.painted = String(painted);
-      if (painted) element.dataset.diskVariant = variant;
       cancelFlow = startOrbitalFlow(element, lightCanvas, dustCanvas, flowCanvas, clock, onDiskFrame);
     };
     let current = readRequest();

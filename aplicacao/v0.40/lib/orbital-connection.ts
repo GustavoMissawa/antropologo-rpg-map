@@ -1,4 +1,5 @@
-import {ORBITAL_MARKER_BAND, orbitalFlowBand} from './orbital-flow.ts';
+import {orbitalAngleDistance, type OrbitalAnchor} from './orbital-disk.ts';
+import {ORBITAL_DISK_SCALE, orbitalFlowAngle} from './orbital-flow.ts';
 
 export type OrbitalPoint = {x: number; y: number};
 
@@ -6,25 +7,51 @@ const tilt = 37 * Math.PI / 180;
 const cosine = Math.cos(tilt);
 const sine = Math.sin(tilt);
 const flattening = .74;
-const markerBand = orbitalFlowBand(ORBITAL_MARKER_BAND);
-// The inner part of this band keeps the marker clear of the destination nodes.
-const attachmentRadius = .75;
-const fullTurn = Math.PI * 2;
 
-export function advanceOrbitalMarker(angle: number, diskSeconds: number) {
-  return (angle - (diskSeconds * markerBand.velocity) % fullTurn + fullTurn) % fullTurn;
+export function orbitalAnchorAngle(anchor: OrbitalAnchor, seconds: number) {
+  return anchor.angle + orbitalFlowAngle(anchor.band, seconds);
 }
 
-export function orbitalMarkerStart(center: OrbitalPoint, target: OrbitalPoint, activation: number) {
+/** Select among painted stars on the destination side, with positive weight even in the dark. */
+export function chooseOrbitalAnchor(
+  anchors: readonly OrbitalAnchor[],
+  center: OrbitalPoint,
+  target: OrbitalPoint,
+  width: number,
+  seconds: number,
+  random = Math.random,
+) {
   const dx = target.x - center.x, dy = target.y - center.y;
-  const localX = dx * cosine + dy * sine;
-  const localY = (-dx * sine + dy * cosine) / flattening;
-  return Math.atan2(localY, localX) + Math.sin(activation * 2.399963) * .105;
+  const targetX = dx * cosine + dy * sine;
+  const targetY = -dx * sine + dy * cosine;
+  const bearing = Math.atan2(targetY / flattening, targetX);
+  const separation = Math.min(42, width * .09);
+  const choices: {anchor: OrbitalAnchor; cumulative: number}[] = [];
+  let nearest = anchors[0];
+  let nearestAngle = Infinity;
+  let total = 0;
+  for (const anchor of anchors) {
+    const angle = orbitalAnchorAngle(anchor, seconds);
+    const radius = width * ORBITAL_DISK_SCALE * anchor.radius;
+    // Leave room for the connection when a destination nearly touches an outer band.
+    if ((targetX - Math.cos(angle) * radius) ** 2 + (targetY - Math.sin(angle) * radius * flattening) ** 2 < separation ** 2) continue;
+    const offset = orbitalAngleDistance(bearing, angle);
+    if (offset < nearestAngle) {
+      nearest = anchor;
+      nearestAngle = offset;
+    }
+    if (offset > Math.PI / 4) continue;
+    total += .14 + .86 * anchor.density;
+    choices.push({anchor, cumulative: total});
+  }
+  const draw = total * random();
+  return choices.find(choice => draw < choice.cumulative)?.anchor ?? nearest;
 }
 
-/** Follow the same band, tilt and foreshortening as the canvas filaments. */
-export function orbitalConnection(center: OrbitalPoint, target: OrbitalPoint, width: number, activation: number, angle = orbitalMarkerStart(center, target, activation)) {
-  const radius = width * .481 * attachmentRadius;
+/** The source follows the exact band and projection used to render its star. */
+export function orbitalConnection(center: OrbitalPoint, target: OrbitalPoint, width: number, activation: number, anchor: OrbitalAnchor, seconds: number) {
+  const angle = orbitalAnchorAngle(anchor, seconds);
+  const radius = width * ORBITAL_DISK_SCALE * anchor.radius;
   const depth = Math.sin(angle);
   const x = Math.cos(angle) * radius, y = depth * radius * flattening;
   const origin = {x: center.x + x * cosine - y * sine, y: center.y + x * sine + y * cosine};
