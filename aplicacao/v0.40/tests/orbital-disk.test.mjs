@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {test} from 'node:test';
-import {createOrbitalDisk, orbitalDensity, orbitalArmAngle, orbitalArmRadius, pickOrbitalDisk} from '../lib/orbital-disk.ts';
+import {createOrbitalDisk, orbitalDensity, orbitalArmAngle, orbitalArmRadius, orbitalForkOffset, orbitalRingRadius, orbitalRingLight, pickOrbitalDisk} from '../lib/orbital-disk.ts';
 import {paintOrbitalLight} from '../lib/orbital-light.ts';
 
 const variants = ['spiral', 'twin-arms', 'rings', 'crescent'];
@@ -68,11 +68,12 @@ test('O mapa acompanha os braços, os três anéis e a face iluminada do crescen
   for (const seed of [401738, 581127, 25819421, 3741784932]) {
     for (const [variant, count] of [['spiral', 3], ['twin-arms', 2]]) {
       const {profile, density} = createOrbitalDisk(variant, seed);
-      const radius = orbitalArmRadius(.53);
       assert.equal(profile.arms.length, count);
-      const baseline = mean(angles.map(angle => orbitalDensity(density, radius, angle)));
-      assert.ok(profile.arms.every(arm =>
-        orbitalDensity(density, radius, orbitalArmAngle(arm, .53)) > baseline * 1.25), variant);
+      assert.ok(profile.arms.every(arm => mean([.43, .53, .63, .73].map(progress => {
+        const radius = orbitalArmRadius(progress);
+        const baseline = mean(angles.map(angle => orbitalDensity(density, radius, angle)));
+        return orbitalDensity(density, radius, orbitalArmAngle(arm, progress)) / baseline;
+      })) > 1.3), variant);
       if (count === 2) {
         const [first, second] = profile.arms;
         assert.ok(Math.abs((second.angle - first.angle) - Math.PI) <= .62);
@@ -82,19 +83,41 @@ test('O mapa acompanha os braços, os três anéis e a face iluminada do crescen
 
     const rings = createOrbitalDisk('rings', seed);
     const [inner, middle, outer] = rings.profile.rings;
-    const ringAverage = radius => mean(angles.map(angle => orbitalDensity(rings.density, radius, angle)));
+    const ringAverage = radiusAt => mean(angles.map(angle => orbitalDensity(rings.density, radiusAt(angle), angle)));
     assert.equal(rings.profile.rings.length, 3);
     for (const [a, b] of [[inner, middle], [middle, outer]]) {
-      assert.ok(ringAverage((a.radius + b.radius) / 2) < .65 * Math.min(ringAverage(a.radius), ringAverage(b.radius)));
+      const atA = angle => orbitalRingRadius(a, angle);
+      const atB = angle => orbitalRingRadius(b, angle);
+      assert.ok(ringAverage(angle => (atA(angle) + atB(angle)) / 2) < .65 * Math.min(ringAverage(atA), ringAverage(atB)));
     }
-    assert.ok(orbitalDensity(rings.density, outer.radius, outer.angle) >
-      orbitalDensity(rings.density, outer.radius, outer.angle + Math.PI) * 1.5);
+    const sector = angle => mean([-.68, -.34, 0, .34, .68].map(offset =>
+      orbitalDensity(rings.density, orbitalRingRadius(outer, angle + offset), angle + offset)));
+    assert.ok(sector(outer.angle) > sector(outer.angle + Math.PI) * 1.35);
 
     const crescent = createOrbitalDisk('crescent', seed);
     const {glow} = crescent.profile;
     const hotRadius = glow.inner + .14 * glow.width;
     assert.ok(orbitalDensity(crescent.density, hotRadius, glow.angle) >
       orbitalDensity(crescent.density, hotRadius, glow.angle + Math.PI) * 1.7);
+  }
+});
+
+test('Ramificações nascem no braço e os anéis preservam setores estruturais quebrados', () => {
+  for (const variant of ['spiral', 'twin-arms', 'crescent']) {
+    const {profile} = createOrbitalDisk(variant, 91472835);
+    assert.equal(profile.forks.length, profile.arms.length);
+    for (const fork of profile.forks) {
+      assert.equal(Math.abs(orbitalForkOffset(fork, fork.start)), 0);
+      assert.ok(Math.abs(orbitalForkOffset(fork, (fork.start + fork.end) / 2)) > .18);
+      assert.ok(fork.end <= profile.arms[fork.arm].reach);
+      assert.ok(fork.strength < profile.arms[fork.arm].strength);
+    }
+  }
+  const {profile} = createOrbitalDisk('rings', 91472835);
+  for (const ring of profile.rings) {
+    const radii = Array.from({length: 32}, (_, i) => orbitalRingRadius(ring, i * Math.PI / 16));
+    assert.ok(Math.max(...radii) - Math.min(...radii) > .014);
+    assert.ok(orbitalRingLight(ring, ring.gap) <= .35);
   }
 });
 

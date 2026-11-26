@@ -1,22 +1,54 @@
-export type NebulaFormation = {anchor: string; tilt: number; scale: number; x: number; y: number; strength: number; stretch: number; blend: number; phase: number};
-const anchors = ['north', 'east', 'southwest', 'south', 'northeast'];
-/** Pure seeded generator, bounded to the established edge corridors. */
-export function createNebulaComposition(seed: number): NebulaFormation[] {
-  let state = seed >>> 0;
-  const random = () => ((state = (Math.imul(state,1664525)+1013904223)>>>0)/4294967296);
-  const count = 2 + Math.floor(random()*4);
-  const chosen = [random()<.5?0:2, [1,3,4][Math.floor(random()*3)]];
-  const rest = anchors.map((_,i)=>i).filter(i=>!chosen.includes(i));
-  while (chosen.length<count) chosen.push(rest.splice(Math.floor(random()*rest.length),1)[0]);
-  return chosen.map(i=>({
-    anchor: anchors[i], tilt: -24+random()*48, scale: .82+random()*.30,
-    x: -4+random()*8, y: -5+random()*10, strength: .72+random()*.28,
-    stretch: .8+random()*.4, blend: .35+random()*.4, phase: -random()*26,
-  }));
+import {orbitalRandom, orbitalSeed} from './orbital-noise.ts';
+
+const anchors = ['north', 'east', 'southwest', 'south', 'northeast'] as const;
+const families = ['diffuse', 'filament', 'dark', 'pillars'] as const;
+export type NebulaFamily = typeof families[number];
+type NebulaAccent = Exclude<NebulaFamily, 'pillars'>;
+
+const accents: Record<NebulaFamily, readonly NebulaAccent[]> = {
+  diffuse: ['dark', 'filament'],
+  filament: ['diffuse', 'dark'],
+  dark: ['diffuse', 'filament'],
+  pillars: ['diffuse', 'filament'],
+};
+
+export type NebulaComposition = {
+  seed: number;
+  family: NebulaFamily;
+  accent: NebulaAccent | null;
+  anchor: typeof anchors[number];
+  x: number;
+  y: number;
+  tilt: number;
+  scale: number;
+  aspect: number;
+  opacity: number;
+};
+
+export function createNebulaComposition(seed: number): NebulaComposition | null {
+  const random = orbitalRandom(orbitalSeed(seed ^ 0xf966fb73));
+  if (random() < 1 / 3) return null;
+
+  const draw = random();
+  const family = families[draw < .35 ? 0 : draw < .60 ? 1 : draw < .80 ? 2 : 3];
+  const accent = random() < .18 ? accents[family][Math.floor(random() * 2)] : null;
+  const variation = (range: number) => (2 * random() - 1) * range;
+  const anchor = anchors[Math.floor(random() * anchors.length)];
+  return {
+    seed, family, accent, anchor,
+    x: variation(6), y: variation(7), tilt: variation(family === 'pillars' ? 30 : 41),
+    scale: (family === 'diffuse' ? 1.12 : 1) + variation(.20),
+    aspect: (family === 'pillars' ? 1.20 : 1.46) + variation(.12),
+    opacity: .89 + variation(.11),
+  };
 }
-let composition: NebulaFormation[] | undefined;
-/** Called only after hydration. The module lives for this document, including SPA navigation. */
+
+let pageComposition: NebulaComposition | null | undefined;
+
+/** The empty result also persists when the Home is remounted. */
 export function pageNebulaComposition() {
-  if (typeof window === 'undefined') return [];
-  return composition ??= createNebulaComposition(crypto.getRandomValues(new Uint32Array(1))[0]);
+  if (pageComposition === undefined && typeof window !== 'undefined') {
+    pageComposition = createNebulaComposition(crypto.getRandomValues(new Uint32Array(1))[0]);
+  }
+  return pageComposition ?? null;
 }

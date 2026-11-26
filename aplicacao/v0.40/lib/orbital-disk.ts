@@ -1,4 +1,5 @@
 import {orbitalFlowBand, type OrbitalFlowClock} from './orbital-flow.ts';
+import {clampUnit, createOrbitalNoise, orbitalRandom, smoothUnit} from './orbital-noise.ts';
 
 const diskVariants = ['spiral', 'twin-arms', 'rings', 'crescent'] as const;
 const storageKey = 'antropologo:orbital-disk';
@@ -15,13 +16,14 @@ const armExponent = 1.24;
 export type OrbitalDiskVariant = typeof diskVariants[number];
 
 type SpiralVariant = Exclude<OrbitalDiskVariant, 'rings'>;
-type OrbitalArm = {angle: number; winding: number; bend: number; width: number; strength: number; reach: number};
-type OrbitalRing = {radius: number; width: number; angle: number; strength: number};
-type OrbitalGlow = {angle: number; span: number; inner: number; width: number; strength: number};
+type OrbitalArm = {angle: number; winding: number; bend: number; width: number; strength: number; reach: number; ripple: number};
+type OrbitalRing = {radius: number; width: number; angle: number; strength: number; ripple: number; gap: number};
+type OrbitalGlow = {angle: number; span: number; inner: number; width: number; strength: number; ripple: number};
+type OrbitalFork = {arm: number; start: number; end: number; spread: number; strength: number};
 type DiskShape =
   | {variant: 'rings'; rings: OrbitalRing[]}
-  | {variant: SpiralVariant; arms: OrbitalArm[]; glow: OrbitalGlow; outerLight: number};
-type DiskProfile = DiskShape & {clumps: [number, number]; starCount: number};
+  | {variant: SpiralVariant; arms: OrbitalArm[]; forks: OrbitalFork[]; glow: OrbitalGlow; outerLight: number};
+type DiskProfile = DiskShape & {starCount: number};
 type Random = () => number;
 
 export type OrbitalAnchor = {angle: number; radius: number; band: number; density: number};
@@ -34,14 +36,6 @@ export type OrbitalDisk = {
   stars: DiskStar[];
   anchors: OrbitalAnchor[];
 };
-
-export function orbitalRandom(seed: number) {
-  let state = seed >>> 0;
-  return () => {
-    state = (Math.imul(state, 1664525) + 1013904223) >>> 0;
-    return state / 4294967296;
-  };
-}
 
 export function pickOrbitalDisk(previous: string | null, random = Math.random): OrbitalDiskVariant {
   const options = diskVariants.filter(variant => variant !== previous);
@@ -57,7 +51,6 @@ const spiralProfiles = {
 function createProfile(variant: OrbitalDiskVariant, random: Random): DiskProfile {
   const variation = (amount: number) => (2 * random() - 1) * amount;
   const offset = random() * TAU;
-  const clumps: [number, number] = [random() * TAU, random() * TAU];
   const starCount = 1240 + Math.floor(random() * 361);
   if (variant === 'rings') {
     const rings = [.35, .55, .76].map((radius, index) => ({
@@ -65,8 +58,10 @@ function createProfile(variant: OrbitalDiskVariant, random: Random): DiskProfile
       width: .052 + index * .009 + variation(.016),
       angle: offset + (index * 2.31) + variation(.43),
       strength: [1, .80, .68][index] + variation(.14),
+      ripple: .014 + random() * .017,
+      gap: offset + index * 1.7 + variation(1.5),
     }));
-    return {variant, rings, clumps, starCount};
+    return {variant, rings, starCount};
   }
 
   const base = spiralProfiles[variant];
@@ -78,19 +73,30 @@ function createProfile(variant: OrbitalDiskVariant, random: Random): DiskProfile
     width: base.width * (1 + variation(.25)),
     strength: 1 - index * .075 + variation(.15),
     reach: .96 - index * .038 + variation(.03),
+    ripple: .055 + random() * .10,
   }));
+  const forks = arms.map((arm, index) => {
+    const start = .27 + random() * .25;
+    return {
+      arm: index, start, end: Math.min(arm.reach, start + .27 + random() * .22),
+      spread: (index % 2 ? -1 : 1) * (.53 + random() * .55),
+      strength: (variant === 'crescent' ? .31 : .47) + random() * .21,
+    };
+  });
   const glow = {
     angle: base.glow + offset + variation(.45),
     span: 2.03 + variation(variant === 'crescent' ? .51 : .28),
     inner: .309 + variation(.013),
     width: .34 + variation(.065),
     strength: base.inner * (1 + variation(.16)),
+    ripple: .014 + random() * .023,
   };
-  return {variant, arms, glow, outerLight: base.outer * (1 + variation(.16)), clumps, starCount};
+  return {variant, arms, forks, glow, outerLight: base.outer * (1 + variation(.16)), starCount};
 }
 
 export function orbitalArmAngle(arm: OrbitalArm, progress: number) {
-  return arm.angle + arm.winding * progress + arm.bend * progress * (1 - progress);
+  return arm.angle + arm.winding * progress + arm.bend * progress * (1 - progress)
+    + arm.ripple * Math.sin(progress * 13 + arm.angle);
 }
 
 export function orbitalArmRadius(progress: number) {
@@ -99,7 +105,22 @@ export function orbitalArmRadius(progress: number) {
 
 export function orbitalRingLight(ring: OrbitalRing, angle: number) {
   const sector = .5 + .5 * Math.cos(angle - ring.angle);
-  return .32 + .68 * sector * sector;
+  const gap = smoothUnit((1 - orbitalAngleDistance(angle, ring.gap) / .54));
+  return (.32 + .68 * sector * sector) * (1 - .65 * gap);
+}
+
+export function orbitalRingRadius(ring: OrbitalRing, angle: number) {
+  return ring.radius + ring.ripple * (.74 * Math.sin(3 * angle + ring.angle) + .26 * Math.sin(7 * angle - ring.angle));
+}
+
+export function orbitalForkOffset(fork: OrbitalFork, progress: number) {
+  const along = clampUnit((progress - fork.start) / (fork.end - fork.start));
+  return fork.spread * along * (.48 + .52 * along);
+}
+
+export function orbitalGlowInner(glow: OrbitalGlow, angle: number) {
+  const offset = angle - glow.angle;
+  return glow.inner + glow.ripple * (.70 * Math.sin(4 * offset) + .30 * Math.sin(9 * offset + glow.angle));
 }
 
 export function orbitalAngleDistance(first: number, second: number) {
@@ -110,39 +131,59 @@ function gaussian(offset: number) {
   return Math.exp(-.5 * offset * offset);
 }
 
-function buildDensity(profile: DiskProfile) {
+function buildDensity(profile: DiskProfile, seed: number) {
   const density = new Float32Array((radialSteps + 1) * angularSteps);
+  const noise = createOrbitalNoise(seed ^ 0xe490ca57);
+  const directions = Array.from({length: angularSteps}, (_, column) => {
+    const angle = angularStep * column;
+    const rings = profile.variant === 'rings'
+      ? profile.rings.map(ring => ({radius: orbitalRingRadius(ring, angle), light: ring.strength * orbitalRingLight(ring, angle)})) : [];
+    const glowInner = profile.variant === 'rings' ? 0 : orbitalGlowInner(profile.glow, angle);
+    const arc = profile.variant === 'rings' ? 0 : Math.sqrt(Math.max(0, 1 - 2 * orbitalAngleDistance(angle, profile.glow.angle) / profile.glow.span));
+    return {angle, x: Math.cos(angle), y: Math.sin(angle), rings, glowInner, arc};
+  });
   for (let row = 0; row <= radialSteps; row++) {
     const radius = innerRadius + row * radialStep;
     const edge = Math.min(1, row / 2, (radialSteps - row) / 3);
     const progress = Math.pow((radius - armInner) / armRange, 1 / armExponent);
-    // The radial term only needs to be evaluated once for each row.
-    const ringFade = profile.variant === 'rings'
-      ? profile.rings.map(ring => ring.strength * gaussian((radius - ring.radius) / (ring.width * .50))) : [];
+    const arms = profile.variant === 'rings' ? [] : profile.arms.map((arm, index) => {
+      const fork = profile.forks[index];
+      const angle = orbitalArmAngle(arm, progress);
+      return {
+        angle, width: arm.width * (.89 + .18 * Math.sin(8 * progress + arm.angle)),
+        body: arm.strength * clampUnit((arm.reach - progress) / .14),
+        forkAngle: angle + orbitalForkOffset(fork, progress),
+        forkLight: fork.strength * smoothUnit((progress - fork.start) / .11) * smoothUnit((fork.end - progress) / .10),
+      };
+    });
     for (let column = 0; column < angularSteps; column++) {
-      const angle = angularStep * column;
+      const {angle, x, y, rings, glowInner, arc} = directions[column];
+      const coarse = noise(x * radius * 4.3, y * radius * 4.3);
+      const detail = noise(x * radius * 13.5 + 9, y * radius * 13.5 - 7);
       let structure = 0;
+      let dust = 0;
       if (profile.variant === 'rings') {
         for (let i = 0; i < profile.rings.length; i++) {
-          structure = Math.max(structure, ringFade[i] * orbitalRingLight(profile.rings[i], angle));
+          const lane = (radius - rings[i].radius) / profile.rings[i].width;
+          structure = Math.max(structure, gaussian(lane / .49) * rings[i].light);
+          dust = Math.max(dust, gaussian((lane + .33) / .16));
         }
       } else {
-        const {glow, arms, outerLight} = profile;
-        const arc = Math.max(0, 1 - 2 * orbitalAngleDistance(angle, glow.angle) / glow.span);
-        const innerLight = glow.strength * Math.sqrt(arc)
-          * gaussian((radius - glow.inner - glow.width * .14) / (glow.width * .30));
+        const {glow, outerLight} = profile;
+        const innerLight = glow.strength * arc * gaussian((radius - glowInner - glow.width * .14) / (glow.width * .30));
         for (const arm of arms) {
-          const angular = orbitalAngleDistance(angle, orbitalArmAngle(arm, progress)) / arm.width;
-          const tip = Math.max(0, Math.min(1, (arm.reach - progress) / .14));
-          structure = Math.max(structure, gaussian(angular) * tip * arm.strength);
+          const angular = orbitalAngleDistance(angle, arm.angle) / arm.width;
+          const fork = orbitalAngleDistance(angle, arm.forkAngle) / (arm.width * .61);
+          structure = Math.max(structure, gaussian(angular) * arm.body, gaussian(fork) * arm.forkLight);
+          dust = Math.max(dust, gaussian((angular - .52) / .22) * clampUnit(arm.body));
         }
         structure = Math.max(innerLight, structure * outerLight * (.88 - .19 * progress));
+        dust = Math.max(dust, .55 * arc * gaussian((radius - glowInner - .05) / .021));
       }
-      // Overlapping broad and narrow concentrations create knots along the structure.
-      const [broad, fine] = profile.clumps;
-      const pockets = .88 + .14 * Math.cos(3 * angle + 10 * radius + broad)
-        + .10 * Math.cos(7 * angle - 11 * radius + fine);
-      density[row * angularSteps + column] = Math.min(1, structure * edge * pockets);
+      const knots = .61 + .42 * coarse + .22 * detail;
+      const cavities = 1 - .44 * smoothUnit((.40 - coarse) * 3.4);
+      const transmission = 1 - dust * (.14 + .42 * detail);
+      density[row * angularSteps + column] = clampUnit(structure * edge * knots * cavities * transmission);
     }
   }
   return density;
@@ -215,7 +256,7 @@ function createAnchors(density: Float32Array, random: Random): OrbitalAnchor[] {
 
 export function createOrbitalDisk(variant: OrbitalDiskVariant, seed: number): OrbitalDisk {
   const profile = createProfile(variant, orbitalRandom(seed));
-  const density = buildDensity(profile);
+  const density = buildDensity(profile, seed);
   const stars = createStars(density, profile.starCount, orbitalRandom(seed ^ 0x4b208f97));
   const anchors = createAnchors(density, orbitalRandom(seed ^ 0x37abd6e3));
   return {seed, profile, density, stars, anchors};

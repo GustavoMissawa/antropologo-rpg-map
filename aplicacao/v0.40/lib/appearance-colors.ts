@@ -9,6 +9,13 @@ export function parseHexColor(value: unknown): string | undefined {
   return match ? '#' + match[1].toLowerCase() : undefined;
 }
 
+export function readOrbitalColors(root: HTMLElement): OrbitalColors {
+  return {
+    primary: parseHexColor(root.dataset.orbitPrimary) ?? originalOrbitalColors.primary,
+    secondary: parseHexColor(root.dataset.orbitSecondary) ?? originalOrbitalColors.secondary,
+  };
+}
+
 type RGB = [number, number, number];
 const white: RGB = [255, 255, 255];
 const black: RGB = [0, 0, 0];

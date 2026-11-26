@@ -1,7 +1,7 @@
 'use client';
 
 import {useEffect, useId, useRef, type CSSProperties} from 'react';
-import {originalOrbitalColors, parseHexColor} from '../lib/appearance-colors';
+import {readOrbitalColors} from '../lib/appearance-colors';
 import {pageOrbitalScene} from '../lib/orbital-disk';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
@@ -133,10 +133,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
       disk,
       size: compact.matches ? 640 : 1024,
       mode: root.dataset.mode === 'dark' ? 'dark' : 'light',
-      colors: {
-        primary: parseHexColor(root.dataset.orbitPrimary) ?? originalOrbitalColors.primary,
-        secondary: parseHexColor(root.dataset.orbitSecondary) ?? originalOrbitalColors.secondary,
-      },
+      colors: readOrbitalColors(root),
     });
     let cancelFlow: (() => void) | undefined;
     const onPaint = (painted: boolean) => {

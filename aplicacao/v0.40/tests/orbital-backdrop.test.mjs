@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import {runInNewContext} from 'node:vm';
 import {appearanceBootstrap, parseAppearance} from '../lib/appearance.ts';
 import {createOrbitalStars} from '../lib/orbital-sky.ts';
+import {createNebulaComposition, pageNebulaComposition} from '../lib/nebula-composition.ts';
+import {createNebulaMaterial, tintNebulaPixels} from '../lib/nebula-material.ts';
 import {act, clickButton, mountPlatform, preferences} from './helpers/platform-dom.mjs';
 
 test('Preferências antigas ativam as nebulosas; desligar é independente da migração de cores', () => {
@@ -72,9 +74,13 @@ test('O interruptor persiste sem recriar estrelas, dado ou disco e sobrevive a c
   let ui=await mountPlatform();
   try {
     const sky=ui.host.querySelector('.orbital-starfield'), art=ui.host.querySelector('.orbital-art');
-    const composition=()=>[...ui.host.querySelectorAll('.cosmic-nebula')].map(n=>n.dataset.composition);
+    const composition=()=>({
+      family: ui.host.querySelector('.orbital-backdrop').dataset.nebula,
+      fields: [...ui.host.querySelectorAll('.cosmic-nebula')].map(n=>[n.dataset.seed, n.dataset.accent, n.getAttribute('style')]),
+    });
     const initialComposition=composition();
-    assert.ok(ui.host.querySelectorAll('.cosmic-nebula').length>=2 && ui.host.querySelectorAll('.cosmic-nebula').length<=5);
+    assert.ok(['none', 'diffuse', 'filament', 'dark', 'pillars'].includes(initialComposition.family));
+    assert.equal(initialComposition.fields.length, initialComposition.family === 'none' ? 0 : 1);
     assert.equal(sky.querySelectorAll('circle').length,290);
     assert.equal(ui.host.querySelector('.orbital-backdrop').getAttribute('aria-hidden'),'true');
     await clickButton(ui.host,'Configurações');
@@ -114,17 +120,95 @@ test('O interruptor persiste sem recriar estrelas, dado ou disco e sobrevive a c
   }
 });
 
-test('Composições têm 2–5 formações, variam por semente e mantêm corredores limitados', async () => {
-  const {createNebulaComposition, pageNebulaComposition} = await import('../lib/nebula-composition.ts');
-  const signatures = new Set();
-  for (let seed=1; seed<=100; seed++) {
-    const composition = createNebulaComposition(seed*98765431);
-    assert.deepEqual(composition, createNebulaComposition(seed*98765431));
-    assert.ok(composition.length>=2 && composition.length<=5);
-    assert.equal(new Set(composition.map(n=>n.anchor)).size, composition.length);
-    assert.ok(composition.every(n=>n.scale>=.82 && n.scale<=1.12 && Math.abs(n.x)<=4 && Math.abs(n.y)<=5));
-    signatures.add(JSON.stringify(composition));
+test('O sorteio usa um terço de vazios e a distribuição condicional das quatro famílias', () => {
+  const sample = 60000;
+  const families = {diffuse: 0, filament: 0, dark: 0, pillars: 0};
+  const corridors = new Set();
+  let empty = 0;
+  let hybrids = 0;
+  for (let seed = 0; seed < sample; seed++) {
+    const nebula = createNebulaComposition(seed);
+    if (!nebula) {
+      empty++;
+      continue;
+    }
+    families[nebula.family]++;
+    corridors.add(nebula.anchor);
+    if (nebula.accent) {
+      hybrids++;
+      assert.notEqual(nebula.accent, nebula.family);
+    }
+    assert.ok(nebula.scale >= .8 && nebula.scale <= 1.32 && Math.abs(nebula.x) <= 6 && Math.abs(nebula.y) <= 7);
   }
-  assert.equal(signatures.size, 100);
-  assert.equal(pageNebulaComposition(), pageNebulaComposition());
+  assert.ok(Math.abs(empty / sample - 1 / 3) < .008);
+  assert.equal(corridors.size, 5);
+  for (const [family, expected] of Object.entries({diffuse: .35, filament: .25, dark: .20, pillars: .20})) {
+    assert.ok(Math.abs(families[family] / (sample - empty) - expected) < .012, family);
+  }
+  assert.ok(Math.abs(hybrids / (sample - empty) - .18) < .01);
+  assert.strictEqual(pageNebulaComposition(), pageNebulaComposition());
+});
+
+test('As famílias têm estruturas reproduzíveis e a cor conserva a cobertura e as bordas suaves', () => {
+  const samples = new Map();
+  for (let seed = 0; samples.size < 4; seed++) {
+    const nebula = createNebulaComposition(seed);
+    if (nebula && !nebula.accent && !samples.has(nebula.family)) samples.set(nebula.family, nebula);
+  }
+  const signatures = [];
+  for (const nebula of samples.values()) {
+    assert.deepEqual(nebula, createNebulaComposition(nebula.seed));
+    const material = createNebulaMaterial(nebula, 96);
+    assert.deepEqual(material, createNebulaMaterial(nebula, 96));
+    const {width, height, channels} = material;
+    let opaque = 0;
+    let dusty = 0;
+    for (let row = 0; row < height; row++) {
+      for (let col = 0; col < width; col++) {
+        const offset = (row * width + col) * 3;
+        if (row === 0 || row === height - 1 || col === 0 || col === width - 1) {
+          assert.equal(channels[offset], 0);
+          assert.equal(channels[offset + 1], 0);
+        }
+        if (channels[offset] > 34) opaque++;
+        if (channels[offset + 1] > 70) dusty++;
+      }
+    }
+    assert.ok(opaque > 140, nebula.family);
+    assert.ok(opaque < width * height * .66);
+    if (nebula.family === 'dark' || nebula.family === 'pillars') assert.ok(dusty > 95);
+    if (nebula.family === 'filament') assert.equal(dusty, 0);
+    signatures.push([opaque, dusty].join('/'));
+
+    const cool = new Uint8ClampedArray(width * height * 4);
+    const warm = new Uint8ClampedArray(cool.length);
+    const day = new Uint8ClampedArray(cool.length);
+    const colors = {primary: '#94baf7', secondary: '#8fd2cb'};
+    tintNebulaPixels(material, colors, 'dark', cool);
+    tintNebulaPixels(material, {primary:'#d59a97', secondary:'#f0cd83'}, 'dark', warm);
+    tintNebulaPixels(material, colors, 'light', day);
+    assert.notDeepEqual(cool, warm);
+    assert.notDeepEqual(cool, day);
+    for (let i = 3; i < cool.length; i += 4) {
+      assert.equal(cool[i], warm[i], 'paletas conservam a máscara');
+      assert.ok(day[i] <= cool[i], 'a composição clara preserva contraste');
+    }
+  }
+  assert.equal(new Set(signatures).size, 4);
+});
+
+test('O híbrido modifica uma fração do material da família predominante', () => {
+  const checked = new Set();
+  for (let seed = 0; checked.size < 4 && seed < 1000; seed++) {
+    const nebula = createNebulaComposition(seed);
+    if (!nebula?.accent || checked.has(nebula.family)) continue;
+    checked.add(nebula.family);
+    const {channels: full} = createNebulaMaterial(nebula, 96);
+    const {channels: lead} = createNebulaMaterial({...nebula, accent: null}, 96);
+    assert.notDeepEqual(full, lead);
+    assert.deepEqual(full, createNebulaMaterial(nebula, 96).channels);
+    const delta = full.reduce((total, value, i) => total + Math.abs(value - lead[i]), 0);
+    assert.ok(delta / full.length < 12);
+  }
+  assert.equal(checked.size, 4);
 });

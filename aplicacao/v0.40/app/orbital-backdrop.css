@@ -1,14 +1,8 @@
-/* Ambient layers stay behind every control; the central disk owns the foreground. */
+/* The distant sky never captures input. A separate foreground contains the disk and controls. */
 .orbital-backdrop {
-  --nebula-primary: color-mix(in srgb, var(--orbit-ambient-base) 65%, transparent);
-  --nebula-secondary: color-mix(in srgb, var(--orbit-ambient-light) 59%, transparent);
-  --nebula-lit: color-mix(in srgb, var(--orbit-ambient-light) 60%, #f4f6ff);
-  --nebula-dust: color-mix(in srgb, var(--orbit-background) 91%, #01030a);
   --sky-star-ink: color-mix(in srgb, #edf2ff 76%, var(--orbit-ambient-base));
   position: absolute;
   z-index: -1;
-  /* The content column is capped on wide monitors. Extend the sky to the
-     viewport instead of compensating only for the main element padding. */
   inset: 0 auto 0 50%;
   width: 100vw;
   transform: translateX(-50%);
@@ -20,111 +14,60 @@
     linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent);
   mask-composite: intersect;
 }
-.orbital-nebulae, .orbital-starfield {position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
-.orbital-nebulae {
-  /* Keep gas away from the core even as the surrounding layout resizes. */
-  mask-image: radial-gradient(ellipse 30% 36% at 52% 49%, transparent 48%, #000 100%);
-}
-.cosmic-nebula {
-  --nebula-opacity:calc(.72 * var(--nebula-strength,1));
-  position:absolute;
-  opacity:var(--nebula-opacity);
-  transform:translate(var(--nebula-x),var(--nebula-y)) rotate(calc(var(--nebula-tilt) + var(--nebula-jitter))) scale(var(--nebula-scale));
-  /* Final alpha envelope is outside the filter and fades BEFORE its rectangle. */
-  mask-image:radial-gradient(ellipse 48% 44% at 49% 48%,#000 16%,#000b 40%,transparent 94%),linear-gradient(90deg,transparent,#000 18%,#000 82%,transparent),linear-gradient(transparent,#000 18%,#000 82%,transparent);
-  mask-composite:intersect;
-  animation:nebula-breathe 26s ease-in-out infinite alternate;
-}
-.cosmic-nebula-material {position:absolute;inset:-8%;filter:url(#orbital-nebula-grain);transform:scaleX(var(--nebula-stretch))}
-.orbital-nebula-filters {position:absolute;pointer-events:none}
-.cosmic-nebula-north {left:-13%;top:-17%;width:49%;height:43%;--nebula-tilt:-19deg}
-.cosmic-nebula-east {right:-17%;top:12%;width:38%;height:57%;--nebula-tilt:32deg;--nebula-opacity:calc(.57 * var(--nebula-strength,1));animation-delay:-9s}
-.cosmic-nebula-southwest {left:-12%;bottom:-10%;width:43%;height:37%;--nebula-tilt:12deg;--nebula-opacity:calc(.62 * var(--nebula-strength,1));animation-delay:-18s}
-.cosmic-nebula-south {right:4%;bottom:-20%;width:31%;height:40%;--nebula-tilt:-29deg;--nebula-opacity:calc(.48 * var(--nebula-strength,1))}
-.cosmic-nebula-gas, .cosmic-nebula-filaments, .cosmic-nebula-dust {position:absolute;inset:0}
-.cosmic-nebula-northeast {right:-3%;top:-23%;width:38%;height:40%;--nebula-tilt:16deg}
-.cosmic-nebula-gas {
-  background:
-    radial-gradient(ellipse 14% 18% at 24% 43%, var(--nebula-secondary), transparent 100%),
-    radial-gradient(ellipse 17% 28% at 36% 38%, var(--nebula-primary), transparent 100%),
-    radial-gradient(ellipse 26% 14% at 45% 57%, var(--nebula-secondary), transparent 100%),
-    radial-gradient(ellipse 16% 22% at 61% 36%, var(--nebula-primary), transparent 100%),
-    radial-gradient(ellipse 24% 18% at 73% 51%, var(--nebula-secondary), transparent 100%),
-    radial-gradient(ellipse 34% 29% at 42% 52%, var(--nebula-primary), transparent 100%),
-    radial-gradient(ellipse 15% 38% at 52% 39%, var(--nebula-primary), transparent 100%);
-  filter:blur(8px);
-  opacity:calc(.65 + var(--nebula-blend,.5) * .45);
-}
-.cosmic-nebula-filaments {
-  background:
-    radial-gradient(ellipse 15% 2% at 27% 48%, var(--nebula-lit), transparent),
-    radial-gradient(ellipse 2% 17% at 46% 36%, var(--nebula-lit), transparent),
-    radial-gradient(ellipse 19% 3% at 63% 47%, var(--nebula-secondary), transparent),
-    linear-gradient(144deg, transparent 40%, var(--nebula-primary) 43%, transparent 46%),
-    linear-gradient(27deg, transparent 44%, var(--nebula-secondary) 48%, transparent 52%),
-    linear-gradient(161deg, transparent 50%, var(--nebula-lit) 51%, transparent 53%);
-  mask-image:radial-gradient(ellipse 40% 30% at 47% 47%, #000 10%, transparent 100%);
-  filter:blur(2px);
-  opacity:.48;
-  transform:rotate(-11deg);
-}
-.cosmic-nebula-dust {
-  background:
-    radial-gradient(ellipse 29% 4% at 35% 51%, var(--nebula-dust) 16%, transparent 100%),
-    radial-gradient(ellipse 4% 22% at 48% 38%, var(--nebula-dust) 13%, transparent 100%),
-    radial-gradient(ellipse 22% 5% at 69% 50%, var(--nebula-dust) 10%, transparent 100%),
-    linear-gradient(151deg, transparent 46%, var(--nebula-dust) 48%, transparent 50%);
-  mask-image:radial-gradient(ellipse 38% 30% at 47% 49%, #000 5%, transparent 100%);
-  transform:rotate(-14deg);
-  filter:blur(3px);
-  opacity:.56;
-}
-.cosmic-nebula::after {
-  content:'';position:absolute;inset:0;
-  background:
-    radial-gradient(circle at 34% 43%, var(--nebula-lit) 0 .8px, transparent 3px),
-    radial-gradient(circle at 59% 39%, var(--nebula-lit) 0 1px, transparent 4px),
-    radial-gradient(circle at 71% 53%, var(--nebula-lit) 0 .7px, transparent 2px);
-  opacity:.8;
-}
-.cosmic-nebula-east .cosmic-nebula-gas {transform:scaleX(-1)}
-.cosmic-nebula-southwest .cosmic-nebula-gas {transform:scaleY(-1)}
-.cosmic-nebula-south .cosmic-nebula-filaments {transform:rotate(17deg)}
-/* Opacity on the outer wrapper leaves the filtered material itself static. */
-@keyframes nebula-breathe {from{opacity:calc(var(--nebula-opacity) * .84)}to{opacity:var(--nebula-opacity)}}
-.orbital-sky-star {fill:var(--sky-star-ink)}
-.orbital-sky-star[data-tint='primary'] {fill:var(--orbit-ambient-base)}
-.orbital-sky-star[data-tint='secondary'] {fill:var(--orbit-ambient-light)}
-.orbital-sky-star[data-twinkle='true'] {animation:sky-twinkle var(--star-period,10s) ease-in-out var(--star-delay,0s) infinite alternate}
-@keyframes sky-twinkle {from{fill-opacity:.45}to{fill-opacity:1}}
-.orbital-backdrop[data-motion='paused'] :is(.cosmic-nebula,.orbital-sky-star) {animation-play-state:paused}
-:root[data-nebulae='false'] .orbital-nebulae {display:none}
-:root[data-nebulae='false'] .cosmic-nebula {animation:none}
 
-/* Daylight uses colored pigment and soft dust, not a screen/inversion filter. */
+.orbital-nebulae, .orbital-starfield { position: absolute; inset: 0; width: 100%; height: 100%; }
+.orbital-nebulae {
+  mask-image: radial-gradient(ellipse 34% 41% at 52% 49%, transparent 36%, #0002 57%, #000 100%);
+}
+.orbital-home[data-expanded='true'] .orbital-nebulae { opacity: .64; }
+
+.cosmic-nebula {
+  --nebula-left: 21%;
+  --nebula-top: 10%;
+  --nebula-span: 56vw;
+  position: absolute;
+  left: calc(var(--nebula-left) + var(--nebula-x));
+  top: calc(var(--nebula-top) + var(--nebula-y));
+  width: clamp(275px, calc(var(--nebula-span) * var(--nebula-scale)), 1060px);
+  height: auto;
+  aspect-ratio: var(--nebula-aspect);
+  object-fit: fill;
+  opacity: calc(.86 * var(--nebula-strength));
+  transform: translate(-50%, -50%) rotate(var(--nebula-tilt));
+  visibility: hidden;
+}
+.cosmic-nebula[data-ready='true'] { visibility: visible; }
+.cosmic-nebula[data-anchor='northeast'] { --nebula-left: 89%; --nebula-top: 13%; }
+.cosmic-nebula[data-anchor='east'] { --nebula-left: 96%; --nebula-top: 46%; }
+.cosmic-nebula[data-anchor='southwest'] { --nebula-left: 16%; --nebula-top: 80%; }
+.cosmic-nebula[data-anchor='south'] { --nebula-left: 78%; --nebula-top: 87%; }
+
+.orbital-sky-star { fill: var(--sky-star-ink); }
+.orbital-sky-star[data-tint='primary'] { fill: var(--orbit-ambient-base); }
+.orbital-sky-star[data-tint='secondary'] { fill: var(--orbit-ambient-light); }
+.orbital-sky-star[data-twinkle='true'] {
+  animation: sky-twinkle var(--star-period, 10s) ease-in-out var(--star-delay, 0s) infinite alternate;
+}
+@keyframes sky-twinkle { from { fill-opacity: .45; } to { fill-opacity: 1; } }
+.orbital-backdrop[data-motion='paused'] .orbital-sky-star { animation-play-state: paused; }
+:root[data-nebulae='false'] .orbital-nebulae { display: none; }
+
 :root[data-mode='light'] .orbital-backdrop {
-  --nebula-primary:color-mix(in srgb, var(--orbit-ambient-base) 51%, transparent);
-  --nebula-secondary:color-mix(in srgb, var(--orbit-ambient-light) 53%, transparent);
-  --nebula-dust:color-mix(in srgb, var(--orbit-node-accent) 26%, transparent);
-  --nebula-lit:color-mix(in srgb, var(--orbit-ambient-light) 22%, #fff);
-  --sky-star-ink:color-mix(in srgb, var(--orbit-node-accent) 60%, transparent);
+  --sky-star-ink: color-mix(in srgb, var(--orbit-node-accent) 60%, transparent);
 }
-:root[data-mode='light'] .cosmic-nebula {--nebula-opacity:calc(.62 * var(--nebula-strength,1))}
-:root[data-mode='light'] .cosmic-nebula-filaments {opacity:.52}
-:root[data-mode='light'] .orbital-sky-star[data-tint='primary'] {fill:var(--orbit-control-accent)}
-:root[data-mode='light'] .orbital-sky-star[data-tint='secondary'] {fill:var(--orbit-node-accent)}
-@media(max-width:900px) {
-  .cosmic-nebula-material {filter:blur(1px)}
-  .cosmic-nebula {--nebula-opacity:calc(.37 * var(--nebula-strength,1))}
-  :root[data-mode='light'] .cosmic-nebula {--nebula-opacity:calc(.4 * var(--nebula-strength,1))}
-  .cosmic-nebula-north {left:-40%;top:-6%;width:85%;height:31%}
-  .cosmic-nebula-east {right:-41%;top:11%;width:74%;height:39%}
-  .cosmic-nebula-southwest {left:-40%;bottom:0;width:81%;height:29%}
-  .cosmic-nebula-south {right:-25%;bottom:-9%;width:72%;height:27%}
-  .cosmic-nebula-northeast {right:-32%;top:-8%;width:77%;height:28%}
-  .orbital-nebulae {mask-image:radial-gradient(ellipse 39% 30% at 50% 30%,transparent 42%,#000 100%)}
+:root[data-mode='light'] .orbital-sky-star[data-tint='primary'] { fill: var(--orbit-control-accent); }
+:root[data-mode='light'] .orbital-sky-star[data-tint='secondary'] { fill: var(--orbit-node-accent); }
+
+@media (max-width: 900px) {
+  .cosmic-nebula { --nebula-span: 68vw; opacity: calc(.73 * var(--nebula-strength)); }
 }
-@media(prefers-reduced-motion:reduce) {
-  .orbital-backdrop :is(.cosmic-nebula,.orbital-sky-star) {animation:none}
+@media (max-width: 740px) {
+  .orbital-nebulae { mask-image: radial-gradient(ellipse 52% 30% at 50% 29%, transparent 40%, #000 100%); }
+  .cosmic-nebula { --nebula-span: 101vw; --nebula-left: 6%; --nebula-top: 8%; opacity: calc(.68 * var(--nebula-strength)); }
+  .cosmic-nebula[data-anchor='northeast'] { --nebula-left: 101%; --nebula-top: 9%; }
+  .cosmic-nebula[data-anchor='east'] { --nebula-left: 106%; --nebula-top: 47%; }
+  .cosmic-nebula[data-anchor='southwest'] { --nebula-left: 1%; --nebula-top: 78%; }
+  .cosmic-nebula[data-anchor='south'] { --nebula-left: 87%; --nebula-top: 80%; }
 }
-@media(forced-colors:active) {.orbital-backdrop{display:none}}
+@media (prefers-reduced-motion: reduce) { .orbital-sky-star[data-twinkle='true'] { animation: none; } }
+@media (forced-colors: active) { .orbital-backdrop { display: none; } }
