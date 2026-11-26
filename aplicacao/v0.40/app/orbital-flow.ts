@@ -3,7 +3,7 @@ import {sampleOrbitalCritical, type OrbitalCriticalEvent, type OrbitalCriticalFr
 
 type CriticalFlow = {
   event: {current: OrbitalCriticalEvent | null};
-  paint: (sample: OrbitalCriticalFrame | null, compact: boolean) => void;
+  paint: (sample: OrbitalCriticalFrame | null) => void;
 };
 
 export function startOrbitalFlow(
@@ -34,7 +34,7 @@ export function startOrbitalFlow(
     } else if (art.dataset.cosmicPhase && art.dataset.cosmicPhase !== 'still') {
       delete art.dataset.cosmicPhase;
     }
-    critical.paint(sample, compact.matches);
+    critical.paint(sample);
   }
 
   function status() {

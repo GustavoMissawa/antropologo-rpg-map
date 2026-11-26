@@ -160,8 +160,8 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
     notify();
     for (let time = 18030; time <= 20100; time += 30) runFrame(time);
     assert.ok(clock.speed > 2.7);
-    assert.equal(art.dataset.cosmicPhase, 'shock');
-    assert.ok(painted.jet > .95);
+    assert.equal(art.dataset.cosmicPhase, 'focus');
+    assert.ok(painted.core > .7);
     for (let time = 20130; frames.size && time <= 24000; time += 30) runFrame(time);
     assert.equal(clock.speed, 0);
     assert.ok(clock.seconds > beforeCritical);
@@ -169,7 +169,7 @@ test('O compositor pausa sem apagar a fase, retoma e libera frames e observadore
     assert.equal(critical.event.current, null);
     assert.equal(painted, null);
     assert.equal(art.dataset.cosmicPhase, undefined);
-    assert.deepEqual([...phases], ['overload', 'focus', 'jet', 'shock', 'dissipating']);
+    assert.deepEqual([...phases], ['overload', 'focus', 'dissipating']);
     document.hidden = true; callbacks.get('visibilitychange')();
     assert.equal(frames.size, 0);
     assert.equal(art.dataset.diskMotion, 'paused');

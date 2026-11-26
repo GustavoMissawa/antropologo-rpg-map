@@ -5,7 +5,6 @@ import {readOrbitalColors} from '../lib/appearance-colors';
 import type {OrbitalCriticalEvent, OrbitalCriticalFrame} from '../lib/orbital-critical';
 import {pageOrbitalScene} from '../lib/orbital-disk';
 import {ORBITAL_DISK_TILT_DEGREES} from '../lib/orbital-flow';
-import {createOrbitalJet} from '../lib/orbital-jet';
 import {paintOrbitalBitmaps, paintOrbitalLight, type OrbitalBitmaps, type OrbitalLightRequest} from '../lib/orbital-light';
 
 import {startOrbitalFlow} from './orbital-flow';
@@ -117,7 +116,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
   const stream = useRef<HTMLCanvasElement>(null);
   const dust = useRef<HTMLCanvasElement>(null);
   const flow = useRef<HTMLCanvasElement>(null);
-  const jet = useRef<HTMLCanvasElement>(null);
+  const halo = useRef<HTMLDivElement>(null);
   const diskLight = useRef<HTMLDivElement>(null);
   const critical = useRef<OrbitalCriticalEvent | null>(null);
   const diskPress = useRef<{x: number; y: number} | null>(null);
@@ -135,9 +134,9 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
     const lightCanvas = stream.current;
     const dustCanvas = dust.current;
     const flowCanvas = flow.current;
-    const jetCanvas = jet.current;
+    const coreLight = halo.current;
     const diskLayer = diskLight.current;
-    if (!element || !lightCanvas || !dustCanvas || !flowCanvas || !jetCanvas || !diskLayer) return;
+    if (!element || !lightCanvas || !dustCanvas || !flowCanvas || !coreLight || !diskLayer) return;
 
     const compact = matchMedia('(max-width: 740px)');
     const root = document.documentElement;
@@ -151,17 +150,22 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
       colors: readOrbitalColors(root),
     });
     let current = readRequest();
-    const paintJet = createOrbitalJet(jetCanvas, disk.seed);
     let brightness = '';
+    let coreOpacity = '';
     const criticalFlow = {
       event: critical,
-      paint(sample: OrbitalCriticalFrame | null, small: boolean) {
+      paint(sample: OrbitalCriticalFrame | null) {
         const next = sample && sample.light > .001 ? `brightness(${(1 + sample.light).toFixed(3)})` : '';
         if (next !== brightness) {
           diskLayer.style.filter = next;
           brightness = next;
         }
-        paintJet(sample, current.colors, current.mode, small);
+        const opacity = sample && sample.core > .001 ? sample.core.toFixed(3) : '';
+        if (opacity !== coreOpacity) {
+          if (opacity) coreLight.style.setProperty('--orbital-core-light', opacity);
+          else coreLight.style.removeProperty('--orbital-core-light');
+          coreOpacity = opacity;
+        }
       },
     };
     let cancelFlow: (() => void) | undefined;
@@ -195,7 +199,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
       cancelAnimationFrame(updateFrame);
       cancelTextures();
       cancelFlow?.();
-      criticalFlow.paint(null, compact.matches);
+      criticalFlow.paint(null);
     };
   }, [onDiskFrame]);
 
@@ -210,8 +214,7 @@ export function OrbitalArt({slowDie, cruising, activation, onDiskFrame, boostDis
           <canvas ref={flow} className="orbital-flow" />
         </div>
       </div>
-      <canvas ref={jet} className="orbital-jet" width={1} height={1} aria-hidden="true" />
-      <div className="orbital-critical-halo" aria-hidden="true" />
+      <div ref={halo} className="orbital-critical-halo" aria-hidden="true" />
       {onDiskReturn && <button className="orbital-disk-return" type="button" aria-label="Voltar à Home Orbital"
         onPointerDown={event => {diskPress.current = {x: event.clientX, y: event.clientY};}}
         onPointerCancel={() => {diskPress.current = null;}}
