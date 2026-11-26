@@ -1,8 +1,7 @@
-import { planOrbitalFlight, planetaryLocation, pointOnOrbit, type CelestialOrbit, type OrbitalTopic, type PlanetarySystem, type SpacePoint } from './orbital-system.ts';
+import { planOrbitalFlight, planetaryLocation, type PlanetarySystem, type SpacePoint } from './orbital-system.ts';
 import { clampUnit, smoothUnit } from './orbital-noise.ts';
 
-export const solarOrbit = { x: 450, y: 224 };
-export const lunarOrbit = { x: 137, y: 85 };
+import { lunarOrbit, type mapFrame } from './orbital-layout.ts';
 export type OrbitalView = 'exploration' | 'focus' | 'reading';
 export type Camera = SpacePoint & { zoom: number };
 export type CameraMotion = {
@@ -14,18 +13,18 @@ export type CameraMotion = {
 export const overviewCamera: Camera = { x: 0, y: 0, zoom: 1 };
 export const arrivalCamera: Camera = { x: -186, y: -115, zoom: .72 };
 
-export function orbitPosition(orbit: CelestialOrbit, plane: SpacePoint, seconds: number) {
-  const angularSpeed = (plane === lunarOrbit ? .008 : .0028) / Math.sqrt(orbit.radius);
-  const point = pointOnOrbit({ radius: orbit.radius, angle: orbit.angle + seconds * angularSpeed });
-  return { x: point.x * plane.x, y: point.y * plane.y };
-}
-
-export function targetCamera(topic: OrbitalTopic | undefined, seconds: number, compact: boolean): Camera {
-  if (!topic) return overviewCamera;
-  const center = orbitPosition(topic.planet.orbit, solarOrbit, seconds);
-  if (!topic.moon) return { ...center, zoom: compact ? 2.75 : 2.12 };
-  const moon = orbitPosition(topic.moon.orbit, lunarOrbit, seconds);
-  return { x: center.x + moon.x, y: center.y + moon.y, zoom: compact ? 5.55 : 4.28 };
+export function targetCamera(parent: SpacePoint | undefined, moon: SpacePoint | undefined,
+  hasMoons: boolean, frame: ReturnType<typeof mapFrame>): Camera {
+  if (!parent) return overviewCamera;
+  const {bounds, scale} = frame;
+  const offset = moon ? {x: moon.x * .22, y: moon.y * .22} : {x: 0, y: 0};
+  const width = bounds.right - bounds.left;
+  const height = bounds.bottom - bounds.top;
+  const extentX = (hasMoons ? 162 : 100) + Math.abs(offset.x);
+  const extentY = (hasMoons ? 125 : 100) + Math.abs(offset.y);
+  const magnification = Math.min((width < 560 ? 1.50 : 2.38) + (moon ? .12 : 0),
+    width / (2 * extentX), height / (2 * extentY));
+  return {x: parent.x + offset.x, y: parent.y + offset.y, zoom: magnification / scale};
 }
 
 export function makeCameraMotion(system: PlanetarySystem, previous: string | undefined, destination: string | undefined,
