@@ -1,11 +1,51 @@
 .rules-content { display: contents; }
 
-.orbital-home-departure {
+/* Keep the current Home geometry in screen space while the destination mounts in flow. */
+.orbital-flight {
   position: fixed;
+  inset: 0;
   z-index: 8;
   pointer-events: none;
   isolation: isolate;
-  background: var(--orbit-atmosphere), var(--orbit-horizon);
+  overflow: clip;
+}
+.orbital-home-departure { position: absolute; }
+.orbital-home-departure :is(.orbital-starfield,.orbital-nebulae,.orbital-rail,.orbital-workspace) { transition: none; }
+.orbital-flight-sky,.orbital-flight-haze,.orbital-flight-stars {
+  position: absolute;
+  inset: 0;
+}
+.orbital-flight-sky { isolation: isolate; background: var(--orbit-horizon); }
+.orbital-flight-haze {
+  inset: -16%;
+  opacity: 0;
+  background:
+    radial-gradient(ellipse at 22% 75%, var(--orbit-cloud-secondary), transparent 57%),
+    radial-gradient(ellipse at 83% 31%, var(--orbit-cloud-primary), transparent 53%);
+}
+.orbital-flight-stars {
+  width: 100%;
+  height: 100%;
+  color: color-mix(in srgb, var(--orbit-ink) 82%, var(--orbit-control-bright));
+}
+.orbital-flight-skip {
+  position: absolute;
+  inset: auto max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) auto;
+  min-height: 44px;
+  padding: 8px 15px;
+  border: 1px solid var(--orbit-control-line);
+  border-radius: 8px;
+  background: var(--orbit-surface);
+  color: var(--orbit-ink);
+  font: 600 .875rem/1.35 var(--font);
+  outline-color: var(--orbit-control-bright);
+  pointer-events: auto;
+}
+@media (hover: hover) and (pointer: fine) {
+  .orbital-flight-skip:hover { background: var(--orbit-control-hover); }
+}
+.rules-orbital[data-approaching='true'] :is(.ruleset-reader-top,.rule-index,.orbital-system-caption,.ruleset-draft-note) {
+  opacity: 0;
 }
 
 .rules-orbital {
@@ -139,6 +179,7 @@
     linear-gradient(0deg, transparent, #000 5%, #000 96%, transparent);
   mask-composite: intersect;
 }
+.orbital-system-sky { position: absolute; inset: 0; pointer-events: none; }
 .orbital-system-stars {
   position: absolute;
   inset: -16%;

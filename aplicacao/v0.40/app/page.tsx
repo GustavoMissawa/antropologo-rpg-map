@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback,useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useCallback,useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { AppearanceControls, useAppearance } from './appearance';
 import {useSystemVisualState,hasSystemIdentity,SystemHeaderIdentity,SystemHeaderBackground,SystemMainBackground} from './system-identity';
 import {ContextHelp} from './context-help';
@@ -54,7 +54,7 @@ function PlatformApp(){
   const appearance=useAppearance();
   const style=appearance.value.interfaceStyle;
   const orbital=style==='orbital';
-  const {homeLayer,departure,trackApproach}=useSystemApproach(orbital);
+  const {homeLayer,flightLayer,skipRef,systemApproach,departure,trackApproach,skipApproach}=useSystemApproach(orbital);
   const [route,setRoute]=useState<PlatformRoute>({page:'home'});
   const locationRoute=useRef<PlatformRoute>(route);
   const [journey,setJourney]=useState<PlatformJourney|null>(null);
@@ -104,8 +104,8 @@ function PlatformApp(){
     if(timer.current)clearTimeout(timer.current);
     timer.current=setTimeout(()=>setToast(''),4500);
   },[]);
-  const applyRoute=useCallback((next:PlatformRoute, animate:boolean, activate=false)=>{
-    trackApproach(locationRoute.current,next,animate);
+  const applyRoute=useCallback((next:PlatformRoute, animate:boolean, activate=false, travel=false)=>{
+    trackApproach(locationRoute.current,next,travel);
     setJourney(animate?{from:locationRoute.current,to:next}:null);
     locationRoute.current=next;
     setReceipt('');
@@ -113,7 +113,7 @@ function PlatformApp(){
     setDieActivation(activate?++activationCount.current:0);
     setRoute(next);
   },[trackApproach]);
-  const navigate=useCallback((next:PlatformRoute, activate=false, replace=false)=>{
+  const navigate=useCallback((next:PlatformRoute, activate=false, replace=false, travel=false)=>{
     const hash=platformHref(next);
     if(hash===historyHash.current)return true;
     if(ruleEditorDirty.current){notify(editorWarning);return false;}
@@ -124,7 +124,7 @@ function PlatformApp(){
     else window.history.pushState(state,'',hash);
     historyHash.current=hash;
     const previous=locationRoute.current;
-    applyRoute(next,!replace,activate);
+    applyRoute(next,!replace,activate,travel);
     const inBook=previous.page==='rules'&&next.page==='rules'&&previous.bookId&&previous.bookId===next.bookId;
     if(!replace&&!inBook)window.scrollTo({top:0,behavior:'instant'});
     return true;
@@ -224,7 +224,7 @@ function PlatformApp(){
     window.addEventListener('beforeunload',warn);
     return()=>window.removeEventListener('beforeunload',warn);
   },[rulesHaveDraft,templateDirty]);
-  function selectSystem(id:string|null){return navigate({page:'rules',bookId:id??undefined});}
+  function selectSystem(id:string|null,travel=false){return navigate({page:'rules',bookId:id??undefined},false,false,travel);}
   function selectTopic(topicId?:string,anchorId?:string,replace=false,view?:'orbit'){
     if(activeRulebookId===null)return false;
     return navigate({page:'rules',bookId:activeRulebookId,topicId,anchorId,view},false,replace);
@@ -315,7 +315,7 @@ function PlatformApp(){
   const hasIdentity=hasSystemIdentity(contextBook);
   const homeActions={
     books:rulebooks,sheets:recent,pdfs,pdfLoading,pdfError,
-    onAddPdf:()=>openModal('pdf'),onSystem:selectSystem,
+    onAddPdf:()=>openModal('pdf'),onSystem:(id:string)=>selectSystem(id,orbitalHome),
     onAllSystems:()=>browseSystems(),onCreateSystem:()=>browseSystems(true),
     onCreateCharacter:()=>newCharacter(selectedContext),onOpenCharacter:openCharacter,
     onAllCharacters:()=>navigate({page:'sheet'}),
@@ -348,15 +348,23 @@ function PlatformApp(){
       {orbital&&page!=='home'&&!(page==='rules'&&activeRulebookId)&&<WorkspaceTrail section={areaNames[area]} onMap={()=>selectDestination(null)} onSection={()=>selectSection(area)}/>}
       {page==='home'&&!orbitalHome&&<TestNotice/>}{sessionError&&<p className="session-context-warning" role="status">{sessionError}</p>}{page==='rules'&&receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
 
-      {(orbitalHome||departure)&&<div ref={homeLayer} className={departure?'orbital-home-departure':undefined}
-        inert={!!departure} aria-hidden={!!departure||undefined} style={departure?.bounds}>
-        <OrbitalHome {...homeActions} destination={departure?departure.destination??null:destination} dieActivation={dieActivation}
-          onSelectDestination={selectDestination} firstStepsCue={departure?null:firstSteps.cue} onFirstStepsZone={setFirstStepsZone} onDiskReturn={firstSteps.diskUsed}/>
+      {(orbitalHome||departure)&&<div ref={flightLayer} className={departure?'orbital-flight':undefined}>
+        {departure&&<div className="orbital-flight-sky" aria-hidden="true" style={{'--flight-scroll-y': `${departure.scrollY}px`} as CSSProperties}/>}
+        <div ref={homeLayer} className={departure?'orbital-home-departure':undefined}
+          inert={!!departure} aria-hidden={!!departure||undefined} style={departure?.bounds}>
+          <OrbitalHome {...homeActions} departing={!!departure} destination={departure?departure.destination??null:destination} dieActivation={dieActivation}
+            onSelectDestination={selectDestination} firstStepsCue={departure?null:firstSteps.cue} onFirstStepsZone={setFirstStepsZone} onDiskReturn={firstSteps.diskUsed}/>
+          <TestNotice/>
+        </div>
+        {departure&&!departure.reduced&&<>
+          <div className="orbital-flight-haze" aria-hidden="true"/>
+          <canvas className="orbital-flight-stars" aria-hidden="true"/>
+          <button ref={skipRef} className="orbital-flight-skip" type="button" aria-keyshortcuts="Escape" onClick={skipApproach}>Pular viagem</button>
+        </>}
       </div>}
       {page==='home'&&!orbitalHome&&<PlatformHome {...homeActions} context={selectedContext}/>}
-      {orbitalHome&&<TestNotice/>}
 
-      {page==='rules'&&<RulesLibrary orbital={orbital} journey={journey} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} topicId={topicId} anchorId={anchorId} view={ruleView} onTopicChange={selectTopic} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
+      {page==='rules'&&<RulesLibrary orbital={orbital} systemApproach={systemApproach} approaching={!!departure} createRequested={createSystemRequested} onCreateRequestHandled={()=>setCreateSystemRequested(false)} onEditorDirtyChange={reportRuleEditorDirty} books={rulebooks} onChange={setRulebooks} activeId={activeRulebookId} onActiveChange={selectSystem} topicId={topicId} anchorId={anchorId} view={ruleView} onTopicChange={selectTopic} notify={notify} characters={recent} onEditTemplate={editTemplate} onLinkTemplate={linkTemplate} onCreateCharacter={newCharacter} onImportCharacter={acceptImported} unsavedTemplateBookId={templateDirty?templateDraft?.bookId:undefined}/>}
 
       {page==='pdfs'&&<>
         {orbital?<WorkspaceHeading area="pdfs" title="Biblioteca de PDFs" description="Organize manuais, aventuras e referências da sua mesa." actions={addPdfButton}/>:<>

@@ -32,7 +32,7 @@ test('Câmera chega ao planeta e às luas usando as posições dos mesmos corpos
   assert.equal(at('character').x,parent.x);
   assert.notDeepEqual(first,second);
   assert.notEqual(at('skills',true).x,at('character',true).x);
-  const travel=makeCameraMotion(system,'attributes','skills',first,false,false);
+  const travel=makeCameraMotion(system,'attributes','skills',first,false);
   assert.equal(travel.kind,'orbit');
   const middle=cameraAt(travel,second,.5,parent);
   assert.deepEqual(cameraAt(travel,second,0,parent),first);
@@ -41,20 +41,17 @@ test('Câmera chega ao planeta e às luas usando as posições dos mesmos corpos
   assert.notDeepEqual(orbitPosition(planet.orbit,solarOrbit,28),parent);
 });
 
-test('Câmera distingue viagem próxima, distante e chegada e redireciona a partir do quadro atual',()=>{
+test('Câmera distingue viagem próxima e distante e redireciona a partir do quadro atual',()=>{
   const early=at('character'), goal=at('welcome');
-  const jump=makeCameraMotion(system,'character','welcome',early,false,false);
+  const jump=makeCameraMotion(system,'character','welcome',early,false);
   assert.equal(jump.kind,'jump');
   const between=cameraAt(jump,goal,.4);
   assert(between.zoom<Math.min(early.zoom,goal.zoom));
   assert.deepEqual(cameraAt(jump,goal,1),goal);
-  const revised=makeCameraMotion(system,'welcome','magic',between,false,false);
+  const revised=makeCameraMotion(system,'welcome','magic',between,false);
   assert.deepEqual(cameraAt(revised,at('magic'),0),between);
-  assert.equal(makeCameraMotion(system,'dice','magic',at('dice'),false,false).kind,'lateral');
-  const arriving=makeCameraMotion(system,undefined,undefined,overviewCamera,true,false);
-  assert.equal(arriving.kind,'arrival');
-  assert(arriving.from.zoom<1);
-  assert.equal(makeCameraMotion(system,undefined,undefined,overviewCamera,false,false),null);
+  assert.equal(makeCameraMotion(system,'dice','magic',at('dice'),false).kind,'lateral');
+  assert.equal(makeCameraMotion(system,undefined,undefined,overviewCamera,false),null);
 });
 
 test('O mapa distribui trilhas sem alterar os corpos e preserva folga nas duas famílias durante a rotação',()=>{

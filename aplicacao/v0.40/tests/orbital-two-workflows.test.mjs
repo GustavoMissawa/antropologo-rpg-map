@@ -37,6 +37,61 @@ function selectBody(scene,id){
   return act(async()=>link.dispatchEvent(new MouseEvent('click',{bubbles:true,cancelable:true})));
 }
 
+test('A viagem da Home pausa em segundo plano e o pulo libera o mesmo mapa, sem remontar a estrela', async () => {
+  sessionStorage.clear();
+  await preferences({motionReduced:false});
+  const animations = [];
+  const animate = Element.prototype.animate;
+  const visibility = Object.getOwnPropertyDescriptor(document,'hidden');
+  let hidden = false;
+  Element.prototype.animate = () => {
+    const animation = {pause(){this.paused=true;},play(){this.paused=false;},
+      finish(){this.finished=true;},cancel(){this.cancelled=true;}};
+    animations.push(animation);
+    return animation;
+  };
+  Object.defineProperty(document,'hidden',{configurable:true,get:()=>hidden});
+  try {
+    const ui = await start('#inicio');
+    try {
+      const home = ui.host.querySelector('.orbital-home');
+      const bounds = {left:20, top:80, width:1240, height:840};
+      home.parentElement.getBoundingClientRect = () => bounds;
+      await clickButton(ui.host,'Entrar no sistema AB10 — Absolute 10');
+      const scene = ui.host.querySelector('.orbital-system-scene');
+      const star = scene.querySelector('.orbital-map-star');
+      const skip = ui.host.querySelector('.orbital-flight-skip');
+      assert.equal(ui.host.querySelector('.orbital-home'),home);
+      assert.equal(window.location.hash,'#regras/ab10');
+      assert(scene.closest('.rules-library').hasAttribute('inert'));
+      assert.equal(document.activeElement,skip);
+      await act(async()=>{
+        hidden=true;
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      assert(animations.length>0&&animations.every(animation=>animation.paused));
+      assert.equal(ui.host.querySelector('.orbital-flight-skip'),skip);
+      await act(async()=>{
+        hidden=false;
+        document.dispatchEvent(new Event('visibilitychange'));
+      });
+      assert(animations.every(animation=>!animation.paused));
+      await clickButton(ui.host,'Pular viagem');
+      assert.equal(ui.host.querySelector('.orbital-system-scene'),scene);
+      assert.equal(scene.querySelector('.orbital-map-star'),star);
+      assert(!ui.host.querySelector('.orbital-flight'));
+      assert(!scene.closest('.rules-library').hasAttribute('inert'));
+      assert(animations.every(animation=>animation.finished&&animation.cancelled));
+      await waitFor(()=>document.activeElement===scene.querySelector('h2'));
+    } finally {await ui.close();}
+  } finally {
+    if(animate)Element.prototype.animate=animate;
+    else delete Element.prototype.animate;
+    if(visibility)Object.defineProperty(document,'hidden',visibility);
+    else delete document.hidden;
+  }
+});
+
 test('Exploração, foco e leitura do AB10 conservam a cena e o histórico', async () => {
   sessionStorage.clear();
   await preferences({motionReduced:true});

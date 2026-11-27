@@ -7,6 +7,7 @@ import {
 } from '../lib/orbital-camera';
 import { lunarOrbit, mapFrame, orbitPosition, placeMapLabel, solarOrbit, starMapRadius, type MapBody } from '../lib/orbital-layout';
 import type { OrbitalMoon, OrbitalPlanet, OrbitalTopic, PlanetarySystem } from '../lib/orbital-system';
+import type { SystemApproach } from '../lib/system-approach';
 
 type Rendering = {
   stage: RefObject<HTMLDivElement | null>;
@@ -18,22 +19,27 @@ type Rendering = {
   planets: MapBody<OrbitalPlanet>[];
   moons: MapBody<OrbitalMoon>[];
   view: OrbitalView;
-  arrival: boolean;
+  approachRef: RefObject<SystemApproach | null>;
 };
 
 const bounded = (value: number, limit: number) => Math.max(-limit,Math.min(limit,value));
 const position = (x: number, y: number) => `translate(${x.toFixed(2)} ${y.toFixed(2)})`;
 
-export function useOrbitalCamera({stage, svg, world, system, topic, topicId, planets, moons, view, arrival}: Rendering) {
+export function useOrbitalCamera({stage, svg, world, system, topic, topicId, planets, moons, view, approachRef}: Rendering) {
   const camera = useRef<Camera>(overviewCamera);
   const previous = useRef<{id?: string} | null>(null);
   const clock = useRef(0);
   useLayoutEffect(() => {
     const frame = stage.current, viewport = svg.current, layer = world.current;
     if (!frame || !viewport || !layer) return;
+    const pendingApproach = approachRef.current;
+    const approach = pendingApproach?.bookId === system.id && view === 'exploration' ? pendingApproach : null;
     const starLayers = Array.from(frame.querySelectorAll<HTMLElement>('[data-star-layer]'));
+    const sky = frame.querySelector<HTMLElement>('.orbital-system-sky')!;
     const track = layer.querySelector('[data-moon-tracks]');
     const star = layer.querySelector<SVGGElement>('.orbital-map-star')!;
+    const bodies = layer.querySelector<SVGGElement>('.orbital-map-bodies')!;
+    const solarTracks = layer.querySelector<SVGGElement>('.orbital-solar-tracks')!;
     const caption = frame.parentElement?.querySelector<HTMLElement>('.orbital-system-caption');
     const actions = frame.parentElement?.querySelector<HTMLElement>('.orbital-map-actions');
     const byId = new Map([...planets,...moons].map(item => [item.body.id,item] as const));
@@ -53,14 +59,17 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
     let height = frame.clientHeight || 560;
     let compact = width < 610;
     let framing = mapFrame(width,height,85,46);
+    let left = 0, top = 0;
+    let lastArrivalAim = {x: 0, y: 0};
     let visible = true;
     let raf = 0, lastFrame = 0, lastPaint = 0;
-    const arriving = arrival && previous.current===null;
-    const navigating = arriving || previous.current!==null;
-    let flight: CameraMotion | null = navigating && view!=='reading' && !reduced.matches && frame.clientWidth && !document.hidden
-      ? makeCameraMotion(system,previous.current?.id,topicId,camera.current,arriving,compact) : null;
+    const arriving = () => !!approach?.active;
+    let fadedForArrival = false;
+    let flight: CameraMotion | null = previous.current !== null && !arriving() && view!=='reading' && !reduced.matches && frame.clientWidth && !document.hidden
+      ? makeCameraMotion(system,previous.current.id,topicId,camera.current,compact) : null;
     let flightStart = 0;
     if (flight) frame.dataset.cameraMotion = flight.kind;
+    if (arriving()) frame.dataset.cameraMotion = 'arrival';
     previous.current = {id:topicId};
 
     function measure() {
@@ -69,6 +78,11 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
       compact = width < 610;
       viewport!.setAttribute('viewBox',`0 0 ${width} ${height}`);
       framing = mapFrame(width, height, (caption?.offsetHeight || 80) + 4, actions ? actions.offsetHeight + (compact ? 19 : 28) : 23);
+      if (approach) {
+        const rect = frame!.getBoundingClientRect();
+        left = rect.left;
+        top = rect.top + window.scrollY;
+      }
       for (const node of nodes) {
         const labelText = node.label.querySelector('text');
         node.length = (labelText?.getComputedTextLength?.() || Number(node.label.dataset.labelWidth)) + 5;
@@ -76,10 +90,24 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
     }
 
     function paint(now: number) {
+      const incoming = approach?.active && !approach.frame.complete ? approach.frame : null;
       const parent = host && orbitPosition(host.orbit,solarOrbit,clock.current);
       const moonPoint = satellite && orbitPosition(satellite.orbit,lunarOrbit,clock.current);
       const target = targetCamera(parent,moonPoint,moons.length>0,framing);
-      if (flight) {
+      if (incoming) {
+        const zoom = incoming.arrivalZoom;
+        const scale = framing.scale * zoom;
+        camera.current = {
+          x: width * (compact ? .025 : .072) * incoming.arrivalBearing / scale,
+          y: height * .19 * incoming.arrivalBearing / scale,
+          zoom,
+        };
+        sky.style.opacity = String(incoming.arrivalSky);
+        star.style.opacity = String(incoming.arrivalStar);
+        bodies.style.opacity = String(incoming.arrivalPlanets);
+        solarTracks.style.opacity = String(incoming.arrivalTracks);
+        fadedForArrival = true;
+      } else if (flight) {
         flightStart ||= now;
         const progress = Math.min(1,(now-flightStart)/flight.duration);
         camera.current = cameraAt(flight,target,progress,parent);
@@ -89,6 +117,11 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
         }
       } else {
         camera.current = target;
+      }
+      if (!incoming && fadedForArrival) {
+        [sky, star, bodies, solarTracks, ...nodes.map(node => node.label)]
+          .forEach(element => element.style.removeProperty('opacity'));
+        fadedForArrival = false;
       }
       const pose = camera.current;
       const {center:origin,bounds} = framing;
@@ -111,7 +144,8 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
         const strength = i===0?.10:.29;
         const shiftX = bounded(-pose.x*scale*strength, width*.14);
         const shiftY = bounded(-pose.y*scale*strength, height*.14);
-        stars.style.transform = `translate3d(${shiftX.toFixed(1)}px,${shiftY.toFixed(1)}px,0)`;
+        const depth = incoming ? 1 + incoming.arrivalBearing * (i === 0 ? .16 : .36) : 1;
+        stars.style.transform = `translate3d(${shiftX.toFixed(1)}px,${shiftY.toFixed(1)}px,0)${depth === 1 ? '' : ` scale(${depth})`}`;
       });
 
       const disks = showStar ? [projectedStar] : [];
@@ -145,19 +179,21 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
       }
       const labels: NonNullable<ReturnType<typeof placeMapLabel>>[] = [];
       for (const {node,disk,bodyScale} of visibleNodes) {
-        const label = node.priority!=='remote' || node.link===document.activeElement
+        const label = (!incoming || incoming.arrivalLabels > 0) && (node.priority!=='remote' || node.link===document.activeElement)
           ? placeMapLabel(disk,node.length,bounds,disks,labels) : null;
         if (node.labelVisible!==!!label) {
           node.labelVisible=!!label;
           node.label.dataset.display=String(!!label);
         }
+        if (incoming) node.label.style.opacity = String(label ? incoming.arrivalLabels : 0);
         if (!label) continue;
         labels.push(label);
         node.label.setAttribute('transform',`${position((label.x-disk.x)/bodyScale,(label.y-disk.y)/bodyScale)} scale(${(1/bodyScale).toFixed(4)})`);
       }
+      if (approach?.active) lastArrivalAim = {x: left + projectedStar.x, y: top + projectedStar.y};
     }
 
-    const playing = () => view!=='reading'&&!reduced.matches&&!document.hidden&&visible&&!!frame.clientWidth;
+    const playing = () => !arriving()&&view!=='reading'&&!reduced.matches&&!document.hidden&&visible&&!!frame.clientWidth;
     function tick(now: number) {
       raf = 0;
       if (!playing()) return;
@@ -175,12 +211,22 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
         raf = 0;
         lastFrame = 0;
         flight = null;
-        delete frame!.dataset.cameraMotion;
+        if (!arriving()) delete frame!.dataset.cameraMotion;
       }
       paint(window.performance.now());
       if (playing() && !raf) raf = requestAnimationFrame(tick);
     }
     function resize() { measure(); refresh(); }
+    if (approach) {
+      approach.paintSystem = (seconds) => {
+        const scrollTop = window.scrollY;
+        if (!reduced.matches) clock.current += seconds;
+        // Until the destination becomes visible, its bearing is constant.
+        if (approach.frame.arrivalStar > 0) paint(performance.now());
+        return {x: lastArrivalAim.x, y: lastArrivalAim.y - scrollTop};
+      };
+      approach.resumeSystem = refresh;
+    }
     measure();
     refresh();
     const resizeObserver = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(resize);
@@ -200,6 +246,12 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
     return()=>{
       if (raf) cancelAnimationFrame(raf);
       delete frame.dataset.cameraMotion;
+      if (approach) {
+        delete approach.paintSystem;
+        delete approach.resumeSystem;
+      }
+      if (fadedForArrival) [sky, star, bodies, solarTracks, ...nodes.map(node => node.label)]
+        .forEach(element => element.style.removeProperty('opacity'));
       resizeObserver?.disconnect();
       frame.removeEventListener('focusin',refresh);
       frame.removeEventListener('focusout',refresh);
@@ -208,5 +260,5 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
       reduced.removeEventListener('change',refresh);
       document.removeEventListener('visibilitychange',refresh);
     };
-  },[stage,svg,world,system,topic,topicId,planets,moons,view,arrival]);
+  },[stage,svg,world,system,topic,topicId,planets,moons,view,approachRef]);
 }

@@ -1,5 +1,5 @@
 'use client';
-import { useEffect,useRef,useState,type ReactNode } from 'react';
+import { useEffect,useRef,useState,type ReactNode,type RefObject } from 'react';
 import { ArrowDown,ArrowLeft,ArrowRight,ArrowUp,BookOpen,ChevronRight,Dices,Download,FileText,FolderOpen,Info,Layers3,ListTree,LockKeyhole,Orbit,Pencil,Plus,Search,Trash2,X } from 'lucide-react';
 import { AB10_RULEBOOK_ID,MAX_RULEBOOKS,MAX_RULE_DEPTH,MAX_RULE_TOPICS,addRulebook,countRules,filterRules,findRule,makeRulebook,mapRules,moveRule,removeCustomRulebook,ruleLocation,serializeRulebook,uid,updateCustomRulebook,type Rule,type Rulebook,type Sheet } from '../lib/model';
 import { ContentExportDialog } from './content-export';
@@ -16,17 +16,17 @@ import { RulebookSheetLink } from './rulebook-sheet-link';
 import { RulesIndex } from './rules-index';
 import { WorkspaceHeading } from './orbital-workspace';
 import { OrbitalSystemScene } from './orbital-system-scene';
-import type { PlatformJourney } from '../lib/platform-navigation';
+import type { SystemApproach } from '../lib/system-approach';
 import type { OrbitalView } from '../lib/orbital-camera';
 
 const RuleTopicEditor = deferEditor(() => import('./rule-topic-editor.tsx').then(module => module.RuleTopicEditor), 'o editor de regras');
 
-type Props={orbital?:boolean;journey?:PlatformJourney|null;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;topicId?:string;anchorId?:string;view?:'orbit';onTopicChange:(topicId?:string,anchorId?:string,replace?:boolean,view?:'orbit')=>boolean;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
+type Props={orbital?:boolean;systemApproach:RefObject<SystemApproach|null>;approaching:boolean;createRequested?:boolean;onCreateRequestHandled?:()=>void;books:Rulebook[];onChange:(update:(books:Rulebook[])=>Rulebook[])=>void;activeId:string|null;onActiveChange:(id:string|null)=>void;topicId?:string;anchorId?:string;view?:'orbit';onTopicChange:(topicId?:string,anchorId?:string,replace?:boolean,view?:'orbit')=>boolean;notify:(message:string)=>void;characters:Sheet[];onEditTemplate:(book:Rulebook,createNew?:boolean)=>void;onLinkTemplate:(book:Rulebook,sheet:Sheet|undefined)=>void;onCreateCharacter:(book:Rulebook)=>void;onImportCharacter:(result:ImportedContent)=>void;unsavedTemplateBookId?:string;onEditorDirtyChange?:(dirty:boolean)=>void};
 const statuses={draft:'Rascunho',test:'Em teste',canon:'Canônico'};
 function RulesetVisual({book}:{book:Rulebook}){const [broken,setBroken]=useState(false);return <span className="ruleset-cover-title ruleset-visual">{book.id===AB10_RULEBOOK_ID?<AB10Logo/>:book.logo&&!broken?<img src={book.logo} alt={'Logo de '+book.name} onError={()=>setBroken(true)}/>:<span className="ruleset-name-fallback">{book.name}</span>}</span>;}
 function Tool({label,children,...props}:{label:string;children:ReactNode;disabled?:boolean;onClick:()=>void}){return <button type="button" className="icon-button" title={label} aria-label={label} {...props}>{children}</button>;}
 
-export function RulesLibrary({orbital=false,journey=null,createRequested,onCreateRequestHandled,books,onChange,activeId,onActiveChange,topicId,anchorId,view,onTopicChange,notify,characters,onEditTemplate,onLinkTemplate,onCreateCharacter,onImportCharacter,unsavedTemplateBookId,onEditorDirtyChange}:Props){
+export function RulesLibrary({orbital=false,systemApproach,approaching,createRequested,onCreateRequestHandled,books,onChange,activeId,onActiveChange,topicId,anchorId,view,onTopicChange,notify,characters,onEditTemplate,onLinkTemplate,onCreateCharacter,onImportCharacter,unsavedTemplateBookId,onEditorDirtyChange}:Props){
  const fileInput=useRef<HTMLInputElement>(null),article=useRef<HTMLElement>(null),sceneHeading=useRef<HTMLHeadingElement>(null),indexTrigger=useRef<HTMLButtonElement>(null),importRequest=useRef(0);
  useEffect(()=>()=>{importRequest.current++;},[]);
  const [mobile,setMobile]=useState(false),[indexOpen,setIndexOpen]=useState(false);
@@ -125,7 +125,7 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
  </>;
  const visibleBooks=books.filter(item=>(item.name+' '+item.description).toLocaleLowerCase('pt-BR').includes(libraryQuery.trim().toLocaleLowerCase('pt-BR')));
  const readerActions=book&&<><button type="button" className="button secondary ruleset-save" onClick={()=>download(book)}><Download size={17}/> Salvar regras</button>{!fixed&&<button type="button" className="button primary ruleset-add" disabled={!canAdd} onClick={()=>startChapter()}><Plus size={17}/> Novo capítulo</button>}</>;
- return <section className={"rules-library"+(book?" rules-reader"+(orbital?" rules-orbital":""):"")} aria-label="Biblioteca de conjuntos de regras" onDragOver={contentDragOver} onDrop={e=>contentDrop(e,file=>{void importFile(file);},notify)}>
+ return <section className={"rules-library"+(book?" rules-reader"+(orbital?" rules-orbital":""):"")} aria-label="Biblioteca de conjuntos de regras" data-approaching={approaching||undefined} inert={approaching} onDragOver={contentDragOver} onDrop={e=>contentDrop(e,file=>{void importFile(file);},notify)}>
   {receipt&&<ContentImportReceipt message={receipt} onClose={()=>setReceipt('')}/>}
   {exporting&&<ContentExportDialog content={exporting} onClose={()=>setExporting(null)} notify={notify}/>}
   <input ref={fileInput} type="file" accept={RULEBOOK_FILE_ACCEPT} aria-label="Arquivo de conjunto de regras" hidden onChange={e=>importFile(e.target.files?.[0])}/>
@@ -169,7 +169,7 @@ export function RulesLibrary({orbital=false,journey=null,createRequested,onCreat
    {anchorId&&!selectedAnchor&&!missingTopic&&<p className="orbital-list-empty" role="status">A seção deste link não está no tópico. O conteúdo disponível está abaixo.</p>}
    <div className={"rules-layout"+(!total?" rules-without-index":"")}>{total>0&&<RulesIndex mobile={mobile} open={indexOpen} total={total} onClose={closeIndex}><div className="index-head">ÍNDICE DO SISTEMA <span>{total}</span></div><label className="search small-search"><Search size={16}/><input aria-label="Buscar neste conjunto" placeholder="Buscar neste conjunto…" value={query} onChange={e=>setQuery(e.target.value)}/>{query&&<Tool label="Limpar busca de regras" onClick={()=>setQuery('')}><X size={15}/></Tool>}</label><nav className="rule-tree" aria-label={'Capítulos de '+book.name}>{tree(filtered)}{!filtered.length&&<p className="muted empty-search">{query?'Nenhum tópico encontrado.':'Os capítulos aparecerão aqui.'}</p>}</nav><div className="index-foot"><Layers3 size={15}/><span>{fixed?'Os capítulos do AB10 ficam sempre disponíveis.':'Crie capítulos e subdivida os assuntos em subseções.'}</span></div></RulesIndex>}
     <div className="rules-content" data-orbital-view={orbital?sceneView:undefined}>
-     {orbital&&<OrbitalSystemScene key={book.id} book={book} topicId={requested?.id} journey={journey}
+     {orbital&&<OrbitalSystemScene key={book.id} book={book} topicId={requested?.id} approachRef={systemApproach}
       view={sceneView} headingRef={sceneHeading} onTopic={id=>choose(id,undefined,false,true)} onRead={readFromOrbit}
       onOverview={()=>guarded(()=>{if(onTopicChange())requestAnimationFrame(()=>sceneHeading.current?.focus({preventScroll:true}));})}/>}
     <article ref={article} inert={orbital&&sceneView!=='reading'} aria-hidden={orbital&&sceneView!=='reading'||undefined} tabIndex={-1} className="rule-article" id={selected?ruleAnchorId(selected.id):undefined} aria-label={editor?'Editor do tópico':'Leitura do tópico'}>

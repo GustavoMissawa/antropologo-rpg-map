@@ -5,13 +5,12 @@ import { lunarOrbit, type mapFrame } from './orbital-layout.ts';
 export type OrbitalView = 'exploration' | 'focus' | 'reading';
 export type Camera = SpacePoint & { zoom: number };
 export type CameraMotion = {
-  kind: 'arrival' | 'orbit' | 'lateral' | 'jump';
+  kind: 'orbit' | 'lateral' | 'jump';
   from: Camera;
   duration: number;
 };
 
 export const overviewCamera: Camera = { x: 0, y: 0, zoom: 1 };
-export const arrivalCamera: Camera = { x: -186, y: -115, zoom: .72 };
 
 export function targetCamera(parent: SpacePoint | undefined, moon: SpacePoint | undefined,
   hasMoons: boolean, frame: ReturnType<typeof mapFrame>): Camera {
@@ -28,8 +27,7 @@ export function targetCamera(parent: SpacePoint | undefined, moon: SpacePoint | 
 }
 
 export function makeCameraMotion(system: PlanetarySystem, previous: string | undefined, destination: string | undefined,
-  camera: Camera, arrival: boolean, compact: boolean): CameraMotion | null {
-  if (arrival) return { kind: 'arrival', from: arrivalCamera, duration: compact ? 970 : 1160 };
+  camera: Camera, compact: boolean): CameraMotion | null {
   const flight = planOrbitalFlight(planetaryLocation(system, previous), planetaryLocation(system, destination));
   if (!flight) return null;
   const {kind} = flight;
@@ -57,7 +55,7 @@ export function cameraAt(motion: CameraMotion, target: Camera, progress: number,
       return { x: parent.x + radius * Math.cos(angle), y: parent.y + radius * Math.sin(angle) * yRatio, zoom: mix(from.zoom,target.zoom,time) };
     }
   }
-  const t = kind === 'arrival' ? 1 - (1 - progress) ** 3 : kind === 'jump' ? smoothUnit((progress - .12) / .71) : time;
+  const t = kind === 'jump' ? smoothUnit((progress - .12) / .71) : time;
   let zoom = mix(from.zoom, target.zoom, t);
   if (kind === 'jump') {
     const wide = Math.min(.78, from.zoom, target.zoom);

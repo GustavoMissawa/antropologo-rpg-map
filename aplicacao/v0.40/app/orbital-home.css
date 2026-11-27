@@ -101,11 +101,13 @@
 }
 
 .app-shell.orbital-home-mode .main-wrap::before,
-.app-shell.orbital-home-mode .main-wrap::after {
+.app-shell.orbital-home-mode .main-wrap::after,
+.orbital-flight-sky::before,
+.orbital-flight-sky::after {
   content: '';
   position: absolute;
   z-index: -1;
-  inset: var(--orbit-header) 0 auto;
+  inset: calc(var(--orbit-header) - var(--flight-scroll-y, 0px)) 0 auto;
   height: max(620px, 100vh);
   height: max(620px, 100svh);
   max-height: 970px;
@@ -113,11 +115,13 @@
   mask-image: linear-gradient(transparent, #000 16%, #000 74%, transparent);
 }
 
-.app-shell.orbital-home-mode .main-wrap::before {
+.app-shell.orbital-home-mode .main-wrap::before,
+.orbital-flight-sky::before {
   background: var(--orbit-atmosphere);
 }
 
-.app-shell.orbital-home-mode .main-wrap::after {
+.app-shell.orbital-home-mode .main-wrap::after,
+.orbital-flight-sky::after {
   background:
     radial-gradient(circle at 9% 19%, var(--orbit-star) 0 1px, transparent 1.5px),
     radial-gradient(circle at 16% 56%, var(--orbit-star-faint) 0 .8px, transparent 1.35px),
@@ -600,14 +604,14 @@
 .orbital-shortcut > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .orbital-shortcut strong { display: block; overflow: hidden; text-overflow: ellipsis; font-weight: 650; }
 .orbital-shortcut small { display: block; margin-top: 2px; color: var(--orbit-muted); font-size: 12px; }
-.orbital-home-mode .test-notice {
+:is(.orbital-home-mode,.orbital-home-departure) .test-notice {
   margin: 21px 0 0;
   background: var(--orbit-surface, #0b2428);
   border-color: var(--orbit-line);
   color: var(--orbit-ink);
 }
-.orbital-home-mode .test-notice p { color: var(--orbit-muted); }
-.orbital-home-mode .test-link-badge { border-color: var(--orbit-control-glow, #7eb4ae62); }
+:is(.orbital-home-mode,.orbital-home-departure) .test-notice p { color: var(--orbit-muted); }
+:is(.orbital-home-mode,.orbital-home-departure) .test-link-badge { border-color: var(--orbit-control-glow, #7eb4ae62); }
 
 @media (max-width: 1090px) {
   .orbital-chrome { --orbit-header: 114px; }
@@ -622,9 +626,11 @@
 }
 
 @media (max-width: 900px) {
-  .orbital-home-mode { --orbit-cloud-y: clamp(144px, 44vw, 259px); }
+  .orbital-home-mode,.orbital-flight-sky { --orbit-cloud-y: clamp(144px, 44vw, 259px); }
   .app-shell.orbital-home-mode .main-wrap::before,
-  .app-shell.orbital-home-mode .main-wrap::after { max-height: 760px; }
+  .app-shell.orbital-home-mode .main-wrap::after,
+  .orbital-flight-sky::before,
+  .orbital-flight-sky::after { max-height: 760px; }
   .orbital-home { grid-template: 'scene' 'workspace' / minmax(0, 1fr); }
   .orbital-scene { min-height: 0; }
   .orbital-art {
@@ -674,8 +680,8 @@
     padding: 27px 0 0;
   }
   .orbital-workspace::before, .orbital-list h2::before { display: none; }
-  .orbital-home-mode .test-notice { margin-top: 24px; }
-  .orbital-home-mode .test-link-badge { display: none; }
+  :is(.orbital-home-mode,.orbital-home-departure) .test-notice { margin-top: 24px; }
+  :is(.orbital-home-mode,.orbital-home-departure) .test-link-badge { display: none; }
 }
 
 @media (max-width: 570px) {

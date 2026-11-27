@@ -5,9 +5,10 @@ import { BookOpen, Orbit } from 'lucide-react';
 import type { Rulebook } from '../lib/model';
 import type { OrbitalView } from '../lib/orbital-camera';
 import { arrangeOrbitTracks, lunarOrbit, moonMapLimit, planetMapLimit, solarOrbit, starMapRadius, type MapBody } from '../lib/orbital-layout';
-import { platformHref, type PlatformJourney } from '../lib/platform-navigation';
+import { platformHref } from '../lib/platform-navigation';
 import { createPlanetarySystem, visibleOrbitalBodies } from '../lib/orbital-system';
 import type { PlanetaryArchitecture, Surface } from '../lib/planetary-architecture';
+import type { SystemApproach } from '../lib/system-approach';
 import { CelestialGlobe, SpaceStars } from './orbital-space';
 import { useOrbitalCamera } from './use-orbital-camera';
 
@@ -30,8 +31,8 @@ const StarLayer = memo(function StarLayer({seed, count}: {seed: number; count: n
   </svg>;
 });
 
-export function OrbitalSystemScene({book, topicId, journey, view, headingRef, onTopic, onOverview, onRead}: {
-  book: Rulebook; topicId?: string; journey: PlatformJourney | null; view: OrbitalView;
+export function OrbitalSystemScene({book, topicId, approachRef, view, headingRef, onTopic, onOverview, onRead}: {
+  book: Rulebook; topicId?: string; approachRef: RefObject<SystemApproach | null>; view: OrbitalView;
   headingRef: RefObject<HTMLHeadingElement | null>;
   onTopic: (id: string) => void; onOverview: () => void; onRead: () => void;
 }) {
@@ -43,8 +44,7 @@ export function OrbitalSystemScene({book, topicId, journey, view, headingRef, on
   const planets = useMemo(() => arrangeOrbitTracks(visibleOrbitalBodies(system.planets,planetMapLimit,topic?.planet), 'solar'),[system,topic?.planet]);
   const moons = useMemo(() => arrangeOrbitTracks(visibleOrbitalBodies(topic?.planet.moons ?? [],moonMapLimit,topic?.moon), 'lunar'),[topic?.planet,topic?.moon]);
   const body = topic?.moon ?? topic?.planet;
-  const arrival = journey?.from.page === 'home' && journey.to.page === 'rules' && journey.to.bookId === book.id;
-  useOrbitalCamera({stage, svg, world, system, topic, topicId, planets, moons, view, arrival});
+  useOrbitalCamera({stage, svg, world, system, topic, topicId, planets, moons, view, approachRef});
 
   useEffect(() => {
     if (!body || view !== 'focus') return;
@@ -119,8 +119,10 @@ export function OrbitalSystemScene({book, topicId, journey, view, headingRef, on
     data-planet-count={system.planets.length}
     data-moon-count={topic?.planet.moons.length ?? system.topics.size - system.planets.length}>
     <div ref={stage} className="orbital-system-viewport">
-      <div className="orbital-system-stars" data-star-layer="far" aria-hidden="true"><StarLayer seed={system.star.seed} count={124}/></div>
-      <div className="orbital-system-stars" data-star-layer="near" aria-hidden="true"><StarLayer seed={system.star.seed^0x941ca7d0} count={46}/></div>
+      <div className="orbital-system-sky" aria-hidden="true">
+        <div className="orbital-system-stars" data-star-layer="far"><StarLayer seed={system.star.seed} count={124}/></div>
+        <div className="orbital-system-stars" data-star-layer="near"><StarLayer seed={system.star.seed^0x941ca7d0} count={46}/></div>
+      </div>
       <svg ref={svg} className="orbital-world-svg" viewBox="0 0 980 560" role="group" aria-label="Corpos celestes">
         <g ref={world} transform="translate(490 291)">
           <g className="orbital-solar-tracks" aria-hidden="true">
@@ -132,8 +134,10 @@ export function OrbitalSystemScene({book, topicId, journey, view, headingRef, on
               data-current={body===topic.moon} vectorEffect="non-scaling-stroke"/>)}
           </g>}
           <g className="orbital-map-star" aria-hidden="true"><Globe body={system.star} x={0} y={0} radius={starMapRadius(system.star)} detail/></g>
-          {planets.map(destination)}
-          {moons.map(destination)}
+          <g className="orbital-map-bodies">
+            {planets.map(destination)}
+            {moons.map(destination)}
+          </g>
         </g>
       </svg>
     </div>

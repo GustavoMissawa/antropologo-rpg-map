@@ -281,6 +281,7 @@ function OrbitalScene({destination, phase, dieActivation, restoringFocus, onSele
 export function OrbitalHome(props: OrbitalHomeProps & {
   destination: Destination | null;
   dieActivation: number;
+  departing?: boolean;
   onSelectDestination: (destination: Destination | null) => void;
   firstStepsCue: FirstStepsCue | null;
   onFirstStepsZone: (zone: FirstStepsZone | null) => void;
@@ -301,6 +302,7 @@ export function OrbitalHome(props: OrbitalHomeProps & {
     return () => reportZone(null);
   }, [firstStepsZone, reportZone]);
   useEffect(() => {
+    if (props.departing) return;
     if (navigation.destination) lastDestination.current = navigation.destination;
     if (navigation.phase === 'destination' && !document.querySelector('dialog[open]') && !document.activeElement?.matches('.orbital-d20-control')) root.current?.querySelector<HTMLElement>('#orbital-destination-title')?.focus({preventScroll: true});
     if (navigation.phase === 'exploration' && lastDestination.current) {
@@ -311,9 +313,9 @@ export function OrbitalHome(props: OrbitalHomeProps & {
       }
       lastDestination.current = null;
     }
-  }, [navigation.phase, navigation.destination]);
+  }, [navigation.phase, navigation.destination, props.departing]);
   useEffect(() => {
-    if (!expanded) return;
+    if (!expanded || props.departing) return;
     let press: {id: number; x: number; y: number} | null = null;
     const outside = (target: EventTarget | null) => target instanceof Element && !target.closest(
       '.orbital-destination-panel, .orbital-d20-control, .topbar, dialog, button, a, input, select, textarea, [role="button"], [contenteditable="true"]'
@@ -337,7 +339,7 @@ export function OrbitalHome(props: OrbitalHomeProps & {
       document.removeEventListener('pointerup', up);
       document.removeEventListener('pointercancel', cancel);
     };
-  }, [expanded, selectDestination]);
+  }, [expanded, selectDestination, props.departing]);
   return (
     <div ref={root} className="orbital-home" data-phase={navigation.phase} data-destination={navigation.destination ?? undefined} data-expanded={expanded} data-first-steps={props.firstStepsCue ?? undefined} onKeyDown={event => {
       if (event.key === 'Escape' && navigation.destination && !event.defaultPrevented && !document.querySelector('dialog[open]')) {
