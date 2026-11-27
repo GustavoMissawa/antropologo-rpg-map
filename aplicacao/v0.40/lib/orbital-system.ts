@@ -1,5 +1,6 @@
 import type { Rule, Rulebook } from './model.ts';
 import { orbitalRandom, orbitalSeed } from './orbital-noise.ts';
+import { centralProfiles, describeCentralObject, type CentralObject } from './orbital-astronomy.ts';
 import {
   createMassProfile, estimateMoon, estimatePlanet, estimateStar, planetOrbitBounds,
   type Atmosphere, type LunarProperties, type PlanetaryArchitecture, type PlanetaryProperties,
@@ -11,8 +12,8 @@ const appearanceVersion = 'orbital-system-1';
 
 export type SpacePoint = { x: number; y: number };
 export type CelestialOrbit = { radius: number; angle: number };
-export type CelestialAppearance = {
-  type: 'star' | Surface;
+export type CelestialAppearance<T extends 'star' | Surface = 'star' | Surface> = {
+  type: T;
   light: string;
   base: string;
   shade: string;
@@ -24,28 +25,24 @@ export type CelestialAppearance = {
   storm: boolean;
 };
 
-export type CelestialBody = {
+export type CelestialBody<T extends 'star' | Surface = 'star' | Surface> = {
   id: string;
   title: string;
   seed: number;
-  appearance: CelestialAppearance;
+  appearance: CelestialAppearance<T>;
 };
-export type OrbitalMoon = CelestialBody & { planetId: string; orbit: CelestialOrbit; physics: LunarProperties };
-export type OrbitalPlanet = CelestialBody & { orbit: CelestialOrbit; moons: OrbitalMoon[]; physics: PlanetaryProperties };
+export type OrbitalMoon = CelestialBody<Surface> & { planetId: string; orbit: CelestialOrbit; physics: LunarProperties };
+export type OrbitalPlanet = CelestialBody<Surface> & { orbit: CelestialOrbit; moons: OrbitalMoon[]; physics: PlanetaryProperties };
+export type OrbitalPrimary = CelestialBody<'star'> & { physics: StellarProperties; central: CentralObject };
 export type OrbitalTopic = { planet: OrbitalPlanet; moon?: OrbitalMoon };
 export type PlanetarySystem = {
   id: string;
   architecture: PlanetaryArchitecture;
-  star: CelestialBody & { physics: StellarProperties };
+  star: OrbitalPrimary;
   planets: OrbitalPlanet[];
   topics: ReadonlyMap<string, OrbitalTopic>;
 };
 
-const starColors = {
-  cool: ['#fff0cd', '#ffad6f', '#a24431'],
-  temperate: ['#fff9e4', '#ffdb89', '#9b5728'],
-  hot: ['#f1fbff', '#b1d9ff', '#4164ad'],
-} as const;
 const surfaceColors = {
   rocky: [
     ['#efcaaa', '#ab684c', '#382727'],
@@ -89,7 +86,7 @@ export function celestialSeed(...ids: string[]): number {
   return orbitalSeed(hash);
 }
 
-function describeGlobe(physics: PlanetaryProperties | LunarProperties, seed: number): CelestialAppearance {
+function describeGlobe(physics: PlanetaryProperties | LunarProperties, seed: number): CelestialAppearance<Surface> {
   const random = orbitalRandom(seed);
   const {surface, radiusEarth, atmosphere, cratering} = physics;
   const colors = surfaceColors[surface];
@@ -118,13 +115,14 @@ export function createPlanetarySystem(book: Pick<Rulebook, 'id' | 'name' | 'chap
   const massProfile = createMassProfile(celestialSeed(book.id, 'architecture-1'));
   const starSeed = celestialSeed(book.id, 'star');
   const stellar = estimateStar(celestialSeed(book.id, 'stellar-physics'));
-  const [light, base, shade] = starColors[stellar.spectrum];
-  const star = {
-    id: book.id, title: book.name, seed: starSeed, physics: stellar,
+  const central = describeCentralObject(starSeed);
+  const [light, base, shade] = centralProfiles[central.archetype].colors;
+  const star: OrbitalPrimary = {
+    id: book.id, title: book.name, seed: starSeed, physics: stellar, central,
     appearance: {
       type: 'star', light, base, shade, size: 1.02 + .43 * stellar.massSolar, tilt: -12,
       rings: null, atmosphere: 'none', cratering: 0, storm: false,
-    } satisfies CelestialAppearance,
+    },
   };
   const topics = new Map<string, OrbitalTopic>();
   const planets = book.chapters.map(chapter => {

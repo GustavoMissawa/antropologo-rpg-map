@@ -199,6 +199,28 @@
 .orbital-moon-tracks ellipse[data-current="true"] { opacity: .74; stroke-dasharray: none; }
 .orbital-system-scene[data-scene-mode="focus"] .orbital-map-star,
 .orbital-world-body[data-label-priority="remote"] { opacity: .42; }
+.orbital-world-svg :is(.orbital-map-star,.orbital-asteroid-belt) { pointer-events: none; }
+.orbital-pulsar-beams {
+  opacity: .61;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: orbital-pulsar-sweep 7s ease-in-out infinite alternate paused;
+}
+.orbital-magnetar-field {
+  opacity: .41;
+  animation: orbital-magnetar-breathe 6.1s ease-in-out infinite alternate paused;
+}
+.orbital-system-viewport[data-celestial-motion='running'] :is(.orbital-pulsar-beams,.orbital-magnetar-field) {
+  animation-play-state: running;
+}
+@keyframes orbital-pulsar-sweep {
+  from { transform: rotate(-6deg); opacity: .44; }
+  to { transform: rotate(6deg); opacity: .72; }
+}
+@keyframes orbital-magnetar-breathe {
+  from { opacity: .26; }
+  to { opacity: .52; }
+}
 .orbital-world-body[data-label-priority="remote"]:focus-visible { opacity: 1; }
 .orbital-map-star[data-in-frame="false"],
 .orbital-world-body[data-in-frame="false"] { visibility: hidden; }
@@ -293,6 +315,7 @@
   .orbital-map-reset svg { width: 15px; }
 }
 @media (prefers-reduced-motion: reduce) {
+  :is(.orbital-pulsar-beams,.orbital-magnetar-field) { animation: none; }
   .rules-orbital::before,
   .orbital-system-scene,
   .rules-orbital .rules-content[data-orbital-view="reading"] > .rule-article { transition: none; }

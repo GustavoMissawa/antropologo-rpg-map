@@ -2,7 +2,8 @@
 
 import { useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { orbitalRandom } from '../lib/orbital-noise';
-import type { CelestialBody, OrbitalFlight } from '../lib/orbital-system';
+import type { OrbitalPlanet, OrbitalMoon, OrbitalFlight } from '../lib/orbital-system';
+import { globeTexture } from '../lib/orbital-texture';
 
 export function SpaceStars({seed, amount = 92, color = '#e5eeff'}: {seed: number; amount?: number; color?: string}) {
   const stars = useMemo(() => {
@@ -20,113 +21,63 @@ export function SpaceStars({seed, amount = 92, color = '#e5eeff'}: {seed: number
 }
 
 export function CelestialGlobe({body, x, y, radius, detail = false}: {
-  body: CelestialBody; x: number; y: number; radius: number; detail?: boolean;
+  body: OrbitalPlanet | OrbitalMoon; x: number; y: number; radius: number; detail?: boolean;
 }) {
   const id = useId();
   const {type, light, base, shade, tilt, rings, atmosphere, cratering, storm} = body.appearance;
-  const star = type === 'star';
-  const texture = useMemo(() => {
-    if (star) {
-      const random = orbitalRandom(body.seed ^ 0x5bd5213b);
-      return Array.from({length: detail ? 42 : 12}, (_, i) => {
-        const x = random() * 195 - 97.5, y = random() * 195 - 97.5;
-        const span = 3 + random() * 27;
-        return <path key={i} d={`M${x} ${y} q${span*.4} ${-span*.66} ${span} ${span*.17}`}
-          stroke={i % 4 === 0 ? shade : light} strokeWidth={1 + random() * 3.2} strokeLinecap="round"
-          opacity={.10 + random() * .24} fill="none"/>;
-      });
-    }
-    if (type === 'gas-giant' || type === 'ice-giant') {
-      const ice = type === 'ice-giant';
-      const stormRandom = orbitalRandom(body.seed ^ 0x598e5bed);
-      const x = stormRandom() * 82 - 41, y = stormRandom() * 70 - 35;
-      const bands = Array.from({length: detail ? 13 : 6}, (_, layer) => {
-        const i = layer < 6 ? layer * 2 + 1 : (layer - 6) * 2;
-        const random = orbitalRandom(body.seed ^ (0x5bd5213b + i * 997));
-        const y = -104 + (i + random()) * 16;
-        const bend = random() * 30 - 15;
-        return <path key={i} d={`M-112 ${y} C-53 ${y+bend} 47 ${y-bend*.4} 112 ${y-6}`}
-          stroke={i % 3 === 0 ? shade : light} strokeWidth={3 + random() * (layer < 6 ? 14 : 5)}
-          opacity={.16 + random() * (ice ? .19 : .34)} fill="none"/>;
-      });
-      return storm ? [...bands, <g key="storm" transform={`translate(${x} ${y})`} opacity={ice ? .69 : .86}>
-        <ellipse rx="26" ry="10" fill={light} opacity=".52"/>
-        <ellipse rx="19" ry="6.7" fill={shade}/>
-        <path d="M-17 1 C-4 -7 16 -4 14 0 S-1 6 -7 1" fill="none" stroke={base} strokeWidth="2.8" strokeLinecap="round"/>
-      </g>] : bands;
-    }
-    const random = orbitalRandom(body.seed ^ 0x5bd5213b);
-    const terrain = Array.from({length: detail ? 8 : 3}, (_, i) => {
-      const x = random() * 184 - 92;
-      const y = random() * 184 - 92;
-      const size = 13 + random() * 57;
-      const continental = type === 'oceanic';
-      return <path key={'terrain-' + i} fill={i % 2 === 0 ? light : shade}
-        opacity={continental ? .34 + random() * .33 : .12 + random() * .28}
-        d={`M${x-size} ${y} q${size*.24} ${-size*.29} ${size*.73} ${-size*.42}
-          t${size*.75} ${-size*.18} q${size*.72} ${size*.36} ${size*.4} ${size*.67}
-          t${-size*1.2} ${size*.3} q${-size*.52} ${-size*.33} ${-size*.68} ${-size*.37}Z`}/>;
-    });
-    const fracture = type === 'icy' || type === 'volcanic';
-    const bands = type === 'desert';
-    const count = fracture || bands ? (detail ? 10 : 4) : Math.round((detail ? 17 : 6) * cratering);
-    const mark = orbitalRandom(body.seed ^ 0x6d6cea33);
-    const markings = Array.from({length: count}, (_, i) => {
-      const x = mark() * 176 - 88, y = mark() * 176 - 88, r = 2 + mark() ** 2 * 13;
-      return fracture
-        ? <path key={'mark-' + i} d={`M${x} ${y} l${r * 2} ${-r} ${r} ${r / 2} ${r * 2.2} ${-r}`}
-            stroke={type === 'volcanic' ? light : shade} strokeWidth={type === 'volcanic' ? 1.7 : 1.35}
-            opacity={type === 'volcanic' ? .68 : .42} fill="none"/>
-        : bands
-          ? <path key={'mark-' + i} d={`M${x-28} ${y} q19 ${-r*2} 38 ${-r} t49 ${r/2}`}
-              stroke={i%2 ? light : shade} strokeWidth={1 + r*.19} opacity=".30" fill="none"/>
-        : <ellipse key={'mark-' + i} cx={x} cy={y} rx={r} ry={r * .72} fill={shade}
-            stroke={light} strokeWidth={r * .09} opacity={.14 + mark() * .22}/>;
-    });
-    return [...terrain, ...markings];
-  }, [body.seed, detail, base, light, shade, star, storm, type, cratering]);
-
-  const ringColor = rings === 'ice' ? '#d8e8eb' : base;
-  const ringWidth = rings === 'ice' ? 17 : 11;
-
-  return <g transform={`translate(${x} ${y}) scale(${radius / 100})`}>
+  const moon = 'planetId' in body;
+  const texture = useMemo(() => globeTexture(body.seed,type,moon,cratering,storm,detail),
+    [body.seed,type,moon,cratering,storm,detail]);
+  const tones = {light,base,shade};
+  const ringBands = useMemo(() => {
+    if (!rings) return [];
+    const random = orbitalRandom(body.seed ^ 0x17b92ce3);
+    return [128,143,159,174].map((length,i) => ({
+      x:length + random()*2.5, y:length*(.18 + .006*i) + random()*2.8,
+      width: (i === 2 ? 8 : 2.2) + (rings==='ice' ? 3.8 : 1.5)*random(),
+      ink:i % 2 === 0 ? (rings==='ice' ? '#d8e8eb' : base) : light,
+      opacity:.47+.38*random(),
+    }));
+  },[body.seed,rings,light,base]);
+  const atmosphereOpacity = atmosphere === 'dense' ? .58 : .30;
+  return <g transform={`translate(${x} ${y}) scale(${radius / 100})`} data-globe-surface={type}>
     <defs>
       <clipPath id={id + '-disc'}><circle r="100"/></clipPath>
-      <radialGradient id={id + '-ground'} cx={star ? '.43' : '.32'} cy={star ? '.39' : '.24'} r=".84">
-        <stop stopColor={star ? '#fffaf1' : light}/>
-        <stop offset={star ? '.49' : '.58'} stopColor={star ? light : base}/>
-        <stop offset="1" stopColor={star ? base : shade}/>
+      <radialGradient id={id + '-ground'} cx=".30" cy=".25" r=".88">
+        <stop stopColor={light}/>
+        <stop offset=".52" stopColor={base}/>
+        <stop offset="1" stopColor={shade}/>
       </radialGradient>
-      <radialGradient id={id + '-limb'} cx=".3" cy=".28" r=".78">
-        <stop offset=".4" stopColor={shade} stopOpacity="0"/>
-        <stop offset="1" stopColor={shade} stopOpacity={star ? .16 : .88}/>
+      <radialGradient id={id + '-limb'} cx=".27" cy=".24" r=".82">
+        <stop offset=".36" stopColor={shade} stopOpacity="0"/>
+        <stop offset=".77" stopColor={shade} stopOpacity=".38"/>
+        <stop offset="1" stopColor={shade} stopOpacity=".94"/>
       </radialGradient>
-      {star && <radialGradient id={id + '-corona'}>
-        <stop offset=".38" stopColor={light} stopOpacity=".88"/>
-        <stop offset=".5" stopColor={base} stopOpacity=".38"/>
-        <stop offset=".69" stopColor={base} stopOpacity=".12"/>
+      {atmosphere!=='none'&&<radialGradient id={id+'-air'}>
+        <stop offset=".81" stopColor={base} stopOpacity="0"/>
+        <stop offset=".91" stopColor={light} stopOpacity={atmosphereOpacity}/>
         <stop offset="1" stopColor={base} stopOpacity="0"/>
       </radialGradient>}
     </defs>
-    {star && <circle r="212" fill={`url(#${id}-corona)`}/>}
-    {rings && <g transform={`rotate(${tilt})`} fill="none">
-      <ellipse rx="166" ry="39" stroke={ringColor} strokeWidth={ringWidth} opacity=".63"/>
-      <ellipse rx="151" ry="34" stroke={light} strokeWidth="4" opacity=".65"/>
-      <ellipse rx="181" ry="43" stroke={light} strokeWidth="4" opacity=".31"/>
+    {!!ringBands.length&&<g transform={`rotate(${tilt})`} fill="none" data-globe-rings={rings}>
+      {ringBands.map(band=><ellipse key={band.x} rx={band.x} ry={band.y}
+        stroke={band.ink} strokeWidth={band.width} opacity={band.opacity*.67}/>)}
     </g>}
+    {atmosphere!=='none'&&<circle r={atmosphere==='dense'?113:107} fill={`url(#${id}-air)`}/>}
     <circle r="100" fill={`url(#${id}-ground)`}/>
     <g clipPath={`url(#${id}-disc)`}>
-      <g transform={`rotate(${tilt})`}>{texture}</g>
+      <g transform={`rotate(${tilt})`}>
+        {texture.map(({d,tone,opacity,width},i)=><path key={i} d={d} opacity={opacity}
+          fill={width?'none':tones[tone]} stroke={width?tones[tone]:undefined} strokeWidth={width}
+          strokeLinejoin="round" strokeLinecap="round"/>)}
+      </g>
       <circle r="100" fill={`url(#${id}-limb)`}/>
-      <circle r="99" stroke={light} strokeWidth={atmosphere === 'dense' ? 5 : 2.1}
-        opacity={atmosphere === 'dense' ? .47 : .31} fill="none"/>
-      {atmosphere !== 'none' && <path d="M-88 -43 A98 98 0 0 1 42 -88" fill="none" stroke={light}
-        strokeWidth={atmosphere === 'dense' ? 3 : 1.6} strokeLinecap="round" opacity=".59"/>}
+      <path d="M-93 -29A97 97 0 0 1 36 -90" fill="none" stroke={light}
+        strokeWidth={atmosphere==='dense'?3.2:moon?2.7:1.5} strokeOpacity={atmosphere==='none'?.28:atmosphereOpacity}/>
     </g>
-    {rings && <g transform={`rotate(${tilt})`} fill="none">
-      <path d="M-166 0 A166 39 0 0 0 166 0" stroke={ringColor} strokeWidth={ringWidth} opacity=".84"/>
-      <path d="M-151 0 A151 34 0 0 0 151 0" stroke={light} strokeWidth="4" opacity=".75"/>
-      <path d="M-181 0 A181 43 0 0 0 181 0" stroke={light} strokeWidth="4" opacity=".41"/>
+    {!!ringBands.length&&<g transform={`rotate(${tilt})`} fill="none">
+      {ringBands.map(band=><path key={band.x} d={`M-${band.x} 0A${band.x} ${band.y} 0 0 0 ${band.x} 0`}
+        stroke={band.ink} strokeWidth={band.width} opacity={band.opacity}/>)}
     </g>}
   </g>;
 }

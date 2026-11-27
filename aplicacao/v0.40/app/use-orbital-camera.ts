@@ -133,7 +133,7 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
         x-radius>=bounds.left && x+radius<=bounds.right && y-radius>=bounds.top && y+radius<=bounds.bottom;
       const inLocalField = (x:number,y:number,radius:number) => !!parent &&
         Math.hypot((x-parent.x)*.81,y-parent.y) < (moons.length ? 119 : (host?.footprint ?? 0)+15) + radius;
-      const starRadius = starMapRadius(system.star);
+      const starRadius = starMapRadius(system.star) * (system.star.central.archetype === 'black-hole' ? 1.8 : 1);
       const projectedStar = project(0,0,starRadius);
       const showStar = !parent || (!inLocalField(0,0,starRadius) && projectionFits(projectedStar));
       const starState = String(showStar);
@@ -206,7 +206,9 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
       raf = requestAnimationFrame(tick);
     }
     function refresh() {
-      if (!playing()) {
+      const running = playing();
+      frame!.dataset.celestialMotion = running ? 'running' : 'paused';
+      if (!running) {
         if (raf) cancelAnimationFrame(raf);
         raf = 0;
         lastFrame = 0;
@@ -214,7 +216,7 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
         if (!arriving()) delete frame!.dataset.cameraMotion;
       }
       paint(window.performance.now());
-      if (playing() && !raf) raf = requestAnimationFrame(tick);
+      if (running && !raf) raf = requestAnimationFrame(tick);
     }
     function resize() { measure(); refresh(); }
     if (approach) {
@@ -246,6 +248,7 @@ export function useOrbitalCamera({stage, svg, world, system, topic, topicId, pla
     return()=>{
       if (raf) cancelAnimationFrame(raf);
       delete frame.dataset.cameraMotion;
+      delete frame.dataset.celestialMotion;
       if (approach) {
         delete approach.paintSystem;
         delete approach.resumeSystem;

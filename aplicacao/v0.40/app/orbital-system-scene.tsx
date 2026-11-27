@@ -4,12 +4,14 @@ import { memo, useEffect, useMemo, useRef, type MouseEvent, type RefObject } fro
 import { BookOpen, Orbit } from 'lucide-react';
 import type { Rulebook } from '../lib/model';
 import type { OrbitalView } from '../lib/orbital-camera';
-import { arrangeOrbitTracks, lunarOrbit, moonMapLimit, planetMapLimit, solarOrbit, starMapRadius, type MapBody } from '../lib/orbital-layout';
+import { arrangeOrbitTracks, asteroidBelt, lunarOrbit, moonMapLimit, planetMapLimit, solarOrbit, starMapRadius, type MapBody } from '../lib/orbital-layout';
 import { platformHref } from '../lib/platform-navigation';
 import { createPlanetarySystem, visibleOrbitalBodies } from '../lib/orbital-system';
 import type { PlanetaryArchitecture, Surface } from '../lib/planetary-architecture';
+import { centralProfiles } from '../lib/orbital-astronomy';
 import type { SystemApproach } from '../lib/system-approach';
 import { CelestialGlobe, SpaceStars } from './orbital-space';
+import { OrbitalCentralBody } from './orbital-central-body';
 import { useOrbitalCamera } from './use-orbital-camera';
 
 const architectureNotes: Record<PlanetaryArchitecture, string> = {
@@ -25,10 +27,23 @@ const surfaceLabels: Record<Surface, string> = {
 const formatQuantity = new Intl.NumberFormat('pt-BR', {maximumSignificantDigits: 3});
 
 const Globe = memo(CelestialGlobe);
+const Primary = memo(OrbitalCentralBody);
 const StarLayer = memo(function StarLayer({seed, count}: {seed: number; count: number}) {
   return <svg viewBox="0 0 1000 300" preserveAspectRatio="none" focusable="false">
     <SpaceStars seed={seed} amount={count} color="currentColor"/>
   </svg>;
+});
+
+const Asteroids = memo(function Asteroids({belt}: {belt: NonNullable<ReturnType<typeof asteroidBelt>>}) {
+  const paths = ['','',''];
+  for (const {x,y,size,tone} of belt.particles) {
+    const d = (n:number) => n.toFixed(1);
+    paths[tone] += `M${d(x)} ${d(y-size)}l${d(size*.87)} ${d(size*.77)} ${d(-size*.52)} ${d(size*.85)} ${d(-size*1.08)} ${d(-size*.57)}Z`;
+  }
+  const tones = ['#ab8a71','#b9a8ab','#827d84'];
+  return <g className="orbital-asteroid-belt" data-asteroid-count={belt.particles.length} stroke="none" opacity=".69">
+    {paths.map((d,i)=><path key={i} d={d} fill={tones[i]}/>)}
+  </g>;
 });
 
 export function OrbitalSystemScene({book, topicId, approachRef, view, headingRef, onTopic, onOverview, onRead}: {
@@ -43,6 +58,8 @@ export function OrbitalSystemScene({book, topicId, approachRef, view, headingRef
   const topic = topicId === undefined ? undefined : system.topics.get(topicId);
   const planets = useMemo(() => arrangeOrbitTracks(visibleOrbitalBodies(system.planets,planetMapLimit,topic?.planet), 'solar'),[system,topic?.planet]);
   const moons = useMemo(() => arrangeOrbitTracks(visibleOrbitalBodies(topic?.planet.moons ?? [],moonMapLimit,topic?.moon), 'lunar'),[topic?.planet,topic?.moon]);
+  const belt = useMemo(() => topic ? null : asteroidBelt(system.star,planets),[topic,system.star,planets]);
+  const centralLabel = centralProfiles[system.star.central.archetype].label;
   const body = topic?.moon ?? topic?.planet;
   useOrbitalCamera({stage, svg, world, system, topic, topicId, planets, moons, view, approachRef});
 
@@ -128,12 +145,13 @@ export function OrbitalSystemScene({book, topicId, approachRef, view, headingRef
           <g className="orbital-solar-tracks" aria-hidden="true">
             {planets.map(({body,orbit})=><ellipse key={body.id} rx={orbit.radius*solarOrbit.x} ry={orbit.radius*solarOrbit.y}
               data-current={body===topic?.planet} vectorEffect="non-scaling-stroke"/>)}
+            {belt&&<Asteroids belt={belt}/>}
           </g>
           {topic && <g className="orbital-moon-tracks" data-moon-tracks={topic.planet.id} aria-hidden="true">
             {moons.map(({body,orbit})=><ellipse key={body.id} rx={orbit.radius*lunarOrbit.x} ry={orbit.radius*lunarOrbit.y}
               data-current={body===topic.moon} vectorEffect="non-scaling-stroke"/>)}
           </g>}
-          <g className="orbital-map-star" aria-hidden="true"><Globe body={system.star} x={0} y={0} radius={starMapRadius(system.star)} detail/></g>
+          <g className="orbital-map-star" aria-hidden="true"><Primary body={system.star} radius={starMapRadius(system.star)}/></g>
           <g className="orbital-map-bodies">
             {planets.map(destination)}
             {moons.map(destination)}
@@ -148,7 +166,7 @@ export function OrbitalSystemScene({book, topicId, approachRef, view, headingRef
         {topic&&!topic.moon&&<p>{surfaceLabels[topic.planet.physics.surface]} · {formatQuantity.format(topic.planet.physics.massEarth)}
           {' '}<abbr title="massa da Terra">M⊕</abbr> · {formatQuantity.format(topic.planet.physics.distanceAU)}
           {' '}<abbr title="unidade astronômica">UA</abbr> · {Math.round(topic.planet.physics.temperatureK)} K</p>}
-        {!topic&&system.planets.length>0&&<p>{architectureNotes[system.architecture]}</p>}
+        {!topic&&<p>{centralLabel}{system.planets.length>0&&' · '+architectureNotes[system.architecture]}</p>}
         {!topic && system.planets.length > planets.length && <p>{planets.length} de {system.planets.length} no mapa · todos no índice</p>}
         {topic && topic.planet.moons.length > moons.length && <p>{moons.length} de {topic.planet.moons.length} luas no mapa · todas no índice</p>}
         {!system.planets.length&&<p>Adicione um capítulo para criar o primeiro planeta.</p>}
